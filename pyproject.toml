@@ -1,0 +1,37 @@
+[project]
+name = "cumulus-chart-review"
+version = "0.0.1"
+# In order to support 3.12, we wil need to refactor out load_module, which is
+# targeted for deprecation in that version.
+requires-python = ">= 3.9, <3.12"
+dependencies = [
+    "ctakesclient",
+]
+description = "Medical Record Chart Review Calculator"
+readme = "README.md"
+license = { text="Apache License 2.0" }
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Home = "https://smarthealthit.org/cumulus-a-universal-sidecar-for-a-smart-learning-healthcare-system/"
+Documentation = "https://docs.smarthealthit.org/cumulus/"
+Source = "https://github.com/smart-on-fhir/cumulus-chart-review"
+
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pylint",
+]
+
+[tool.flit.sdist]
+include = ["chartreview/"]
