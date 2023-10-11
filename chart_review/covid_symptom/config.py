@@ -1,6 +1,6 @@
 from enum import Enum
 import ctakesclient
-from chartreview import common
+from chart_review import common
 
 ###############################################################################
 # COVID Symptom Class Labels

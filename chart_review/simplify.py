@@ -1,8 +1,8 @@
 from collections.abc import Iterable
 from enum import EnumMeta
 import re
-from chartreview import common
-from chartreview.common import guard_str, guard_iter
+from chart_review import common
+from chart_review.common import guard_str, guard_iter
 
 def merge_simple(source: dict, append: dict) -> dict:
     """

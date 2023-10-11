@@ -1,11 +1,11 @@
 from typing import List
 from collections.abc import Iterable
 from enum import Enum, EnumMeta
-from chartreview.common import guard_str, guard_iter, guard_in
-from chartreview import common
-from chartreview import simplify
-from chartreview import mentions
-from chartreview import agree
+from chart_review.common import guard_str, guard_iter, guard_in
+from chart_review import common
+from chart_review import simplify
+from chart_review import mentions
+from chart_review import agree
 
 class CohortReader:
 

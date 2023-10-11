@@ -55,17 +55,18 @@ Enum **NoteRanges** maps a selection of NoteID from the corpus
 **BASE COHORT METHODS**
 
 `cohort.py`
-* from chartreview import _labelstudio_, _mentions_, _agree_  
+* from chart_review import _labelstudio_, _mentions_, _agree_
 
 class **Cohort** defines the base class to analyze study cohorts.
   * init(`config.py`)
   
-`mentions.py` 
+`simplify.py`
 * **rollup**(...) : return _LabelStudioExport_ with 1 "rollup" annotation replacing individual mentions
-* other methods are rarely used currently
-  * overlaps(...) : test if two mentions overlap (True/False)
-  * calc_term_freq(...) : term frequency of highlighted mention text 
-  * calc_term_label_confusion : report of exact mentions with 2+ class_labels  
+
+`mentions.py` (methods are rarely used currently)
+* overlaps(...) : test if two mentions overlap (True/False)
+* calc_term_freq(...) : term frequency of highlighted mention text
+* calc_term_label_confusion : report of exact mentions with 2+ class_labels
 
 `agree.py` get confusion matrix comparing annotators {truth, reviewer}  
 * **confusion_matrix** (truth, reviewer, ...) returns List[TruePos, TrueNeg, FalsePos, FalseNeg]  

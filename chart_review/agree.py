@@ -1,8 +1,8 @@
 from typing import Dict, List
 from collections.abc import Iterable
 from ctakesclient.typesystem import Span
-from chartreview import mentions
-from chartreview import simplify
+from chart_review import mentions
+from chart_review import simplify
 
 def confusion_matrix(simple: dict, gold_ann: str, review_ann: str, note_range: Iterable, label_pick=None) -> Dict[str, list]:
     """
