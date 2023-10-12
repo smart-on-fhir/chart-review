@@ -1,10 +1,10 @@
 """Run chart-review from the command-line"""
 
 import argparse
-import os
 import sys
 
-from chart_review import agree, cohort, common
+from chart_review import cohort
+from chart_review.commands.accuracy import accuracy
 
 
 ###############################################################################
@@ -48,34 +48,7 @@ def add_accuracy_subparser(subparsers) -> None:
 
 def run_accuracy(args: argparse.Namespace) -> None:
     reader = cohort.CohortReader(args.project_dir)
-
-    first_ann = args.one
-    second_ann = args.two
-    base_ann = args.base
-
-    # Grab ranges
-    first_range = reader.config.note_ranges[first_ann]
-    second_range = reader.config.note_ranges[second_ann]
-
-    # All labels first
-    first_matrix = reader.confusion_matrix(first_ann, base_ann, first_range)
-    second_matrix = reader.confusion_matrix(second_ann, base_ann, second_range)
-    whole_matrix = agree.append_matrix(first_matrix, second_matrix)
-    table = agree.score_matrix(whole_matrix)
-
-    # Now do each labels separately
-    for label in reader.class_labels:
-        first_matrix = reader.confusion_matrix(first_ann, base_ann, first_range, label)
-        second_matrix = reader.confusion_matrix(second_ann, base_ann, second_range, label)
-        whole_matrix = agree.append_matrix(first_matrix, second_matrix)
-        table[label] = agree.score_matrix(whole_matrix)
-
-    # And write out the results
-    output_stem = os.path.join(reader.project_dir, f"accuracy-{first_ann}-{second_ann}-{base_ann}")
-    common.write_json(f"{output_stem}.json", table)
-    print(f"Wrote {output_stem}.json")
-    common.write_text(f"{output_stem}.csv", agree.csv_table(table, reader.class_labels))
-    print(f"Wrote {output_stem}.csv")
+    accuracy(reader, args.one, args.two, args.base)
 
 
 ###############################################################################
