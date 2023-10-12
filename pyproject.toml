@@ -29,6 +29,9 @@ requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
 [project.optional-dependencies]
+tests = [
+    "pytest",
+]
 dev = [
     "black",
     "pylint",

@@ -34,7 +34,7 @@ The most common chart-review measures agreement of the _**class_label**_ from a 
 1. Clone this repo.
 2. Install it locally like so: `pipx install .`
 
-This is not released on PyPI yet.
+`chart-review` is not yet released on PyPI.
 
 ---
 ### How to Run
@@ -47,44 +47,47 @@ Chart Review operates on a project folder that holds your config & data.
 3. Add a `config.yaml` file (or `config.json`) that looks something like this (read more on this format below):
 
 ```yaml
-class-labels:
+labels:
   - cough
   - fever
 
 annotators:
   jane: 2
   john: 6
+  jack: 8
+
+ranges:
+  jane: 242:250
+  john: [260:271, 277]
+  jack: [jane, john]
 ```
 
 #### Run
 
-Simply call `chart-review` with your project folder:
+Call `chart-review` with the sub-command you want and its arguments:
 
-`chart-review /path/to/project/dir`
+`chart-review accuracy --project-dir /path/to/project/dir jane john jack`
 
 Pass `--help` to see more options.
 
 ---
 ### Config File Format 
 
-`config.py` defines study specific variables. 
+`config.yaml` defines study specific variables. 
 
-  * study_folder = `/opt/cumulus/chart-review/studyname`
-  * class_labels = `['case', 'control', 'unknown', '...']`
-  * Annotators 
-  * NoteRanges
+  * Class labels: `labels: ['cough', 'fever']`
+  * Annotators: `annotators: {'jane': 3, 'john': 8}`
+  * Note ranges: `ranges: {'jane': 40:50, 'john': [2, 3, 4, 5]}`
 
-Enum **Annotators** maps a SimpleName to LabelStudioUserId
-* human subject matter expert _like_ "Rena"
-* computer method _like_ "NLP" 
-* coded data sources _like_ "ICD10"
+`annotators` maps a name to a Label Studio User ID
+* human subject matter expert _like_ `jane`
+* computer method _like_ `nlp` 
+* coded data sources _like_ `icd10`
   
-Enum **NoteRanges** maps a selection of NoteID from the corpus 
-* corpus = range(1, end+1)
-* annotator1_vs_2 = Iterable
-* annotator2_vs_3 = Iterable
-* annotator3_vs_1 = Iterable
-* annotator3_vs_1 = Iterable
+`ranges` maps a selection of Note IDs from the corpus 
+* `corpus: start:end`
+* `annotator1_vs_2: [list, of, notes]`
+* `annotator2_vs_3: corpus`
 
 ---
 **BASE COHORT METHODS**

@@ -84,11 +84,11 @@ def run_accuracy(args: argparse.Namespace) -> None:
 #
 ###############################################################################
 
-def main_cli() -> None:
+def main_cli(argv: list[str] = None) -> None:
     """Main entrypoint that wraps all the core program logic"""
     try:
         parser = define_parser()
-        args = parser.parse_args()
+        args = parser.parse_args(argv)
         args.func(args)
     except Exception as exc:
         sys.exit(str(exc))
