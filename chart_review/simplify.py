@@ -1,7 +1,7 @@
 from collections.abc import Iterable
 from enum import EnumMeta
 import re
-from chart_review import common
+from chart_review import common, config
 from chart_review.common import guard_str, guard_iter
 
 def merge_simple(source: dict, append: dict) -> dict:
@@ -26,7 +26,7 @@ def merge_simple(source: dict, append: dict) -> dict:
                     merged['annotations'][int(note_id)][annotator].append(entry)
     return merged
 
-def simplify_full(exported_json: str, annotator_enum: EnumMeta) -> dict:
+def simplify_full(exported_json: str, annotator_enum: config.AnnotatorMap) -> dict:
     """
     TODO: refactor JSON manipulation to labelstudio.py
     LabelStudio outputs contain more info than needed for IAA and term_freq.
@@ -48,7 +48,7 @@ def simplify_full(exported_json: str, annotator_enum: EnumMeta) -> dict:
 
         for annot in entry.get('annotations'):
             completed_by = annot.get('completed_by')
-            annotator = annotator_enum(completed_by).name
+            annotator = annotator_enum[completed_by]
             label = None
             for result in annot.get('result'):
                 if not label:

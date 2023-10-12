@@ -1,0 +1,19 @@
+# This is a converted version of config.py
+# I'm keeping both around for now, as we transition.
+
+labels:
+  - ideation-present
+  - action-present
+  - ideation-past
+  - action-past
+
+annotators:
+  andy: 2
+  amy: 3
+  alon: 4
+
+ranges:
+  corpus: 1226:1277
+  andy: corpus
+  amy: corpus
+  alon: corpus

@@ -30,7 +30,42 @@ The most common chart-review measures agreement of the _**class_label**_ from a 
 * 2 human reviewers _vs_ each other
 
 ---
-**EACH STUDY HAS STUDY-SPECIFIC COHORT** 
+### How to Install
+1. Clone this repo.
+2. Install it locally like so: `pipx install .`
+
+This is not released on PyPI yet.
+
+---
+### How to Run
+
+#### Set Up Project Folder
+
+Chart Review operates on a project folder that holds your config & data.
+1. Make a new folder.
+2. Export your Label Studio annotations and put that in the folder as `labelstudio-export.json`.
+3. Add a `config.yaml` file (or `config.json`) that looks something like this (read more on this format below):
+
+```yaml
+class-labels:
+  - cough
+  - fever
+
+annotators:
+  jane: 2
+  john: 6
+```
+
+#### Run
+
+Simply call `chart-review` with your project folder:
+
+`chart-review /path/to/project/dir`
+
+Pass `--help` to see more options.
+
+---
+### Config File Format 
 
 `config.py` defines study specific variables. 
 

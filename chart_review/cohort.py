@@ -1,29 +1,25 @@
-from typing import List
+import os
 from collections.abc import Iterable
-from enum import Enum, EnumMeta
 from chart_review.common import guard_str, guard_iter, guard_in
 from chart_review import common
+from chart_review import config
 from chart_review import simplify
 from chart_review import mentions
 from chart_review import agree
 
 class CohortReader:
 
-    def __init__(self, project_dir: str, annotator: EnumMeta, note_range: EnumMeta, class_labels: List[str]):
+    def __init__(self, project_dir: str):
         """
         :param project_dir: str like /opt/labelstudio/study_name
-        :param annotator: Enum.name is human-readable name like "rena" and Enum.value is LabelStudio "complete_by"
-        :param note_range: Enum.name is human-readable name like "andy_alon" and  Enum.value is LabelStudio "annotation.id"
-        :param class_labels: defined by "clinical annotation guidelines"
         """
         self.project_dir = project_dir
+        self.config = config.ProjectConfig(project_dir)
         self.labelstudio_json = self.path('labelstudio-export.json') #TODO: refactor labelstudio.py
-        self.annotator = annotator
-        self.note_range = note_range
-        self.class_labels = class_labels
+        self.annotator = self.config.annotators
+        self.note_range = self.config.note_ranges
+        self.class_labels = self.config.class_labels
         self.annotations = None
-
-        common.print_line(f'Loading(...) \n {self.labelstudio_json}')
 
         saved = common.read_json(self.labelstudio_json)
         if isinstance(saved, list):
@@ -38,7 +34,7 @@ class CohortReader:
             self.annotations = compat
 
     def path(self, filename):
-        return f'{self.project_dir}/{filename}'
+        return os.path.join(self.project_dir, filename)
 
     def calc_term_freq(self, annotator) -> dict:
         """
@@ -113,15 +109,3 @@ class CohortReader:
             table[label] = self.score_reviewer(gold_ann, review_ann, note_range, label)
 
         return table
-
-    def get_config(self) -> dict:
-        as_dict = dict()
-        as_dict['class_labels'] = self.class_labels
-        as_dict['project_dir'] = self.project_dir
-        as_dict['annotation_file'] = self.labelstudio_json
-        as_dict['annotator'] = {i.name: i.value for i in self.annotator}
-        as_dict['note_range'] = {i.name: ','.join([str(j) for j in list(i.value)]) for i in self.note_range}
-        return as_dict
-
-    def write_config(self):
-        common.write_json(self.path('config.json'), self.get_config())

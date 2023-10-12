@@ -4,6 +4,7 @@ version = "0.0.1"
 requires-python = ">= 3.9"
 dependencies = [
     "ctakesclient",
+    "pyyaml >= 6",
 ]
 description = "Medical Record Chart Review Calculator"
 readme = "README.md"
@@ -19,6 +20,9 @@ classifiers = [
 Home = "https://smarthealthit.org/cumulus-a-universal-sidecar-for-a-smart-learning-healthcare-system/"
 Documentation = "https://docs.smarthealthit.org/cumulus/"
 Source = "https://github.com/smart-on-fhir/chart-review"
+
+[project.scripts]
+chart-review = "chart_review.cli:main_cli"
 
 [build-system]
 requires = ["flit_core >=3.4,<4"]
