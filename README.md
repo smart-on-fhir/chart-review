@@ -30,42 +30,81 @@ The most common chart-review measures agreement of the _**class_label**_ from a 
 * 2 human reviewers _vs_ each other
 
 ---
-**EACH STUDY HAS STUDY-SPECIFIC COHORT** 
+### How to Install
+1. Clone this repo.
+2. Install it locally like so: `pipx install .`
 
-`config.py` defines study specific variables. 
+`chart-review` is not yet released on PyPI.
 
-  * study_folder = `/opt/cumulus/chart-review/studyname`
-  * class_labels = `['case', 'control', 'unknown', '...']`
-  * Annotators 
-  * NoteRanges
+---
+### How to Run
 
-Enum **Annotators** maps a SimpleName to LabelStudioUserId
-* human subject matter expert _like_ "Rena"
-* computer method _like_ "NLP" 
-* coded data sources _like_ "ICD10"
+#### Set Up Project Folder
+
+Chart Review operates on a project folder that holds your config & data.
+1. Make a new folder.
+2. Export your Label Studio annotations and put that in the folder as `labelstudio-export.json`.
+3. Add a `config.yaml` file (or `config.json`) that looks something like this (read more on this format below):
+
+```yaml
+labels:
+  - cough
+  - fever
+
+annotators:
+  jane: 2
+  john: 6
+  jack: 8
+
+ranges:
+  jane: 242-250  # inclusive
+  john: [260-271, 277]
+  jack: [jane, john]
+```
+
+#### Run
+
+Call `chart-review` with the sub-command you want and its arguments:
+
+`chart-review accuracy --project-dir /path/to/project/dir jane john jack`
+
+Pass `--help` to see more options.
+
+---
+### Config File Format 
+
+`config.yaml` defines study specific variables. 
+
+  * Class labels: `labels: ['cough', 'fever']`
+  * Annotators: `annotators: {'jane': 3, 'john': 8}`
+  * Note ranges: `ranges: {'jane': 40-50, 'john': [2, 3, 4, 5]}`
+
+`annotators` maps a name to a Label Studio User ID
+* human subject matter expert _like_ `jane`
+* computer method _like_ `nlp` 
+* coded data sources _like_ `icd10`
   
-Enum **NoteRanges** maps a selection of NoteID from the corpus 
-* corpus = range(1, end+1)
-* annotator1_vs_2 = Iterable
-* annotator2_vs_3 = Iterable
-* annotator3_vs_1 = Iterable
-* annotator3_vs_1 = Iterable
+`ranges` maps a selection of Note IDs from the corpus 
+* `corpus: start:end`
+* `annotator1_vs_2: [list, of, notes]`
+* `annotator2_vs_3: corpus`
 
 ---
 **BASE COHORT METHODS**
 
 `cohort.py`
-* from chartreview import _labelstudio_, _mentions_, _agree_  
+* from chart_review import _labelstudio_, _mentions_, _agree_
 
 class **Cohort** defines the base class to analyze study cohorts.
   * init(`config.py`)
   
-`mentions.py` 
+`simplify.py`
 * **rollup**(...) : return _LabelStudioExport_ with 1 "rollup" annotation replacing individual mentions
-* other methods are rarely used currently
-  * overlaps(...) : test if two mentions overlap (True/False)
-  * calc_term_freq(...) : term frequency of highlighted mention text 
-  * calc_term_label_confusion : report of exact mentions with 2+ class_labels  
+
+`mentions.py` (methods are rarely used currently)
+* overlaps(...) : test if two mentions overlap (True/False)
+* calc_term_freq(...) : term frequency of highlighted mention text
+* calc_term_label_confusion : report of exact mentions with 2+ class_labels
 
 `agree.py` get confusion matrix comparing annotators {truth, reviewer}  
 * **confusion_matrix** (truth, reviewer, ...) returns List[TruePos, TrueNeg, FalsePos, FalseNeg]  

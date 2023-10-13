@@ -1,0 +1,193 @@
+[
+  {
+    "id": 1,
+    "annotations": [
+      {
+        "id": 301,
+        "completed_by": 3,
+        "result": [
+          {
+            "value": {
+              "text": "achoo",
+              "labels": [
+                "Cough"
+              ]
+            }
+          },
+          {
+            "value": {
+              "text": "sigh",
+              "labels": [
+                "Fatigue",
+                "Headache"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 501,
+        "completed_by": 5,
+        "result": [
+          {
+            "value": {
+              "text": "achoo",
+              "labels": [
+                "Cough"
+              ]
+            }
+          },
+          {
+            "value": {
+              "text": "sigh",
+              "labels": [
+                "Fatigue"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 601,
+        "completed_by": 6,
+        "result": [
+          {
+            "value": {
+              "text": "achoo",
+              "labels": [
+                "Cough"
+              ]
+            }
+          },
+          {
+            "value": {
+              "text": "sigh",
+              "labels": [
+                "Fatigue"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "annotations": [
+      {
+        "id": 502,
+        "completed_by": 5,
+        "result": [
+          {
+            "value": {
+              "text": "ouch",
+              "labels": [
+                "Headache"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 602,
+        "completed_by": 6,
+        "result": [
+          {
+            "value": {
+              "text": "ouch",
+              "labels": [
+                "Fatigue"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "annotations": [
+      {
+        "id": 303,
+        "completed_by": 3,
+        "result": []
+      },
+      {
+        "id": 603,
+        "completed_by": 6,
+        "result": []
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "annotations": [
+      {
+        "id": 304,
+        "completed_by": 3,
+        "result": [
+          {
+            "value": {
+              "text": "sleepy",
+              "labels": [
+                "Fatigue"
+              ]
+            }
+          },
+          {
+            "value": {
+              "text": "pain",
+              "labels": [
+                "Headache"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 504,
+        "completed_by": 5,
+        "result": [
+          {
+            "value": {
+              "text": "sleepy",
+              "labels": [
+                "Fatigue"
+              ]
+            }
+          },
+          {
+            "value": {
+              "text": "pain",
+              "labels": [
+                "Headache"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 604,
+        "completed_by": 6,
+        "result": [
+          {
+            "value": {
+              "text": "sleepy",
+              "labels": [
+                "Fatigue"
+              ]
+            }
+          },
+          {
+            "value": {
+              "text": "pain",
+              "labels": [
+                "Cough"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

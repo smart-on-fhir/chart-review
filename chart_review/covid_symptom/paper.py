@@ -1,8 +1,8 @@
-from chartreview.covid_symptom import config
-from chartreview.covid_symptom.config import Annotator, NoteRange
-from chartreview import agree
-from chartreview import cohort
-from chartreview import common
+from chart_review.covid_symptom import config
+from chart_review.covid_symptom.config import Annotator, NoteRange
+from chart_review import agree
+from chart_review import cohort
+from chart_review import common
 
 def table2_accuracy_ctakes(self):
     gold_ann = Annotator.amy

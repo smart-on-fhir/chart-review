@@ -1,29 +1,4 @@
-from collections import Iterable
-
 from ctakesclient.typesystem import Span
-from chartreview.common import guard_str, guard_iter
-
-def rollup_mentions(simple: dict, annotator: str, note_range: Iterable) -> dict:
-    """
-    @param simple: prepared map of files and annotations
-    @param annotator: like andy, amy, or alon
-    @param note_range: collection of LabelStudio document ID
-    @return: dict keys=note_id, values=labels
-    """
-    rollup = dict()
-
-    for note_id, values in simple['annotations'].items():
-        if int(note_id) in guard_iter(note_range):
-            if values.get(annotator):
-                for annot in values[guard_str(annotator)]:
-                    if not rollup.get(note_id):
-                        rollup[note_id] = list()
-
-                    symptom = annot['labels'][0]
-
-                    if symptom not in rollup[note_id]:
-                        rollup[note_id].append(symptom)
-    return rollup
 
 def calc_term_freq(simple: dict, annotator: str) -> dict:
     """

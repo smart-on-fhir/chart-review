@@ -1,0 +1,14 @@
+labels:
+  - Cough
+  - Fatigue
+  - Headache
+
+annotators:
+  jane: 3
+  john: 5
+  jill: 6
+
+ranges:
+  jane: [1, 3, 4]
+  john: [1, 2, 4]
+  jill: [1, 2, 3, 4]
