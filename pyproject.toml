@@ -30,6 +30,7 @@ build-backend = "flit_core.buildapi"
 
 [project.optional-dependencies]
 tests = [
+    "ddt",
     "pytest",
 ]
 dev = [

@@ -13,7 +13,7 @@ annotators:
   alon: 4
 
 ranges:
-  corpus: 1226:1277
+  corpus: 1226-1277
   andy: corpus
   amy: corpus
   alon: corpus

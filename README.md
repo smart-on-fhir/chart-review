@@ -57,8 +57,8 @@ annotators:
   jack: 8
 
 ranges:
-  jane: 242:250
-  john: [260:271, 277]
+  jane: 242-250  # inclusive
+  john: [260-271, 277]
   jack: [jane, john]
 ```
 
@@ -77,7 +77,7 @@ Pass `--help` to see more options.
 
   * Class labels: `labels: ['cough', 'fever']`
   * Annotators: `annotators: {'jane': 3, 'john': 8}`
-  * Note ranges: `ranges: {'jane': 40:50, 'john': [2, 3, 4, 5]}`
+  * Note ranges: `ranges: {'jane': 40-50, 'john': [2, 3, 4, 5]}`
 
 `annotators` maps a name to a Label Studio User ID
 * human subject matter expert _like_ `jane`

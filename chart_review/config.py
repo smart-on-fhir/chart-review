@@ -12,7 +12,7 @@ AnnotatorMap = dict[int, str]
 class ProjectConfig:
 
     _NUMBER_REGEX = re.compile(r"\d+")
-    _RANGE_REGEX = re.compile(r"\d+:\d+")
+    _RANGE_REGEX = re.compile(r"\d+-\d+")
 
     def __init__(self, project_dir: str):
         """
@@ -40,21 +40,20 @@ class ProjectConfig:
         self.annotators = dict(map(reversed, orig_annotators.items()))
 
         ### Note ranges
-        # Handle some extra syntax like 1:3 == [1, 2, 3]
+        # Handle some extra syntax like 1-3 == [1, 2, 3]
         self.note_ranges = self._data.get("ranges", {})
         for key, values in self.note_ranges.items():
-            if not isinstance(values, list):
-                values = [values]
-            parsed_ranges = (self._parse_note_range(value) for value in values)
-            self.note_ranges[key] = list(itertools.chain.from_iterable(parsed_ranges))
+            self.note_ranges[key] = list(self._parse_note_range(values))
 
-    def _parse_note_range(self, value: str | int) -> Iterable[int]:
-        if isinstance(value, int):
+    def _parse_note_range(self, value: str | int | list[str | int]) -> Iterable[int]:
+        if isinstance(value, list):
+            return list(itertools.chain.from_iterable(self._parse_note_range(v) for v in value))
+        elif isinstance(value, int):
             return [value]
         elif self._NUMBER_REGEX.fullmatch(value):
             return [int(value)]
         elif self._RANGE_REGEX.fullmatch(value):
-            edges = value.split(":")
+            edges = value.split("-")
             return range(int(edges[0]), int(edges[1]) + 1)
         elif value in self.note_ranges:
             return self._parse_note_range(self.note_ranges[value])  # warning: no guards against infinite recursion
