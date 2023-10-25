@@ -89,6 +89,25 @@ Pass `--help` to see more options.
 * `annotator1_vs_2: [list, of, notes]`
 * `annotator2_vs_3: corpus`
 
+#### External Annotations
+
+You may have annotations from NLP or coded FHIR data that you want to compare against.
+Easy!
+
+Set up your config to point at a CSV file in your project folder that holds two columns:
+- DocRef ID (real or anonymous)
+- Label
+
+```yaml
+annotators:
+  human: 1
+  external_nlp:
+    filename: my_nlp.csv
+```
+
+When `chart-review` runs, it will inject the external annotations and match up the DocRef IDs
+to Label Studio notes based on metadata in your Label Studio export.
+
 ---
 **BASE COHORT METHODS**
 

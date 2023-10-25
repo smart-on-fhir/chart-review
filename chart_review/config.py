@@ -36,8 +36,13 @@ class ProjectConfig:
         # is stored in Label Studio. So that's what we return from this method.
         # But as humans writing config files, it's more natural to think of "name -> id".
         # So that's what we keep in the config, and we just reverse it here for convenience.
-        orig_annotators = self._data.get("annotators", {})
-        self.annotators = dict(map(reversed, orig_annotators.items()))
+        self.annotators: dict[int, str] = {}
+        self.external_annotations = {}
+        for name, value in self._data.get("annotators", {}).items():
+            if isinstance(value, int):  # real annotation layer in Label Studio
+                self.annotators[value] = name
+            else:  # fake/external annotation layer that we will inject
+                self.external_annotations[name] = value
 
         ### Note ranges
         # Handle some extra syntax like 1-3 == [1, 2, 3]

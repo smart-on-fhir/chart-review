@@ -15,11 +15,11 @@ labels:
   - Sore throat
 
 annotators:
-  andy = 2
-  amy = 3
-  alon = 6
-  ctakes = 7  # mcmurry.andy
-  icd10 = 0
+  andy: 2
+  amy: 3
+  alon: 6
+  ctakes: 7  # mcmurry.andy
+  icd10: 0
 
 ranges:
   corpus: 782-1006
