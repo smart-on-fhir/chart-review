@@ -1,0 +1,34 @@
+"""Tests for external.py"""
+
+import os
+import shutil
+import tempfile
+import unittest
+
+from chart_review import cohort
+
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+
+
+class TestExternal(unittest.TestCase):
+    """Test case for basic external ID merging"""
+
+    def setUp(self):
+        super().setUp()
+        self.maxDiff = None
+
+    def test_basic_read(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copytree(f"{DATA_DIR}/external", tmpdir, dirs_exist_ok=True)
+            reader = cohort.CohortReader(tmpdir)
+
+            self.assertEqual({
+                "files": {1: 1},
+                "annotations": {
+                    1: {
+                        "human": [{"labels": ["happy"], "text": "woo"}, {"labels": ["sad"], "text": "sigh"}],
+                        # icd10 labels are split into two lists, because we used two different docrefs (anon & real)
+                        "icd10": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
+                    },
+                }
+            }, reader.annotations)

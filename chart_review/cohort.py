@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from chart_review.common import guard_str, guard_iter, guard_in
 from chart_review import common
 from chart_review import config
+from chart_review import external
 from chart_review import simplify
 from chart_review import mentions
 from chart_review import agree
@@ -32,6 +33,10 @@ class CohortReader:
             for k in saved['annotations'].keys():
                 compat['annotations'][int(k)] = saved['annotations'][k]
             self.annotations = compat
+
+        # Load external annotations (i.e. from NLP tags or ICD10 codes)
+        for name, value in self.config.external_annotations.items():
+            self.annotations = external.merge_external(self.annotations, saved, project_dir, name, value)
 
     def path(self, filename):
         return os.path.join(self.project_dir, filename)
