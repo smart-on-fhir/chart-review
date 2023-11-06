@@ -40,15 +40,14 @@ def define_parser() -> argparse.ArgumentParser:
 def add_accuracy_subparser(subparsers) -> None:
     parser = subparsers.add_parser("accuracy")
     add_project_args(parser)
-    parser.add_argument("one")
-    parser.add_argument("two")
-    parser.add_argument("base")
+    parser.add_argument("ground_truth")
+    parser.add_argument("annotator")
     parser.set_defaults(func=run_accuracy)
 
 
 def run_accuracy(args: argparse.Namespace) -> None:
     reader = cohort.CohortReader(args.project_dir)
-    accuracy(reader, args.one, args.two, args.base)
+    accuracy(reader, args.ground_truth, args.annotator)
 
 
 ###############################################################################

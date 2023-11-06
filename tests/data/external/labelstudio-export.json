@@ -30,5 +30,20 @@
         "ABC": "Anon-ABC"
       }
     }
+  },
+  {
+    "id": 2,
+    "annotations": [
+      {
+        "id": 101,
+        "completed_by": 1,
+        "result": []
+      }
+    ],
+    "data": {
+      "docref_mappings": {
+        "Not-In-External": "Not-In-External"
+      }
+    }
   }
 ]

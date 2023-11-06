@@ -20,64 +20,64 @@ class TestCommandLine(unittest.TestCase):
     def test_accuracy(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             shutil.copytree(f"{DATA_DIR}/cold", tmpdir, dirs_exist_ok=True)
-            cli.main_cli(["accuracy", "--project-dir", tmpdir, "jane", "john", "jill"])
+            cli.main_cli(["accuracy", "--project-dir", tmpdir, "jill", "jane"])
 
-            accuracy_json = common.read_json(f"{tmpdir}/accuracy-jane-john-jill.json")
+            accuracy_json = common.read_json(f"{tmpdir}/accuracy-jill-jane.json")
             self.assertEqual(
                 {
+                    "F1": 0.667,
+                    "Sens": 0.75,
+                    "Spec": 0.6,
+                    "PPV": 0.6,
+                    "NPV": 0.75,
+                    "TP": 3,
+                    "FN": 1,
+                    "TN": 3,
+                    "FP": 2,
                     "Cough": {
                         "F1": 0.667,
-                        "FN": 0,
-                        "FP": 2,
-                        "NPV": 1.0,
-                        "PPV": 0.5,
-                        "Sens": 1.0,
-                        "Spec": 0.5,
-                        "TN": 2,
-                        "TP": 2,
-                    },
-                    "F1": 0.667,
-                    "FN": 3,
-                    "FP": 3,
-                    "Fatigue": {
-                        "F1": 0.889,
-                        "FN": 0,
-                        "FP": 1,
-                        "NPV": 1.0,
-                        "PPV": 0.8,
-                        "Sens": 1.0,
-                        "Spec": 0.5,
+                        "FN": 1,
+                        "FP": 0,
+                        "NPV": 0.5,
+                        "PPV": 1.0,
+                        "Sens": 0.5,
+                        "Spec": 1.0,
                         "TN": 1,
-                        "TP": 4,
+                        "TP": 1,
+                    },
+                    "Fatigue": {
+                        "F1": 1.0,
+                        "FN": 0,
+                        "FP": 0,
+                        "NPV": 1.0,
+                        "PPV": 1.0,
+                        "Sens": 1.0,
+                        "Spec": 1.0,
+                        "TN": 1,
+                        "TP": 2,
                     },
                     "Headache": {
                         "F1": 0,
-                        "FN": 3,
-                        "FP": 0,
+                        "FN": 0,
+                        "FP": 2,
                         "NPV": 0,
                         "PPV": 0,
                         "Sens": 0,
                         "Spec": 0,
-                        "TN": 3,
+                        "TN": 1,
                         "TP": 0,
                     },
-                    "NPV": 0.667,
-                    "PPV": 0.667,
-                    "Sens": 0.667,
-                    "Spec": 0.667,
-                    "TN": 6,
-                    "TP": 6,
                 },
                 accuracy_json,
             )
 
-            accuracy_csv = common.read_text(f"{tmpdir}/accuracy-jane-john-jill.csv")
+            accuracy_csv = common.read_text(f"{tmpdir}/accuracy-jill-jane.csv")
             self.assertEqual(
                 """F1	Sens	Spec	PPV	NPV	TP	FN	TN	FP	Label
-0.667	0.667	0.667	0.667	0.667	6	3	6	3	*
-0.667	1.0	0.5	0.5	1.0	2	0	2	2	Cough
-0.889	1.0	0.5	0.8	1.0	4	0	1	1	Fatigue
-0	0	0	0	0	0	3	3	0	Headache
+0.667	0.75	0.6	0.6	0.75	3	1	3	2	*
+0.667	0.5	1.0	1.0	0.5	1	1	1	0	Cough
+1.0	1.0	1.0	1.0	1.0	2	0	1	0	Fatigue
+0	0	0	0	0	0	0	1	2	Headache
 """,
                 accuracy_csv,
             )
