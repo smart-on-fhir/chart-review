@@ -17,6 +17,8 @@ def merge_simple(source: dict, append: dict) -> dict:
         merged['files'][file_id] = int(note_id)
         merged['annotations'][int(note_id)] = source['annotations'][int(note_id)]
 
+        if file_id not in append['files']:
+            continue
         append_id = append['files'][file_id]
         for annotator in append['annotations'][append_id]:
             for entry in append['annotations'][append_id][annotator]:
@@ -49,10 +51,8 @@ def simplify_full(exported_json: str, annotator_enum: config.AnnotatorMap) -> di
         for annot in entry.get('annotations'):
             completed_by = annot.get('completed_by')
             annotator = annotator_enum[completed_by]
-            label = None
+            label = []
             for result in annot.get('result'):
-                if not label:
-                    label = list()
                 match = result.get('value')
                 label.append(match)
 
@@ -114,10 +114,9 @@ def rollup_mentions(simple: dict, annotator: str, note_range: Iterable) -> dict:
                     if not rollup.get(note_id):
                         rollup[note_id] = list()
 
-                    symptom = annot['labels'][0]
-
-                    if symptom not in rollup[note_id]:
-                        rollup[note_id].append(symptom)
+                    for symptom in annot['labels']:
+                        if symptom not in rollup[note_id]:
+                            rollup[note_id].append(symptom)
     return rollup
 
 def deprecate_filter_note_range(simple: dict, note_range: Iterable) -> dict:

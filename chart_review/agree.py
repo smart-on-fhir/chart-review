@@ -24,17 +24,18 @@ def confusion_matrix(simple: dict, gold_ann: str, review_ann: str, note_range: I
     _ground_truth = simplify.rollup_mentions(simple, gold_ann, note_range)
     _reliability = simplify.rollup_mentions(simple, review_ann, note_range)
 
-    label_set = set()   # Must be labeled by ground truth at least 1x
+    # Only examine labels that were used by the ground truth or annotators least 1x
+    label_set = set()
     for _v in _ground_truth.values():
-        for label in _v:
-            label_set.add(label)
+        label_set |= set(_v)
+    for _v in _reliability.values():
+        label_set |= set(_v)
 
     TP = list()  # True Positive
     FP = list()  # False Positive
     FN = list()  # False Negative
     TN = list()  # True Negative
 
-    #for note_id in [str(n) for n in note_range]:
     for note_id in note_range:
         for label in label_set:
             if not label_pick or (label == label_pick):  # Pick label (default=None)
