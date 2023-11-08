@@ -30,13 +30,14 @@ def merge_simple(source: dict, append: dict) -> dict:
 
 def simplify_full(exported_json: str, annotator_enum: config.AnnotatorMap) -> dict:
     """
-    TODO: refactor JSON manipulation to labelstudio.py
     LabelStudio outputs contain more info than needed for IAA and term_freq.
+
     * PHI raw physician note text is removed *
+    TODO: refactor JSON manipulation to labelstudio.py
 
     :param exported_json: file output from LabelStudio
-    :param users: dict like {2:andy, 3:amy, alon:6, ctakes:7, 0:icd10}
-    @return: dict key= note_id
+    :param annotator_enum: dict like {2:annotator1, 6:annotator2}
+    :return: dict key= note_id
     """
     simple = {'files': {}, 'annotations': {}}
     for entry in common.read_json(exported_json):
@@ -64,15 +65,14 @@ def simplify_full(exported_json: str, annotator_enum: config.AnnotatorMap) -> di
 
 def simplify_min(exported_json: str, annotator_enum: EnumMeta) -> dict:
     """
-    TODO: deprecated, this shouldn't be used anymore. This was the alternative export format from LabelStudio
-
     LabelStudio outputs contain more info than needed for IAA and term_freq.
 
     * PHI raw physician note text is removed *
+    TODO: deprecated, this shouldn't be used anymore. This was the alternative export format from LabelStudio
 
     :param exported_json: file output from LabelStudio
-    :param users: dict like {2:andy, 3:amy, alon:6, ctakes:7, 0:icd10}
-    @return: dict key= note_id
+    :param annotator_enum: dict like {2:annotator1, 6:annotator2}
+    :return: dict key= note_id
     """
     simple = dict()
     for entry in common.read_json(exported_json):
@@ -91,19 +91,19 @@ def simplify_file_id(file_id: str) -> str:
     TODO: deprecate, this is LabelStudio:UUID:i2b2 mapping dance logic
 
     :param file_id: labelstudio-file_id.json.optional.extension.json
-    @return: simple filename like "file_id.json"
+    :return: simple filename like "file_id.json"
     """
     prefix = re.search('-', file_id).start()  # UUID split in LabelStudio
     suffix = re.search('.json', file_id).start()
     root = file_id[prefix+1:suffix]
     return f'{root}.json'
 
-def rollup_mentions(simple: dict, annotator: str, note_range: Iterable) -> dict:
+def rollup_mentions(simple: dict, annotator: str, note_range: Iterable) -> dict[int, list[str]]:
     """
-    @param simple: prepared map of files and annotations
-    @param annotator: like andy, amy, or alon
-    @param note_range: collection of LabelStudio document ID
-    @return: dict keys=note_id, values=labels
+    :param simple: prepared map of files and annotations
+    :param annotator: an annotator name
+    :param note_range: collection of LabelStudio document ID
+    :return: dict keys=note_id, values=labels
     """
     rollup = dict()
 

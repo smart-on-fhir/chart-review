@@ -5,38 +5,38 @@ from chart_review import cohort
 from chart_review import common
 
 def table2_accuracy_ctakes(self):
-    gold_ann = Annotator.amy
-    review_ann = Annotator.andy
-
-    andy = self.confusion_matrix(Annotator.andy, Annotator.ctakes, NoteRange.andy.value)
-    amy = self.confusion_matrix(Annotator.amy, Annotator.ctakes, NoteRange.amy.value)
-    matrix = agree.append_matrix(amy, andy)
-    table2 = agree.score_matrix(matrix)
+    truth = Annotator.amy
+    annotator = Annotator.andy
 
     study_cohort = cohort.CohortReader()
 
+    andy = study_cohort.confusion_matrix(Annotator.andy.name, Annotator.ctakes.name, NoteRange.andy.value)
+    amy = study_cohort.confusion_matrix(Annotator.amy.name, Annotator.ctakes.name, NoteRange.amy.value)
+    matrix = agree.append_matrix(amy, andy)
+    table2 = agree.score_matrix(matrix)
+
     for label in study_cohort.class_labels:
-        andy = study_cohort.confusion_matrix(Annotator.andy, Annotator.ctakes, NoteRange.andy.value, label)
-        amy = study_cohort.confusion_matrix(Annotator.amy, Annotator.ctakes, NoteRange.amy.value, label)
+        andy = study_cohort.confusion_matrix(Annotator.andy.name, Annotator.ctakes.name, NoteRange.andy.value, label)
+        amy = study_cohort.confusion_matrix(Annotator.amy.name, Annotator.ctakes.name, NoteRange.amy.value, label)
         matrix = agree.append_matrix(amy, andy)
         table2[label] = agree.score_matrix(matrix)
 
-    common.write_json(self.getpath(gold_ann, review_ann, 'table2_ctakes', 'json'), table2)
+    common.write_json(self.getpath(truth, annotator, 'table2_ctakes', 'json'), table2)
 
-    common.write_text(self.getpath(gold_ann, review_ann, 'table2_ctakes', 'csv'),
+    common.write_text(self.getpath(truth, annotator, 'table2_ctakes', 'csv'),
                agree.csv_table(table2, study_cohort.class_labels))
 
 
 def table2_accuracy_icd10(self):
-    gold_ann = Annotator.amy
-    review_ann = Annotator.andy
+    truth = Annotator.amy
+    annotator = Annotator.andy
 
     andy = self.confusion_matrix(Annotator.andy, Annotator.icd10, NoteRange.andy.value)
     amy = self.confusion_matrix(Annotator.amy, Annotator.icd10, NoteRange.amy.value)
     matrix = agree.append_matrix(amy, andy)
     table2 = agree.score_matrix(matrix)
 
-    common.write_json(self.getpath(gold_ann, review_ann, 'append_matrix', 'json'),
+    common.write_json(self.getpath(truth, annotator, 'append_matrix', 'json'),
                matrix)
 
     for label in self.class_labels:
@@ -45,10 +45,10 @@ def table2_accuracy_icd10(self):
         matrix = agree.append_matrix(amy, andy)
         table2[label] = agree.score_matrix(matrix)
 
-    common.write_json(self.getpath(gold_ann, review_ann, 'table2_icd10', 'json'),
+    common.write_json(self.getpath(truth, annotator, 'table2_icd10', 'json'),
                table2)
 
-    common.write_text(self.getpath(gold_ann, review_ann, 'table2_icd10', 'csv'),
+    common.write_text(self.getpath(truth, annotator, 'table2_icd10', 'csv'),
                agree.csv_table(table2, self.class_labels))
 
 

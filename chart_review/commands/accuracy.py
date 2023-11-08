@@ -7,13 +7,13 @@ from chart_review import agree, cohort, common
 
 def accuracy(reader: cohort.CohortReader, truth: str, annotator: str) -> None:
     """
-    High-level accuracy calculation between an annotator and ground truth.
+    High-level accuracy calculation between two annotators.
 
     The results will be written to the project directory.
 
     :param reader: the cohort configuration
-    :param truth: ground truth reviewer
-    :param annotator: the annotator to compare against truth
+    :param truth: the truth annotator
+    :param annotator: the other annotator to compare against truth
     """
     # Grab the intersection of ranges
     note_range = set(reader.config.note_ranges[truth])

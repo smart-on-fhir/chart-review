@@ -3,9 +3,9 @@ from ctakesclient.typesystem import Span
 def calc_term_freq(simple: dict, annotator: str) -> dict:
     """
     Calculate the frequency of TERMS highlighted for each LABEL (Cough, Dyspnea, etc).
-    @param simple: prepared map of files and annotations
-    @param annotator: Reviewer like andy, amy, or alon
-    @return: dict key=TERM val= {label, list of chart_id}
+    :param simple: prepared map of files and annotations
+    :param annotator: an annotator name
+    :return: dict key=TERM val= {label, list of chart_id}
     """
     term_freq = dict()
     for note_id, values in simple['annotations'].items():

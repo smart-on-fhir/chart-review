@@ -4,31 +4,31 @@ from ctakesclient.typesystem import Span
 from chart_review import mentions
 from chart_review import simplify
 
-def confusion_matrix(simple: dict, gold_ann: str, review_ann: str, note_range: Iterable, label_pick=None) -> Dict[str, list]:
+def confusion_matrix(simple: dict, truth: str, annotator: str, note_range: Iterable, label_pick=None) -> Dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
     https://www.researchgate.net/figure/Calculation-of-sensitivity-specificity-and-positive-and-negative-predictive_fig1_49650721
 
     This is the rollup of counting each symptom only 1x, not multiple times for a single patient.
     :param simple: prepared map of files and annotations
-    :param gold_ann: annotator like andy, amy, or alon
-    :param review_ann: annotator like andy, amy, or alon (usually alon)
+    :param truth: annotator to use as the ground truth
+    :param annotator: another annotator to compare with truth
     :param note_range: collection of LabelStudio document ID
     :param label_pick: (optional) of the CLASS_LABEL to score separately
     :return: Dict
         "TP": True Positives (agree on positive+ symptom)
-        "FP": False Positives (reliability said positive+, annotator said No)
-        "FN": False Negative (annotator said positive+, reliability said No)
-        "TN": True Negative (annotator said No, reliability said No)
+        "FP": False Positives (annotator said positive+, truth said No)
+        "FN": False Negative (truth said positive+, annotator said No)
+        "TN": True Negative (truth and annotator both said No)
     """
-    _ground_truth = simplify.rollup_mentions(simple, gold_ann, note_range)
-    _reliability = simplify.rollup_mentions(simple, review_ann, note_range)
+    truth_mentions = simplify.rollup_mentions(simple, truth, note_range)
+    annotator_mentions = simplify.rollup_mentions(simple, annotator, note_range)
 
-    # Only examine labels that were used by the ground truth or annotators least 1x
+    # Only examine labels that were used by any compared annotators at least 1x
     label_set = set()
-    for _v in _ground_truth.values():
+    for _v in truth_mentions.values():
         label_set |= set(_v)
-    for _v in _reliability.values():
+    for _v in annotator_mentions.values():
         label_set |= set(_v)
 
     TP = list()  # True Positive
@@ -40,16 +40,16 @@ def confusion_matrix(simple: dict, gold_ann: str, review_ann: str, note_range: I
         for label in label_set:
             if not label_pick or (label == label_pick):  # Pick label (default=None)
                 key = {note_id: label}
-                gold = _ground_truth.get(note_id)
-                bronze = _reliability.get(note_id)
+                truth_positive = label in truth_mentions.get(note_id, [])
+                annotator_positive = label in annotator_mentions.get(note_id, [])
 
-                if (gold and label in gold) and (bronze and label in bronze):
+                if truth_positive and annotator_positive:
                     TP.append(key)
-                elif (gold and label in gold) and not (bronze and label in bronze):
+                elif truth_positive and not annotator_positive:
                     FN.append(key)
-                elif not (gold and label in gold) and (bronze and label in bronze):
+                elif not truth_positive and annotator_positive:
                     FP.append(key)
-                elif not (gold and label in gold):
+                elif not truth_positive:
                     TN.append(key)
                 else:
                     raise Exception('Guard: Impossible comparison of reviewers')
@@ -58,10 +58,12 @@ def confusion_matrix(simple: dict, gold_ann: str, review_ann: str, note_range: I
 
 def append_matrix(first: dict, second: dict) -> dict:
     """
-    TODO: Warning: assumes first and second have no overallaping NoteRange, may not be applicable for other studies.
-    Append to confusion_matrix matrix dictionaries (like Amy VS NLP + Andy vs NLP)
-    :param first: confusion_matrix matrix (usually Amy)
-    :param second: confusion_matrix matrix (usually Andy)
+    Append two different confusion_matrix matrix dictionaries (like Annotator1 VS NLP + Annotator2 vs NLP)
+
+    TODO: Warning: assumes first and second have no overlapping NoteRange, may not be applicable for other studies.
+
+    :param first: confusion_matrix matrix
+    :param second: confusion_matrix matrix
     :return:
     """
     added = {}
@@ -110,26 +112,19 @@ def avg_scores(first: dict, second: dict, sig_digits=3) -> dict:
             merged[header] = round(added/2, sig_digits)
     return merged
 
-def score_reviewer(simple: dict, gold_ann: str, review_ann: str, note_range: Iterable, pick_label=None) -> dict:
+def score_reviewer(simple: dict, truth: str, annotator: str, note_range: Iterable, pick_label=None) -> dict:
     """
-    Score reliability of rater compared to ground truth
+    Score reliability of an annotator against a truth annotator.
+
     :param simple: prepared map of files and annotations
-    :param gold_ann: annotator like andy, amy, or alon
-    :param review_ann: annotator like andy, amy, or alon (usually alon)
+    :param truth: annotator to use as the ground truth
+    :param annotator: another annotator to compare with truth
     :param note_range: collection of LabelStudio document ID
     :param pick_label: (optional) of the CLASS_LABEL to score separately
     :return: dict, keys f1, precision, recall and vals= %score
     """
-    ground_truth = confusion_matrix(simple, gold_ann, review_ann, note_range, pick_label)
-    reliability = confusion_matrix(simple, review_ann, gold_ann, note_range, pick_label)
-
-    # GUARD: Validate by flipping reviewers
-    if len(reliability['FN']) != len(ground_truth['FP']):
-        print(reliability['FN'])
-        print(ground_truth['FP'])
-        raise Exception('Guard: False Positives mismatch')
-
-    return score_matrix(ground_truth)
+    truth_matrix = confusion_matrix(simple, truth, annotator, note_range, pick_label)
+    return score_matrix(truth_matrix)
 
 def csv_table(score: dict, class_labels: Iterable):
     table = list()
