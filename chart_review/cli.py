@@ -13,6 +13,7 @@ from chart_review.commands.accuracy import accuracy
 #
 ###############################################################################
 
+
 def add_project_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--project-dir",
@@ -37,6 +38,7 @@ def define_parser() -> argparse.ArgumentParser:
 #
 ###############################################################################
 
+
 def add_accuracy_subparser(subparsers) -> None:
     parser = subparsers.add_parser("accuracy")
     add_project_args(parser)
@@ -55,6 +57,7 @@ def run_accuracy(args: argparse.Namespace) -> None:
 # Main CLI entrypoints
 #
 ###############################################################################
+
 
 def main_cli(argv: list[str] = None) -> None:
     """Main entrypoint that wraps all the core program logic"""

@@ -16,10 +16,10 @@ def _load_csv_symptoms(filename: str) -> dict[str, list[str]]:
     """
     docref_to_symptoms = {}
 
-    with open(filename, "r", newline='', encoding="utf8") as csvfile:
+    with open(filename, "r", newline="", encoding="utf8") as csvfile:
         reader = csv.reader(csvfile)
         next(reader, None)  # skip header row
-        for row in reader: # row should be [docref_id, symptom]
+        for row in reader:  # row should be [docref_id, symptom]
             docref_id = row[0]
             symptom_list = docref_to_symptoms.setdefault(docref_id, [])
             symptom_list.append(row[1])
@@ -39,7 +39,9 @@ def _docref_id_to_label_studio_id(exported_json: list[dict], docref_id: str) -> 
     return None
 
 
-def merge_external(simple: dict, exported_json: list[dict], project_dir: str, name: str, config: dict) -> dict:
+def merge_external(
+    simple: dict, exported_json: list[dict], project_dir: str, name: str, config: dict
+) -> dict:
     """Loads an external csv file annotator and merges them into an existing simple dict"""
     if filename := config.get("filename"):
         full_filename = os.path.join(project_dir, filename)

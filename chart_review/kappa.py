@@ -21,7 +21,7 @@ def score_kappa(truth: list, annotator: list):
     for item in uniq:
         cnt1 = truth.count(item)
         cnt2 = annotator.count(item)
-        count = ((cnt1 / len(truth)) * (cnt2 / len(annotator)))
+        count = (cnt1 / len(truth)) * (cnt2 / len(annotator))
         expected += count
 
     return round((observed - expected) / (1 - expected), 4)

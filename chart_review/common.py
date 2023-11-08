@@ -12,16 +12,18 @@ import json
 # Helper Functions: read/write JSON and text
 ###############################################################################
 
+
 def read_json(path: str) -> dict:
     """
     Reads json from a file
     :param path: filesystem path
     :return: message: coded message
     """
-    logging.debug('read_json() %s', path)
+    logging.debug("read_json() %s", path)
 
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         return json.load(f)
+
 
 def write_json(path: str, data: dict, indent: Optional[int] = 4) -> None:
     """
@@ -30,10 +32,11 @@ def write_json(path: str, data: dict, indent: Optional[int] = 4) -> None:
     :param data: the structure to write to disk
     :param indent: whether and how much to indent the output
     """
-    logging.debug('write_json() %s', path)
+    logging.debug("write_json() %s", path)
 
-    with open(path, 'w') as f:
+    with open(path, "w") as f:
         json.dump(data, f, indent=indent)
+
 
 def read_text(path: str) -> str:
     """
@@ -41,10 +44,11 @@ def read_text(path: str) -> str:
     :param path: (currently filesystem path)
     :return: message: coded message
     """
-    logging.debug('read_text() %s', path)
+    logging.debug("read_text() %s", path)
 
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         return f.read()
+
 
 def write_text(path: str, text: str) -> None:
     """
@@ -52,10 +56,11 @@ def write_text(path: str, text: str) -> None:
     :param path: filesystem path
     :param text: the text to write to disk
     """
-    logging.debug('write_text() %s', path)
+    logging.debug("write_text() %s", path)
 
-    with open(path, 'w') as f:
+    with open(path, "w") as f:
         f.write(text)
+
 
 def csv_map(csv_file: str) -> dict:
     """
@@ -64,12 +69,13 @@ def csv_map(csv_file: str) -> dict:
     :return: dict {key:value}
     """
     res = {}
-    with open(csv_file, 'r') as fp:
+    with open(csv_file, "r") as fp:
         for line in fp.readlines():
-            line = line.replace('"', '').strip()
-            key, val = line.split(',')
+            line = line.replace('"', "").strip()
+            key, val = line.split(",")
             res[key] = val
     return res
+
 
 ###############################################################################
 # Helper Functions: Pretty Print JSON, useful for Testing/Debugging
@@ -85,15 +91,17 @@ def print_json(jsonable) -> None:
     else:
         print(jsonable)
 
+
 def print_line(heading=None) -> None:
     """
     :param heading: optionally give a header to the line seperator
     """
-    seperator = '##############################################################'
+    seperator = "##############################################################"
     if heading:
-        print(f'\n{seperator}\n{heading}\n{seperator}')
+        print(f"\n{seperator}\n{heading}\n{seperator}")
     else:
         print(seperator)
+
 
 ###############################################################################
 # Helper Functions: enum type smoothing
@@ -106,7 +114,8 @@ def guard_str(object) -> str:
     elif isinstance(object, str):
         return object
     else:
-        raise Exception(f'expected str|Enum but got {type(object)}')
+        raise Exception(f"expected str|Enum but got {type(object)}")
+
 
 def guard_iter(object) -> Iterable:
     if isinstance(object, Enum):
@@ -116,10 +125,11 @@ def guard_iter(object) -> Iterable:
     elif isinstance(object, Iterable):
         return object
     else:
-        raise Exception(f'expected Iterable|Enum but got {type(object)}')
+        raise Exception(f"expected Iterable|Enum but got {type(object)}")
+
 
 def guard_in(entry, strict: Iterable):
     if entry in strict:
         return entry
     else:
-        raise Exception(f'expected entry {entry} to be in {strict}')
+        raise Exception(f"expected entry {entry} to be in {strict}")

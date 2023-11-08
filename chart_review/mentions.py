@@ -1,5 +1,6 @@
 from ctakesclient.typesystem import Span
 
+
 def calc_term_freq(simple: dict, annotator: str) -> dict:
     """
     Calculate the frequency of TERMS highlighted for each LABEL (Cough, Dyspnea, etc).
@@ -8,12 +9,12 @@ def calc_term_freq(simple: dict, annotator: str) -> dict:
     :return: dict key=TERM val= {label, list of chart_id}
     """
     term_freq = dict()
-    for note_id, values in simple['annotations'].items():
+    for note_id, values in simple["annotations"].items():
         if values.get(annotator):
             for annot in values.get(annotator):
-                term = annot['text'].upper()
-                label = annot['labels'][0]
-                if len(annot['labels']) > 1:
+                term = annot["text"].upper()
+                label = annot["labels"][0]
+                if len(annot["labels"]) > 1:
                     raise Exception(f"note_id = {note_id} \t {values}")
 
                 if term not in term_freq.keys():
@@ -24,6 +25,7 @@ def calc_term_freq(simple: dict, annotator: str) -> dict:
 
                 term_freq[term][label].append(note_id)
     return term_freq
+
 
 def calc_term_label_confusion(term_freq: dict) -> dict:
     """
@@ -38,6 +40,7 @@ def calc_term_label_confusion(term_freq: dict) -> dict:
         if len(term_freq[term].keys()) > 1:
             confusing[term] = term_freq[term]
     return confusing
+
 
 def calc_label_freq(term_freq: dict) -> dict:
     unique = dict()
@@ -57,6 +60,7 @@ def calc_label_freq(term_freq: dict) -> dict:
             tf[label][term] = len(unique[label][term])
     return tf
 
+
 def intersect(span1: Span, span2: Span) -> set:
     """
     TODO Refactor to ctakes-client:
@@ -71,6 +75,7 @@ def intersect(span1: Span, span2: Span) -> set:
     range1 = range(span1.begin, span1.end)
     range2 = range(span2.begin, span2.end)
     return set(range1).intersection(set(range2))
+
 
 def overlaps(span1: Span, span2: Span, min_length=2, max_length=20) -> bool:
     """

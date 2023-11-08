@@ -8,15 +8,17 @@ from chart_review import simplify
 from chart_review import mentions
 from chart_review import agree
 
-class CohortReader:
 
+class CohortReader:
     def __init__(self, project_dir: str):
         """
         :param project_dir: str like /opt/labelstudio/study_name
         """
         self.project_dir = project_dir
         self.config = config.ProjectConfig(project_dir)
-        self.labelstudio_json = self.path('labelstudio-export.json') #TODO: refactor labelstudio.py
+        self.labelstudio_json = self.path(
+            "labelstudio-export.json"
+        )  # TODO: refactor labelstudio.py
         self.annotator = self.config.annotators
         self.note_range = self.config.note_ranges
         self.class_labels = self.config.class_labels
@@ -28,15 +30,17 @@ class CohortReader:
         else:
             # TODO: int keys cant be saved in JSON, compatability hack use instead LabelStudio.py
             compat = dict()
-            compat['files'] = saved['files']
-            compat['annotations'] = dict()
-            for k in saved['annotations'].keys():
-                compat['annotations'][int(k)] = saved['annotations'][k]
+            compat["files"] = saved["files"]
+            compat["annotations"] = dict()
+            for k in saved["annotations"].keys():
+                compat["annotations"][int(k)] = saved["annotations"][k]
             self.annotations = compat
 
         # Load external annotations (i.e. from NLP tags or ICD10 codes)
         for name, value in self.config.external_annotations.items():
-            self.annotations = external.merge_external(self.annotations, saved, project_dir, name, value)
+            self.annotations = external.merge_external(
+                self.annotations, saved, project_dir, name, value
+            )
 
     def path(self, filename):
         return os.path.join(self.project_dir, filename)
@@ -60,7 +64,9 @@ class CohortReader:
     def calc_term_label_confusion(self, annotator) -> dict:
         return mentions.calc_term_label_confusion(self.calc_term_freq(annotator))
 
-    def confusion_matrix(self, truth: str, annotator: str, note_range: Iterable, label_pick=None) -> dict:
+    def confusion_matrix(
+        self, truth: str, annotator: str, note_range: Iterable, label_pick=None
+    ) -> dict:
         """
         This is the rollup of counting each symptom only 1x, not multiple times for a single patient.
         :param truth: annotator to use as the ground truth
@@ -69,11 +75,7 @@ class CohortReader:
         :param label_pick: (optional) of the CLASS_LABEL to score separately
         :return: dict
         """
-        return agree.confusion_matrix(self.annotations,
-                                      truth,
-                                      annotator,
-                                      note_range,
-                                      label_pick)
+        return agree.confusion_matrix(self.annotations, truth, annotator, note_range, label_pick)
 
     def score_reviewer(self, truth: str, annotator: str, note_range, label_pick=None):
         """
@@ -87,11 +89,9 @@ class CohortReader:
         if label_pick:
             guard_in(label_pick, self.class_labels)
 
-        return agree.score_reviewer(self.annotations,
-                                    truth,
-                                    annotator,
-                                    guard_iter(note_range),
-                                    label_pick)
+        return agree.score_reviewer(
+            self.annotations, truth, annotator, guard_iter(note_range), label_pick
+        )
 
     def score_reviewer_table_csv(self, truth: str, annotator: str, note_range) -> str:
         table = list()
@@ -104,7 +104,7 @@ class CohortReader:
             score = self.score_reviewer(truth, annotator, note_range, label)
             table.append(agree.csv_row_score(score, label))
 
-        return '\n'.join(table) + '\n'
+        return "\n".join(table) + "\n"
 
     def score_reviewer_table_dict(self, truth, annotator, note_range) -> dict:
         table = self.score_reviewer(truth, annotator, note_range)

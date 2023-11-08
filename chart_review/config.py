@@ -10,7 +10,6 @@ AnnotatorMap = dict[int, str]
 
 
 class ProjectConfig:
-
     _NUMBER_REGEX = re.compile(r"\d+")
     _RANGE_REGEX = re.compile(r"\d+-\d+")
 
@@ -61,7 +60,9 @@ class ProjectConfig:
             edges = value.split("-")
             return range(int(edges[0]), int(edges[1]) + 1)
         elif value in self.note_ranges:
-            return self._parse_note_range(self.note_ranges[value])  # warning: no guards against infinite recursion
+            return self._parse_note_range(
+                self.note_ranges[value]
+            )  # warning: no guards against infinite recursion
         else:
             print(f"Unknown note range '{value}'", file=sys.stderr)
             return []

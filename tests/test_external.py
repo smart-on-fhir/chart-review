@@ -22,18 +22,24 @@ class TestExternal(unittest.TestCase):
             shutil.copytree(f"{DATA_DIR}/external", tmpdir, dirs_exist_ok=True)
             reader = cohort.CohortReader(tmpdir)
 
-            self.assertEqual({
-                "files": {1: 1, 2: 2},
-                "annotations": {
-                    1: {
-                        "human": [{"labels": ["happy"], "text": "woo"}, {"labels": ["sad"], "text": "sigh"}],
-                        # icd10 labels are split into two lists, because we used two different docrefs (anon & real)
-                        "icd10": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
+            self.assertEqual(
+                {
+                    "files": {1: 1, 2: 2},
+                    "annotations": {
+                        1: {
+                            "human": [
+                                {"labels": ["happy"], "text": "woo"},
+                                {"labels": ["sad"], "text": "sigh"},
+                            ],
+                            # icd10 labels are split into two lists, because we used two different docrefs (anon & real)
+                            "icd10": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
+                        },
+                        # This was a note that didn't appear in the icd10 external annotations (and also didn't have a
+                        # positive label by the human reviewer) - just here to test that it didn't screw anything up.
+                        2: {
+                            "human": [],
+                        },
                     },
-                    # This was a note that didn't appear in the icd10 external annotations (and also didn't have a
-                    # positive label by the human reviewer) - just here to test that it didn't screw anything up.
-                    2: {
-                        "human": [],
-                    }
-                }
-            }, reader.annotations)
+                },
+                reader.annotations,
+            )

@@ -24,7 +24,9 @@ def accuracy(reader: cohort.CohortReader, truth: str, annotator: str) -> None:
 
     # Now do each labels separately
     for label in reader.class_labels:
-        table[label] = agree.score_matrix(reader.confusion_matrix(truth, annotator, note_range, label))
+        table[label] = agree.score_matrix(
+            reader.confusion_matrix(truth, annotator, note_range, label)
+        )
 
     # And write out the results
     output_stem = os.path.join(reader.project_dir, f"accuracy-{truth}-{annotator}")

@@ -4,7 +4,10 @@ from ctakesclient.typesystem import Span
 from chart_review import mentions
 from chart_review import simplify
 
-def confusion_matrix(simple: dict, truth: str, annotator: str, note_range: Iterable, label_pick=None) -> Dict[str, list]:
+
+def confusion_matrix(
+    simple: dict, truth: str, annotator: str, note_range: Iterable, label_pick=None
+) -> Dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
     https://www.researchgate.net/figure/Calculation-of-sensitivity-specificity-and-positive-and-negative-predictive_fig1_49650721
@@ -52,9 +55,10 @@ def confusion_matrix(simple: dict, truth: str, annotator: str, note_range: Itera
                 elif not truth_positive:
                     TN.append(key)
                 else:
-                    raise Exception('Guard: Impossible comparison of reviewers')
+                    raise Exception("Guard: Impossible comparison of reviewers")
 
-    return {'TP': TP, 'FN': FN, 'FP': FP, 'TN': TN}
+    return {"TP": TP, "FN": FN, "FP": FP, "TN": TN}
+
 
 def append_matrix(first: dict, second: dict) -> dict:
     """
@@ -67,9 +71,10 @@ def append_matrix(first: dict, second: dict) -> dict:
     :return:
     """
     added = {}
-    for header in ['TP', 'FP', 'FN', 'TN']:
+    for header in ["TP", "FP", "FN", "TN"]:
         added[header] = first[header] + second[header]
     return added
+
 
 def score_matrix(matrix: dict, sig_digits=3) -> dict:
     """
@@ -77,10 +82,10 @@ def score_matrix(matrix: dict, sig_digits=3) -> dict:
     F1 deliberately ignores "True Negatives" because TN inflates scoring (AUROC)
     @return: dict with keys {'f1', 'precision', 'recall'} vals are %score
     """
-    true_pos = matrix['TP']
-    true_neg = matrix['TN']
-    false_pos = matrix['FP']
-    false_neg = matrix['FN']
+    true_pos = matrix["TP"]
+    true_neg = matrix["TN"]
+    false_pos = matrix["FP"]
+    false_neg = matrix["FN"]
 
     if 0 == len(true_pos) or 0 == len(true_neg):
         sens = 0
@@ -95,24 +100,33 @@ def score_matrix(matrix: dict, sig_digits=3) -> dict:
         npv = len(true_neg) / (len(true_neg) + len(false_neg))
         f1 = (2 * ppv * sens) / (ppv + sens)
 
-    return {'F1': round(f1, sig_digits),
-            'Sens': round(sens, sig_digits),
-            'Spec': round(spec, sig_digits),
-            'PPV': round(ppv, sig_digits),
-            'NPV': round(npv, sig_digits),
-            'TP': len(true_pos), 'FP': len(false_pos), 'FN': len(false_neg), 'TN': len(true_neg)}
+    return {
+        "F1": round(f1, sig_digits),
+        "Sens": round(sens, sig_digits),
+        "Spec": round(spec, sig_digits),
+        "PPV": round(ppv, sig_digits),
+        "NPV": round(npv, sig_digits),
+        "TP": len(true_pos),
+        "FP": len(false_pos),
+        "FN": len(false_neg),
+        "TN": len(true_neg),
+    }
+
 
 def avg_scores(first: dict, second: dict, sig_digits=3) -> dict:
     merged = {}
     for header in csv_header():
         added = first[header] + second[header]
-        if header in ['TP', 'FP', 'FN', 'TN']:
+        if header in ["TP", "FP", "FN", "TN"]:
             merged[header] = added
         else:
-            merged[header] = round(added/2, sig_digits)
+            merged[header] = round(added / 2, sig_digits)
     return merged
 
-def score_reviewer(simple: dict, truth: str, annotator: str, note_range: Iterable, pick_label=None) -> dict:
+
+def score_reviewer(
+    simple: dict, truth: str, annotator: str, note_range: Iterable, pick_label=None
+) -> dict:
     """
     Score reliability of an annotator against a truth annotator.
 
@@ -126,6 +140,7 @@ def score_reviewer(simple: dict, truth: str, annotator: str, note_range: Iterabl
     truth_matrix = confusion_matrix(simple, truth, annotator, note_range, pick_label)
     return score_matrix(truth_matrix)
 
+
 def csv_table(score: dict, class_labels: Iterable):
     table = list()
     table.append(csv_header(False, True))
@@ -133,7 +148,8 @@ def csv_table(score: dict, class_labels: Iterable):
 
     for label in class_labels:
         table.append(csv_row_score(score[label], label))
-    return '\n'.join(table) + '\n'
+    return "\n".join(table) + "\n"
+
 
 def csv_header(pick_label=False, as_string=False):
     """
@@ -142,14 +158,15 @@ def csv_header(pick_label=False, as_string=False):
     :param pick_label: default= None
     :return: header
     """
-    as_list = ['F1', 'Sens', 'Spec', 'PPV', 'NPV', 'TP', 'FN', 'TN', 'FP']
+    as_list = ["F1", "Sens", "Spec", "PPV", "NPV", "TP", "FN", "TN", "FP"]
 
     if not as_string:
         return as_list
 
     header = as_list
-    header.append(pick_label if pick_label else 'Label')
-    return '\t'.join(header)
+    header.append(pick_label if pick_label else "Label")
+    return "\t".join(header)
+
 
 def csv_row_score(score: dict, pick_label=None) -> str:
     """
@@ -161,8 +178,9 @@ def csv_row_score(score: dict, pick_label=None) -> str:
     """
     row = [score[header] for header in csv_header()]
     row = [str(value) for value in row]
-    row.append(pick_label if pick_label else '*')
-    return '\t'.join(row)
+    row.append(pick_label if pick_label else "*")
+    return "\t".join(row)
+
 
 def true_prevalence(prevalence_apparent: float, sensitivity: float, specificity: float):
     """
@@ -180,4 +198,4 @@ def true_prevalence(prevalence_apparent: float, sensitivity: float, specificity:
 
     :return: float adjusted prevalence
     """
-    return round((prevalence_apparent + specificity-1)/(sensitivity+specificity-1),5)
+    return round((prevalence_apparent + specificity - 1) / (sensitivity + specificity - 1), 5)
