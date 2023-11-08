@@ -28,6 +28,9 @@ chart-review = "chart_review.cli:main_cli"
 requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
+[tool.bandit]
+exclude_dirs = ["tests"]
+
 [tool.black]
 line-length = 100
 

@@ -71,7 +71,8 @@ def simplify_min(exported_json: str, annotator_enum: EnumMeta) -> dict:
     LabelStudio outputs contain more info than needed for IAA and term_freq.
 
     * PHI raw physician note text is removed *
-    TODO: deprecated, this shouldn't be used anymore. This was the alternative export format from LabelStudio
+    TODO: deprecated, this shouldn't be used anymore.
+          This was the alternative export format from LabelStudio
 
     :param exported_json: file output from LabelStudio
     :param annotator_enum: dict like {2:annotator1, 6:annotator2}

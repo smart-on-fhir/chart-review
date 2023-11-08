@@ -68,7 +68,8 @@ class CohortReader:
         self, truth: str, annotator: str, note_range: Iterable, label_pick=None
     ) -> dict:
         """
-        This is the rollup of counting each symptom only 1x, not multiple times for a single patient.
+        This is the rollup of counting each symptom only once, not multiple times.
+
         :param truth: annotator to use as the ground truth
         :param annotator: another annotator to compare with truth
         :param note_range: collection of LabelStudio document ID

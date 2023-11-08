@@ -18,7 +18,8 @@ def add_project_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--project-dir",
         default=".",
-        help="Directory holding project files, like config.yaml and labelstudio-export.json (default: current dir)",
+        help="Directory holding project files, "
+        "like config.yaml and labelstudio-export.json (default: current dir)",
     )
 
 

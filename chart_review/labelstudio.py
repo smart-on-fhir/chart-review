@@ -52,7 +52,8 @@ class LabelStudioNote:
         :param filter_cui: {cui:text} to select concepts for document level
                            annotation
         :param filter_semtype: UMLS semantic type to filter by (select for)
-        :param custom: dict containing optional additional metadata, such as FHIR or I2b2 Source Identifiers.
+        :param custom: dict containing optional additional metadata,
+                       such as FHIR or I2b2 Source Identifiers.
         """
         self.note_text = physician_note
         self.note_file = None  # optionally load from file and cache filename

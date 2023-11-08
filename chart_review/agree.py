@@ -12,7 +12,7 @@ def confusion_matrix(
     Confusion Matrix (TP, FP, TN, FN)
     https://www.researchgate.net/figure/Calculation-of-sensitivity-specificity-and-positive-and-negative-predictive_fig1_49650721
 
-    This is the rollup of counting each symptom only 1x, not multiple times for a single patient.
+    This is the rollup of counting each symptom only once, not multiple times for a single patient.
     :param simple: prepared map of files and annotations
     :param truth: annotator to use as the ground truth
     :param annotator: another annotator to compare with truth
@@ -27,7 +27,7 @@ def confusion_matrix(
     truth_mentions = simplify.rollup_mentions(simple, truth, note_range)
     annotator_mentions = simplify.rollup_mentions(simple, annotator, note_range)
 
-    # Only examine labels that were used by any compared annotators at least 1x
+    # Only examine labels that were used by any compared annotators at least once
     label_set = set()
     for _v in truth_mentions.values():
         label_set |= set(_v)
@@ -52,7 +52,7 @@ def confusion_matrix(
                     FN.append(key)
                 elif not truth_positive and annotator_positive:
                     FP.append(key)
-                elif not truth_positive:
+                elif not truth_positive and not annotator_positive:
                     TN.append(key)
                 else:
                     raise Exception("Guard: Impossible comparison of reviewers")
@@ -62,9 +62,12 @@ def confusion_matrix(
 
 def append_matrix(first: dict, second: dict) -> dict:
     """
-    Append two different confusion_matrix matrix dictionaries (like Annotator1 VS NLP + Annotator2 vs NLP)
+    Append two different confusion_matrix matrix dictionaries.
 
-    TODO: Warning: assumes first and second have no overlapping NoteRange, may not be applicable for other studies.
+    For example, (Annotator1 VS NLP) appended to (Annotator2 vs NLP).
+
+    TODO: Warning: assumes first and second have no overlapping NoteRange,
+          may not be applicable for other studies.
 
     :param first: confusion_matrix matrix
     :param second: confusion_matrix matrix

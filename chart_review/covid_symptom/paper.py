@@ -81,7 +81,8 @@ def table3_true_prevalence(self):
                         float(prct), float(sensitivity), float(specificity)
                     )
                 table3.append(
-                    f"{variant_era},{covid_symptom},{cnt},{prct},{prevelance},{sensitivity},{specificity}"
+                    f"{variant_era},{covid_symptom},{cnt},{prct},"
+                    f"{prevelance},{sensitivity},{specificity}"
                 )
 
     table3 = "\n".join(table3) + "\n"
