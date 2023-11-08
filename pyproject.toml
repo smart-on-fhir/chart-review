@@ -28,13 +28,16 @@ chart-review = "chart_review.cli:main_cli"
 requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
+[tool.black]
+line-length = 100
+
 [project.optional-dependencies]
 tests = [
     "ddt",
     "pytest",
 ]
 dev = [
-    "black",
+    "black == 23.11.0",
     "pylint",
 ]
 

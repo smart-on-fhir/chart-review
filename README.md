@@ -153,4 +153,13 @@ Class **LabelStudioNote**
 **NICE TO HAVES LATER**
 
 * **_confusion matrix_** type support using Pandas
-* **score_matrix** would be nicer to use a Pandas strongly typed class 
+* **score_matrix** would be nicer to use a Pandas strongly typed class
+
+---
+### Set up your dev environment
+
+To use the same dev environment as us, you'll want to run these commands:
+```sh
+pip install .[dev]
+pre-commit install
+```
