@@ -24,7 +24,9 @@ class TestProjectConfig(unittest.TestCase):
         return config.ProjectConfig(tmpdir.name)
 
     @ddt.data(
-        ("yaml", """
+        (
+            "yaml",
+            """
             labels:
                 - cough
                 - fever
@@ -34,14 +36,18 @@ class TestProjectConfig(unittest.TestCase):
             ranges:
                 jane: [3]
                 john: [1, 3, 5]
-        """),
-        ("json", """
+        """,
+        ),
+        (
+            "json",
+            """
             {
                 "labels": ["cough", "fever"],
                 "annotators": {"jane": 1, "john": 2},
                 "ranges": {"jane": [3], "john": [1, 3, 5]}
             }
-        """),
+        """,
+        ),
     )
     @ddt.unpack
     def test_multiple_formats(self, suffix, text):
@@ -54,19 +60,24 @@ class TestProjectConfig(unittest.TestCase):
 
     def test_range_syntax(self):
         """Verify that we support interesting note range syntax options."""
-        proj_config = self.make_config("""
+        proj_config = self.make_config(
+            """
             ranges:
                 bare_num: 1
                 string_num: "2"
                 range: 3-5
                 reference: bare_num
                 array: [1, "2", range]
-        """)
+        """
+        )
 
-        self.assertEqual({
-            "bare_num": [1],
-            "string_num": [2],
-            "range": [3, 4, 5],
-            "reference": [1],
-            "array": [1, 2, 3, 4, 5],
-        }, proj_config.note_ranges)
+        self.assertEqual(
+            {
+                "bare_num": [1],
+                "string_num": [2],
+                "range": [3, 4, 5],
+                "reference": [1],
+                "array": [1, 2, 3, 4, 5],
+            },
+            proj_config.note_ranges,
+        )

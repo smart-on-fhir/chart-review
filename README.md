@@ -66,7 +66,15 @@ ranges:
 
 Call `chart-review` with the sub-command you want and its arguments:
 
-`chart-review accuracy --project-dir /path/to/project/dir jane john jack`
+For Jane as truth for Jack's annotations:
+```shell
+chart-review accuracy jane jack
+```
+
+For Jack as truth for John's annotations:
+```shell
+chart-review accuracy jack john
+```
 
 Pass `--help` to see more options.
 
@@ -125,8 +133,8 @@ class **Cohort** defines the base class to analyze study cohorts.
 * calc_term_freq(...) : term frequency of highlighted mention text
 * calc_term_label_confusion : report of exact mentions with 2+ class_labels
 
-`agree.py` get confusion matrix comparing annotators {truth, reviewer}  
-* **confusion_matrix** (truth, reviewer, ...) returns List[TruePos, TrueNeg, FalsePos, FalseNeg]  
+`agree.py` get confusion matrix comparing annotators {truth, annotator}
+* **confusion_matrix** (truth, annotator, ...) returns List[TruePos, TrueNeg, FalsePos, FalseNeg]
 * **score_matrix** (matrix) returns dict with keys {F1, Sens, Spec, PPV, NPV, TP,FP,TN,FN}
 
 `labelstudio.py` handles LabelStudio JSON
@@ -145,4 +153,13 @@ Class **LabelStudioNote**
 **NICE TO HAVES LATER**
 
 * **_confusion matrix_** type support using Pandas
-* **score_matrix** would be nicer to use a Pandas strongly typed class 
+* **score_matrix** would be nicer to use a Pandas strongly typed class
+
+---
+### Set up your dev environment
+
+To use the same dev environment as us, you'll want to run these commands:
+```sh
+pip install .[dev]
+pre-commit install
+```
