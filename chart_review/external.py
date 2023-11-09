@@ -22,7 +22,8 @@ def _load_csv_symptoms(filename: str) -> dict[str, list[str]]:
         for row in reader:  # row should be [docref_id, symptom]
             docref_id = row[0]
             symptom_list = docref_to_symptoms.setdefault(docref_id, [])
-            symptom_list.append(row[1])
+            if row[1]:  # allow for no labels for a docref (no positive symptoms found)
+                symptom_list.append(row[1])
 
     return docref_to_symptoms
 
