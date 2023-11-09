@@ -45,5 +45,20 @@
         "Not-In-External": "Not-In-External"
       }
     }
+  },
+  {
+    "id": 3,
+    "annotations": [
+      {
+        "id": 101,
+        "completed_by": 1,
+        "result": []
+      }
+    ],
+    "data": {
+      "docref_mappings": {
+        "No-Symptoms": "Anon-No-Symptoms"
+      }
+    }
   }
 ]

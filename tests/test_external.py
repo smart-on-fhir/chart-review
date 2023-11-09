@@ -24,7 +24,7 @@ class TestExternal(unittest.TestCase):
 
             self.assertEqual(
                 {
-                    "files": {1: 1, 2: 2},
+                    "files": {1: 1, 2: 2, 3: 3},
                     "annotations": {
                         1: {
                             "human": [
@@ -41,6 +41,12 @@ class TestExternal(unittest.TestCase):
                         2: {
                             "human": [],
                         },
+                        # This was an external annotation that said "saw it,
+                        # but no labels for this note"
+                        3: {
+                            "human": [],
+                            "icd10": [],
+                        },
                     },
                 },
                 reader.annotations,
@@ -49,8 +55,8 @@ class TestExternal(unittest.TestCase):
             # Confirm ranges got auto-detected for both human and icd10
             self.assertEqual(
                 {
-                    "human": [1, 2],
-                    "icd10": [1],
+                    "human": [1, 2, 3],
+                    "icd10": [1, 3],
                 },
                 reader.note_range,
             )
