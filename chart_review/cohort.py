@@ -42,6 +42,18 @@ class CohortReader:
                 self.annotations, saved, project_dir, name, value
             )
 
+        # Detect note ranges if they were not defined in the project config
+        # (i.e. default to the full set of annotated notes)
+        all_names = list(self.annotator.values())
+        all_names += list(self.config.external_annotations.keys())
+        for annotator in all_names:
+            if annotator not in self.note_range:
+                notes = []
+                for note_id, annotations in self.annotations["annotations"].items():
+                    if annotator in annotations:
+                        notes.append(note_id)
+                self.note_range[annotator] = notes
+
     def path(self, filename):
         return os.path.join(self.project_dir, filename)
 

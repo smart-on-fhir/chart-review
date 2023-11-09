@@ -9,6 +9,6 @@ annotators:
   jill: 6
 
 ranges:
+  # Skip 2 intentionally, just to confirm that we don't look at annotations
+  # which are not specified by our range.
   jane: [1, 3, 4]
-  john: [1, 2, 4]
-  jill: [1, 2, 3, 4]
