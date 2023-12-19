@@ -3,6 +3,7 @@
 import csv
 import os
 import sys
+from typing import Optional
 
 from chart_review import simplify
 
@@ -28,7 +29,7 @@ def _load_csv_symptoms(filename: str) -> dict[str, list[str]]:
     return docref_to_symptoms
 
 
-def _docref_id_to_label_studio_id(exported_json: list[dict], docref_id: str) -> int | None:
+def _docref_id_to_label_studio_id(exported_json: list[dict], docref_id: str) -> Optional[int]:
     """Looks at the metadata in Label Studio and grabs the note ID that holds the provided docref"""
     for row in exported_json:
         mappings = row.get("data", {}).get("docref_mappings", {})
