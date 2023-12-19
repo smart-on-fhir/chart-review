@@ -2,7 +2,7 @@ import itertools
 import os
 import re
 import sys
-from typing import Iterable
+from typing import Iterable, Union
 
 import yaml
 
@@ -49,7 +49,7 @@ class ProjectConfig:
         for key, values in self.note_ranges.items():
             self.note_ranges[key] = list(self._parse_note_range(values))
 
-    def _parse_note_range(self, value: str | int | list[str | int]) -> Iterable[int]:
+    def _parse_note_range(self, value: Union[str, int, list[Union[str, int]]]) -> Iterable[int]:
         if isinstance(value, list):
             return list(itertools.chain.from_iterable(self._parse_note_range(v) for v in value))
         elif isinstance(value, int):
