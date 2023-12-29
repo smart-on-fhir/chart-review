@@ -39,7 +39,7 @@ class TestAgreement(unittest.TestCase):
         (
             "alice",
             "bob",
-            "Cough",
+            ["Cough"],
             {
                 "FN": [{1: "Cough"}],
                 "FP": [{2: "Cough"}],
@@ -49,7 +49,7 @@ class TestAgreement(unittest.TestCase):
         ),
     )
     @ddt.unpack
-    def test_confusion_matrix_counts(self, truth, annotator, label_pick, expected_matrix):
+    def test_confusion_matrix_counts(self, truth, annotator, labels, expected_matrix):
         """Verify that we can make a simple confusion matrix."""
         simple = {
             "annotations": {
@@ -65,5 +65,5 @@ class TestAgreement(unittest.TestCase):
         }
         notes = [1, 2]
 
-        matrix = agree.confusion_matrix(simple, truth, annotator, notes, label_pick=label_pick)
+        matrix = agree.confusion_matrix(simple, truth, annotator, notes, labels=labels)
         self.assertEqual(expected_matrix, matrix)

@@ -10,6 +10,7 @@
             "value": {
               "text": "achoo",
               "labels": [
+                "Label Not In Study",
                 "Cough"
               ]
             }

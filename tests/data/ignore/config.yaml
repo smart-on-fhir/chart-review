@@ -1,0 +1,8 @@
+annotators:
+  adam: 1
+  allison: 2
+
+ignore:
+  - 3-Enc
+  - Encounter/Anon-4-Enc
+  - 5

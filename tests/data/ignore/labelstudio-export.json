@@ -1,0 +1,153 @@
+[
+  {
+    "id": 1,
+    "annotations": [
+      {
+        "id": 101,
+        "completed_by": 1,
+        "result": [
+          {
+            "value": {
+              "labels": [
+                "A"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "completed_by": 2,
+        "result": [
+          {
+            "value": {
+              "labels": [
+                "A"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "data": {
+      "enc_id": "1-Enc",
+      "anon_id": "Anon-1-Enc"
+    }
+  },
+  {
+    "id": 2,
+    "annotations": [
+      {
+        "id": 101,
+        "completed_by": 1,
+        "result": [
+          {
+            "value": {
+              "labels": [
+                "B"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "completed_by": 2,
+        "result": [
+          {
+            "value": {
+              "labels": [
+                "B"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "data": {
+      "enc_id": "2-Enc",
+      "anon_id": "Anon-2-Enc"
+    }
+  },
+  {
+    "id": 3,
+    "annotations": [
+      {
+        "id": 101,
+        "completed_by": 1,
+        "result": [
+          {
+            "value": {
+              "labels": [
+                "A"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "completed_by": 2,
+        "result": []
+      }
+    ],
+    "data": {
+      "enc_id": "3-Enc",
+      "anon_id": "Anon-3-Enc"
+    }
+  },
+  {
+    "id": 4,
+    "annotations": [
+      {
+        "id": 101,
+        "completed_by": 1,
+        "result": [
+          {
+            "value": {
+              "labels": [
+                "A"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "completed_by": 2,
+        "result": []
+      }
+    ],
+    "data": {
+      "enc_id": "4-Enc",
+      "anon_id": "Anon-4-Enc"
+    }
+  },
+  {
+    "id": 5,
+    "annotations": [
+      {
+        "id": 101,
+        "completed_by": 1,
+        "result": [
+          {
+            "value": {
+              "labels": [
+                "A"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": 102,
+        "completed_by": 2,
+        "result": []
+      }
+    ],
+    "data": {
+      "enc_id": "5-Enc",
+      "anon_id": "Anon-5-Enc"
+    }
+  }
+]
