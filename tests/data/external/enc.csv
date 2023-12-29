@@ -1,0 +1,7 @@
+ENC_ID,SYMPTOM
+"ABC-Enc","happy"
+"ABC","ignored"
+"ABC-Enc","tired"
+"Anon-ABC-Enc","hungry"
+"Unmatched","lost"
+"No-Symptoms-Enc",

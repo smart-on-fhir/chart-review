@@ -1,4 +1,6 @@
 annotators:
   human: 1
-  icd10:
-    filename: icd.csv
+  icd10-doc:
+    filename: doc.csv
+  icd10-enc:
+    filename: enc.csv

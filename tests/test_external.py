@@ -33,7 +33,8 @@ class TestExternal(unittest.TestCase):
                             ],
                             # icd10 labels are split into two lists,
                             # because we used two different docrefs (anon & real)
-                            "icd10": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
+                            "icd10-doc": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
+                            "icd10-enc": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
                         },
                         # This was a note that didn't appear in the icd10 external annotations
                         # (and also didn't have a positive label by the human reviewer).
@@ -45,7 +46,8 @@ class TestExternal(unittest.TestCase):
                         # but no labels for this note"
                         3: {
                             "human": [],
-                            "icd10": [],
+                            "icd10-doc": [],
+                            "icd10-enc": [],
                         },
                     },
                 },
@@ -56,7 +58,8 @@ class TestExternal(unittest.TestCase):
             self.assertEqual(
                 {
                     "human": [1, 2, 3],
-                    "icd10": [1, 3],
+                    "icd10-doc": [1, 3],
+                    "icd10-enc": [1, 3],
                 },
                 reader.note_range,
             )

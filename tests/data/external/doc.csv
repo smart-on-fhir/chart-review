@@ -1,6 +1,7 @@
-docref_id,symptom
+blarg_id,symptom
 "ABC","happy"
 "ABC","tired"
+"ABC-Enc","ignored"
 "Anon-ABC","hungry"
 "Unmatched","lost"
 "No-Symptoms",
