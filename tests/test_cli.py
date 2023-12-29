@@ -81,3 +81,16 @@ class TestCommandLine(unittest.TestCase):
 """,
                 accuracy_csv,
             )
+
+    def test_ignored_ids(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copytree(f"{DATA_DIR}/ignore", tmpdir, dirs_exist_ok=True)
+            cli.main_cli(["accuracy", "--project-dir", tmpdir, "allison", "adam"])
+
+            # Only two of the five notes should be considered, and we should have full agreement.
+            accuracy_json = common.read_json(f"{tmpdir}/accuracy-allison-adam.json")
+            self.assertEqual(1, accuracy_json["F1"])
+            self.assertEqual(2, accuracy_json["TP"])
+            self.assertEqual(0, accuracy_json["FN"])
+            self.assertEqual(2, accuracy_json["TN"])
+            self.assertEqual(0, accuracy_json["FP"])

@@ -1,5 +1,7 @@
 import os
-from collections.abc import Iterable
+import sys
+from typing import Iterable, Optional
+
 from chart_review.common import guard_str, guard_iter, guard_in
 from chart_review import common
 from chart_review import config
@@ -54,6 +56,18 @@ class CohortReader:
                         notes.append(note_id)
                 self.note_range[annotator] = notes
 
+        # Parse ignored IDs (might be note IDs, might be external IDs)
+        self.ignored_notes: set[int] = set()
+        for ignore_id in self.config.ignore:
+            ls_id = external.external_id_to_label_studio_id(saved, str(ignore_id))
+            if ls_id is None:
+                if isinstance(ignore_id, int):
+                    ls_id = ignore_id  # must be direct note ID
+                else:
+                    # Must just be over-zealous excluding (like automatically from SQL)
+                    continue
+            self.ignored_notes.add(ls_id)
+
     def path(self, filename):
         return os.path.join(self.project_dir, filename)
 
@@ -76,8 +90,17 @@ class CohortReader:
     def calc_term_label_confusion(self, annotator) -> dict:
         return mentions.calc_term_label_confusion(self.calc_term_freq(annotator))
 
+    def _select_labels(self, label_pick: str = None) -> Optional[Iterable[str]]:
+        if label_pick:
+            guard_in(label_pick, self.class_labels)
+            return [label_pick]
+        elif self.class_labels:
+            return self.class_labels
+        else:
+            return None
+
     def confusion_matrix(
-        self, truth: str, annotator: str, note_range: Iterable, label_pick=None
+        self, truth: str, annotator: str, note_range: Iterable, label_pick: str = None
     ) -> dict:
         """
         This is the rollup of counting each symptom only once, not multiple times.
@@ -88,9 +111,11 @@ class CohortReader:
         :param label_pick: (optional) of the CLASS_LABEL to score separately
         :return: dict
         """
-        return agree.confusion_matrix(self.annotations, truth, annotator, note_range, label_pick)
+        labels = self._select_labels(label_pick)
+        note_range = set(guard_iter(note_range)) - self.ignored_notes
+        return agree.confusion_matrix(self.annotations, truth, annotator, note_range, labels=labels)
 
-    def score_reviewer(self, truth: str, annotator: str, note_range, label_pick=None):
+    def score_reviewer(self, truth: str, annotator: str, note_range, label_pick: str = None):
         """
         Score reliability of rater at the level of all symptom *PREVALENCE*
         :param truth: annotator to use as the ground truth
@@ -99,12 +124,9 @@ class CohortReader:
         :param label_pick: (optional) of the CLASS_LABEL to score separately
         :return: dict, keys f1, precision, recall and vals= %score
         """
-        if label_pick:
-            guard_in(label_pick, self.class_labels)
-
-        return agree.score_reviewer(
-            self.annotations, truth, annotator, guard_iter(note_range), label_pick
-        )
+        labels = self._select_labels(label_pick)
+        note_range = set(guard_iter(note_range)) - self.ignored_notes
+        return agree.score_reviewer(self.annotations, truth, annotator, note_range, labels=labels)
 
     def score_reviewer_table_csv(self, truth: str, annotator: str, note_range) -> str:
         table = list()

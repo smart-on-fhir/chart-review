@@ -70,3 +70,7 @@ class ProjectConfig:
     @property
     def class_labels(self) -> list[str]:
         return self._data.setdefault("labels", [])
+
+    @property
+    def ignore(self) -> set[str]:
+        return set(self._data.setdefault("ignore", []))

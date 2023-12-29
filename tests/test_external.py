@@ -33,8 +33,16 @@ class TestExternal(unittest.TestCase):
                             ],
                             # icd10 labels are split into two lists,
                             # because we used two different docrefs (anon & real)
-                            "icd10-doc": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
-                            "icd10-enc": [{"labels": ["happy", "tired"]}, {"labels": ["hungry"]}],
+                            "icd10-doc": [
+                                {"labels": ["happy", "tired"]},
+                                {"labels": ["sad"]},
+                                {"labels": ["hungry"]},
+                            ],
+                            "icd10-enc": [
+                                {"labels": ["happy", "tired"]},
+                                {"labels": ["sad"]},
+                                {"labels": ["hungry"]},
+                            ],
                         },
                         # This was a note that didn't appear in the icd10 external annotations
                         # (and also didn't have a positive label by the human reviewer).

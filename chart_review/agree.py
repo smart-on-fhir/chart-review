@@ -1,13 +1,11 @@
-from typing import Dict, List
-from collections.abc import Iterable
-from ctakesclient.typesystem import Span
-from chart_review import mentions
+from typing import Iterable
+
 from chart_review import simplify
 
 
 def confusion_matrix(
-    simple: dict, truth: str, annotator: str, note_range: Iterable, label_pick=None
-) -> Dict[str, list]:
+    simple: dict, truth: str, annotator: str, note_range: Iterable, labels: Iterable[str] = None
+) -> dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
     https://www.researchgate.net/figure/Calculation-of-sensitivity-specificity-and-positive-and-negative-predictive_fig1_49650721
@@ -17,7 +15,7 @@ def confusion_matrix(
     :param truth: annotator to use as the ground truth
     :param annotator: another annotator to compare with truth
     :param note_range: collection of LabelStudio document ID
-    :param label_pick: (optional) of the CLASS_LABEL to score separately
+    :param labels: (optional) collection of labels to consider examining
     :return: Dict
         "TP": True Positives (agree on positive+ symptom)
         "FP": False Positives (annotator said positive+, truth said No)
@@ -33,6 +31,8 @@ def confusion_matrix(
         label_set |= set(_v)
     for _v in annotator_mentions.values():
         label_set |= set(_v)
+    if labels:
+        label_set &= set(labels)
 
     TP = list()  # True Positive
     FP = list()  # False Positive
@@ -41,21 +41,20 @@ def confusion_matrix(
 
     for note_id in note_range:
         for label in label_set:
-            if not label_pick or (label == label_pick):  # Pick label (default=None)
-                key = {note_id: label}
-                truth_positive = label in truth_mentions.get(note_id, [])
-                annotator_positive = label in annotator_mentions.get(note_id, [])
+            key = {note_id: label}
+            truth_positive = label in truth_mentions.get(note_id, [])
+            annotator_positive = label in annotator_mentions.get(note_id, [])
 
-                if truth_positive and annotator_positive:
-                    TP.append(key)
-                elif truth_positive and not annotator_positive:
-                    FN.append(key)
-                elif not truth_positive and annotator_positive:
-                    FP.append(key)
-                elif not truth_positive and not annotator_positive:
-                    TN.append(key)
-                else:
-                    raise Exception("Guard: Impossible comparison of reviewers")
+            if truth_positive and annotator_positive:
+                TP.append(key)
+            elif truth_positive and not annotator_positive:
+                FN.append(key)
+            elif not truth_positive and annotator_positive:
+                FP.append(key)
+            elif not truth_positive and not annotator_positive:
+                TN.append(key)
+            else:
+                raise Exception("Guard: Impossible comparison of reviewers")
 
     return {"TP": TP, "FN": FN, "FP": FP, "TN": TN}
 
@@ -128,7 +127,7 @@ def avg_scores(first: dict, second: dict, sig_digits=3) -> dict:
 
 
 def score_reviewer(
-    simple: dict, truth: str, annotator: str, note_range: Iterable, pick_label=None
+    simple: dict, truth: str, annotator: str, note_range: Iterable, labels: Iterable[str] = None
 ) -> dict:
     """
     Score reliability of an annotator against a truth annotator.
@@ -140,7 +139,7 @@ def score_reviewer(
     :param pick_label: (optional) of the CLASS_LABEL to score separately
     :return: dict, keys f1, precision, recall and vals= %score
     """
-    truth_matrix = confusion_matrix(simple, truth, annotator, note_range, pick_label)
+    truth_matrix = confusion_matrix(simple, truth, annotator, note_range, labels=labels)
     return score_matrix(truth_matrix)
 
 

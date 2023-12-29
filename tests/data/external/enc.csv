@@ -1,7 +1,8 @@
-ENC_ID,SYMPTOM
+BLARG_ID,SYMPTOM
 "ABC-Enc","happy"
 "ABC","ignored"
 "ABC-Enc","tired"
-"Anon-ABC-Enc","hungry"
+"Encounter/Anon-ABC-Enc","sad"
+"DocumentReference/Anon-ABC","hungry"
 "Unmatched","lost"
 "No-Symptoms-Enc",

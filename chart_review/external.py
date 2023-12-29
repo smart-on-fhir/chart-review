@@ -35,12 +35,14 @@ def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, list[str]
         elif "enc" in id_header:
             id_type = IdentifierType.ENCOUNTER
         else:
-            print(f"Unrecognized ID column '{header[0]}'. Will assume DocRef ID.", file=sys.stderr)
-            id_type = IdentifierType.DOCREF
+            print(
+                f"Unrecognized ID column '{header[0]}'. Will assume Encounter ID.", file=sys.stderr
+            )
+            id_type = IdentifierType.ENCOUNTER
 
         for row in reader:
-            docref_id = row[0]
-            label_list = id_to_labels.setdefault(docref_id, [])
+            row_id = row[0]
+            label_list = id_to_labels.setdefault(row_id, [])
             if row[1]:  # allow for no labels for a row (no positive labels found)
                 label_list.append(row[1])
 
@@ -72,10 +74,24 @@ def _encounter_id_to_label_studio_id(exported_json: list[dict], enc_id: str) -> 
     return None
 
 
-def _row_id_to_label_studio_id(
-    exported_json: list[dict], id_type: IdentifierType, row_id: str
+def external_id_to_label_studio_id(
+    exported_json: list[dict],
+    row_id: str,
+    default_id_type: IdentifierType = IdentifierType.ENCOUNTER,
 ) -> Optional[int]:
     """Looks at the metadata in LS and grabs the note ID that holds the provided ID"""
+    # First, check if there is a resource prefix, which will tell us which kind of ID this is
+    parts = row_id.split("/")
+    if parts[0] == "Encounter":
+        id_type = IdentifierType.ENCOUNTER
+        row_id = parts[1]
+    elif parts[0] == "DocumentReference":
+        id_type = IdentifierType.DOCREF
+        row_id = parts[1]
+    else:
+        # Who knows - let's just use the provided default
+        id_type = default_id_type
+
     if id_type == IdentifierType.ENCOUNTER:
         return _encounter_id_to_label_studio_id(exported_json, row_id)
     else:
@@ -88,7 +104,7 @@ def merge_external(
     """Loads an external csv file annotator and merges them into an existing simple dict"""
     if filename := config.get("filename"):
         full_filename = os.path.join(project_dir, filename)
-        id_type, label_map = _load_csv_labels(full_filename)
+        detected_id_type, label_map = _load_csv_labels(full_filename)
     else:
         sys.exit(f"Did not understand config for external annotator '{name}'")
 
@@ -104,7 +120,11 @@ def merge_external(
     # Convert each row id into an LS id:
     external_simple = {"files": {}, "annotations": {}}
     for row_id, label_list in label_map.items():
-        ls_id = _row_id_to_label_studio_id(exported_json, id_type, row_id)
+        ls_id = external_id_to_label_studio_id(
+            exported_json,
+            row_id,
+            default_id_type=detected_id_type,
+        )
         if ls_id is None:
             continue
 

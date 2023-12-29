@@ -22,7 +22,7 @@ def read_json(path: str) -> dict:
     logging.debug("read_json() %s", path)
 
     with open(path, "r") as f:
-        return json.load(f)
+        return json.load(f, strict=False)
 
 
 def write_json(path: str, data: dict, indent: Optional[int] = 4) -> None:
