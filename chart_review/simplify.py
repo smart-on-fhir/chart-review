@@ -1,8 +1,8 @@
-from collections.abc import Iterable
-from enum import EnumMeta
 import re
-from chart_review import common, config
-from chart_review.common import guard_str, guard_iter
+from collections.abc import Container
+from enum import EnumMeta
+
+from chart_review import common, types
 
 
 def merge_simple(source: dict, append: dict) -> dict:
@@ -30,7 +30,7 @@ def merge_simple(source: dict, append: dict) -> dict:
     return merged
 
 
-def simplify_full(exported_json: str, annotator_enum: config.AnnotatorMap) -> dict:
+def simplify_full(exported_json: str, annotator_enum: types.AnnotatorMap) -> dict:
     """
     LabelStudio outputs contain more info than needed for IAA and term_freq.
 
@@ -104,40 +104,19 @@ def simplify_file_id(file_id: str) -> str:
     return f"{root}.json"
 
 
-def rollup_mentions(simple: dict, annotator: str, note_range: Iterable) -> dict[int, list[str]]:
+def rollup_mentions(simple: dict, annotator: str, note_range: Container[int]) -> types.Mentions:
     """
     :param simple: prepared map of files and annotations
     :param annotator: an annotator name
     :param note_range: collection of LabelStudio document ID
     :return: dict keys=note_id, values=labels
     """
-    rollup = dict()
+    rollup = types.Mentions()
 
     for note_id, values in simple["annotations"].items():
-        if int(note_id) in guard_iter(note_range):
-            if values.get(annotator):
-                for annot in values[guard_str(annotator)]:
-                    if not rollup.get(note_id):
-                        rollup[note_id] = list()
+        if note_id in note_range:
+            note_rollup = rollup.setdefault(note_id, set())
+            for annot in values.get(annotator, []):
+                note_rollup |= set(annot["labels"])
 
-                    for symptom in annot["labels"]:
-                        if symptom not in rollup[note_id]:
-                            rollup[note_id].append(symptom)
     return rollup
-
-
-def deprecate_filter_note_range(simple: dict, note_range: Iterable) -> dict:
-    """
-    TODO: deprecate ore refactor, filter by note range.
-
-    @param simple: simplified() dict
-    @param note_range: collection of LabelStudio document ID
-    @return: dict filtered by note_range
-    """
-    filtered = {"files": {}, "annotations": {}}
-    for file_id, note_id in simple["files"].items():
-        if int(note_id) in guard_iter(note_range):
-            foo = simple["annotations"][str(note_id)]
-            filtered["annotations"][note_id] = foo
-            filtered["files"][file_id] = note_id
-    return filtered
