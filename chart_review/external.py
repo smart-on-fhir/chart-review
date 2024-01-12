@@ -112,8 +112,8 @@ def merge_external(
     for row in exported_json:
         if "docref_mappings" not in row.get("data", {}):
             sys.exit(
-                f"Your Label Studio export does not include DocRef/Encounter ID mapping metadata!\n"
-                f"Consider re-uploading your notes using Cumulus ETL's chart-review command."
+                "Your Label Studio export does not include DocRef/Encounter ID mapping metadata!\n"
+                "Consider re-uploading your notes using Cumulus ETL's chart-review command."
             )
         break  # just inspect one
 

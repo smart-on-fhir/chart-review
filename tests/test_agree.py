@@ -1,7 +1,5 @@
 """Tests for agree.py"""
 
-import os
-import tempfile
 import unittest
 
 import ddt
