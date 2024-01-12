@@ -5,7 +5,7 @@ import shutil
 import tempfile
 import unittest
 
-from chart_review import cohort
+from chart_review import cohort, config
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
@@ -20,7 +20,7 @@ class TestExternal(unittest.TestCase):
     def test_basic_read(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             shutil.copytree(f"{DATA_DIR}/external", tmpdir, dirs_exist_ok=True)
-            reader = cohort.CohortReader(tmpdir)
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
 
             self.assertEqual(
                 {

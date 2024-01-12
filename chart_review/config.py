@@ -2,7 +2,7 @@ import itertools
 import os
 import re
 import sys
-from typing import Iterable, Union
+from typing import Iterable, Optional, Union
 
 import yaml
 
@@ -13,22 +13,12 @@ class ProjectConfig:
     _NUMBER_REGEX = re.compile(r"\d+")
     _RANGE_REGEX = re.compile(r"\d+-\d+")
 
-    def __init__(self, project_dir: str):
+    def __init__(self, project_dir: str, config_path: Optional[str] = None):
         """
         :param project_dir: str like /opt/labelstudio/study_name
         """
-        self._data = None
-
-        for filename in ("config.yaml", "config.json"):
-            try:
-                path = os.path.join(project_dir, filename)
-                with open(path, "r", encoding="utf8") as f:
-                    self._data = yaml.safe_load(f)
-            except FileNotFoundError:
-                continue
-
-        if self._data is None:
-            raise FileNotFoundError(f"No config.yaml or config.json file found in {project_dir}")
+        self.project_dir = project_dir
+        self._data = self._load_config(config_path)
 
         # ** Annotators **
         # Internally, we're often dealing with numeric ID as the primary annotator identifier,
@@ -56,6 +46,26 @@ class ProjectConfig:
             if not isinstance(value, list):
                 value = {value}
             self.implied_labels[key] = set(value)
+
+    def path(self, filename: str) -> str:
+        return os.path.join(self.project_dir, filename)
+
+    @staticmethod
+    def _read_yaml(path) -> dict:
+        with open(path, encoding="utf8") as f:
+            return yaml.safe_load(f)
+
+    def _load_config(self, config_path: Optional[str]) -> dict:
+        if config_path is None:
+            # Support config.json in case folks prefer that
+            try:
+                return self._read_yaml(self.path("config.json"))
+            except FileNotFoundError:
+                return self._read_yaml(self.path("config.yaml"))
+
+        # Don't resolve config_path relative to the project dir, because
+        # this will have come from the command line and will resolve relative to `pwd`.
+        return self._read_yaml(config_path)
 
     def _parse_note_range(self, value: Union[str, int, list[Union[str, int]]]) -> Iterable[int]:
         if isinstance(value, list):

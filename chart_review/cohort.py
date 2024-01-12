@@ -11,36 +11,24 @@ from chart_review import agree
 
 
 class CohortReader:
-    def __init__(self, project_dir: str):
+    def __init__(self, proj_config: config.ProjectConfig):
         """
-        :param project_dir: str like /opt/labelstudio/study_name
+        :param proj_config: parsed project configuration
         """
-        self.project_dir = project_dir
-        self.config = config.ProjectConfig(project_dir)
-        self.labelstudio_json = self.path(
-            "labelstudio-export.json"
-        )  # TODO: refactor labelstudio.py
+        self.config = proj_config
+        self.project_dir = self.config.project_dir
+        self.labelstudio_json = self.config.path("labelstudio-export.json")
         self.annotator = self.config.annotators
         self.note_range = self.config.note_ranges
         self.class_labels = self.config.class_labels
-        self.annotations = None
+        self.annotations = simplify.simplify_full(self.labelstudio_json, self.annotator)
 
         saved = common.read_json(self.labelstudio_json)
-        if isinstance(saved, list):
-            self.annotations = simplify.simplify_full(self.labelstudio_json, self.annotator)
-        else:
-            # TODO: int keys cant be saved in JSON, compatability hack use instead LabelStudio.py
-            compat = dict()
-            compat["files"] = saved["files"]
-            compat["annotations"] = dict()
-            for k in saved["annotations"].keys():
-                compat["annotations"][int(k)] = saved["annotations"][k]
-            self.annotations = compat
 
         # Load external annotations (i.e. from NLP tags or ICD10 codes)
         for name, value in self.config.external_annotations.items():
             self.annotations = external.merge_external(
-                self.annotations, saved, project_dir, name, value
+                self.annotations, saved, self.project_dir, name, value
             )
 
         # Detect note ranges if they were not defined in the project config
@@ -66,9 +54,6 @@ class CohortReader:
                     # Must just be over-zealous excluding (like automatically from SQL)
                     continue
             self.ignored_notes.add(ls_id)
-
-    def path(self, filename):
-        return os.path.join(self.project_dir, filename)
 
     def calc_term_freq(self, annotator) -> dict:
         """

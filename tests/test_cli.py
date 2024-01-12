@@ -94,3 +94,18 @@ class TestCommandLine(unittest.TestCase):
             self.assertEqual(0, accuracy_json["FN"])
             self.assertEqual(2, accuracy_json["TN"])
             self.assertEqual(0, accuracy_json["FP"])
+
+    def test_custom_config(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copy(f"{DATA_DIR}/cold/labelstudio-export.json", tmpdir)
+            cli.main_cli(
+                [
+                    "accuracy",
+                    "--project-dir",
+                    tmpdir,
+                    "-c",
+                    f"{DATA_DIR}/cold/config.yaml",
+                    "jane",
+                    "john",
+                ]
+            )  # just confirm it doesn't error out

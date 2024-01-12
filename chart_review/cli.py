@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from chart_review import cohort
+from chart_review import cohort, config
 from chart_review.commands.accuracy import accuracy
 
 
@@ -18,8 +18,14 @@ def add_project_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--project-dir",
         default=".",
-        help="Directory holding project files, "
-        "like config.yaml and labelstudio-export.json (default: current dir)",
+        metavar="DIR",
+        help=(
+            "Directory holding project files, "
+            "like labelstudio-export.json (default: current dir)"
+        ),
+    )
+    parser.add_argument(
+        "--config", "-c", metavar="PATH", help="Config file (default: [project-dir]/config.yaml)"
     )
 
 
@@ -49,7 +55,8 @@ def add_accuracy_subparser(subparsers) -> None:
 
 
 def run_accuracy(args: argparse.Namespace) -> None:
-    reader = cohort.CohortReader(args.project_dir)
+    proj_config = config.ProjectConfig(args.project_dir, config_path=args.config)
+    reader = cohort.CohortReader(proj_config)
     accuracy(reader, args.truth_annotator, args.annotator)
 
 
