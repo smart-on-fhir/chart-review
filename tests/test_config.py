@@ -81,3 +81,21 @@ class TestProjectConfig(unittest.TestCase):
             },
             proj_config.note_ranges,
         )
+
+    def test_implied_labels(self):
+        """Verify that we grab the label config correctly."""
+        proj_config = self.make_config(
+            """
+            implied-labels:
+                A: B
+                C: [D, E]
+            """
+        )
+
+        self.assertEqual(
+            {
+                "A": {"B"},
+                "C": {"D", "E"},
+            },
+            proj_config.implied_labels,
+        )

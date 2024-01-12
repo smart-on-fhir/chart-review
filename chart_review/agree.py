@@ -1,10 +1,52 @@
-from typing import Iterable
+from collections.abc import Collection, Iterable
 
-from chart_review import simplify
+from chart_review import simplify, types
+
+
+def _find_implied_labels(
+    source_label: str, implied_label_mappings: types.ImpliedLabels, found_labels: set[str] = None
+) -> set[str]:
+    """
+    Expands the source label into the set of all implied labels.
+
+    Don't bother passing found_labels in, that's just a helper arg for recursion.
+    """
+    if found_labels is None:
+        found_labels = set()
+
+    if source_label in found_labels:
+        return found_labels
+
+    found_labels.add(source_label)
+    for implied_label in implied_label_mappings.get(source_label, []):
+        _find_implied_labels(implied_label, implied_label_mappings, found_labels=found_labels)
+
+    return found_labels
+
+
+def _find_implied_mentions(
+    mentions: types.Mentions, implied_label_mappings: types.ImpliedLabels
+) -> types.Mentions:
+    """
+    For every note, expands its labels into the set of all implied labels for that note.
+    """
+    found_mentions = types.Mentions()
+
+    for note_id, labels in mentions.items():
+        implied_mentions = found_mentions.setdefault(note_id, set())
+        for label in labels:
+            implied_mentions |= _find_implied_labels(label, implied_label_mappings)
+
+    return found_mentions
 
 
 def confusion_matrix(
-    simple: dict, truth: str, annotator: str, note_range: Iterable, labels: Iterable[str] = None
+    simple: dict,
+    truth: str,
+    annotator: str,
+    note_range: Collection[int],
+    labels: Iterable[str] = None,
+    implied_labels: types.ImpliedLabels = None,
 ) -> dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
@@ -16,6 +58,7 @@ def confusion_matrix(
     :param annotator: another annotator to compare with truth
     :param note_range: collection of LabelStudio document ID
     :param labels: (optional) collection of labels to consider examining
+    :param implied_labels: (optional) ranking of labels from specific -> less specific
     :return: Dict
         "TP": True Positives (agree on positive+ symptom)
         "FP": False Positives (annotator said positive+, truth said No)
@@ -24,6 +67,9 @@ def confusion_matrix(
     """
     truth_mentions = simplify.rollup_mentions(simple, truth, note_range)
     annotator_mentions = simplify.rollup_mentions(simple, annotator, note_range)
+    if implied_labels:
+        truth_mentions = _find_implied_mentions(truth_mentions, implied_labels)
+        annotator_mentions = _find_implied_mentions(annotator_mentions, implied_labels)
 
     # Only examine labels that were used by any compared annotators at least once
     label_set = set()
@@ -40,10 +86,13 @@ def confusion_matrix(
     TN = list()  # True Negative
 
     for note_id in note_range:
-        for label in label_set:
+        truth_note_mentions = truth_mentions.get(note_id, set())
+        annotator_note_mentions = annotator_mentions.get(note_id, set())
+
+        for label in sorted(label_set):
             key = {note_id: label}
-            truth_positive = label in truth_mentions.get(note_id, [])
-            annotator_positive = label in annotator_mentions.get(note_id, [])
+            truth_positive = label in truth_note_mentions
+            annotator_positive = label in annotator_note_mentions
 
             if truth_positive and annotator_positive:
                 TP.append(key)

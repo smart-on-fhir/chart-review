@@ -6,7 +6,7 @@ from typing import Iterable, Union
 
 import yaml
 
-AnnotatorMap = dict[int, str]
+from chart_review import types
 
 
 class ProjectConfig:
@@ -35,7 +35,7 @@ class ProjectConfig:
         # since that's what is stored in Label Studio. So that's what we return from this method.
         # But as humans writing config files, it's more natural to think of "name -> id".
         # So that's what we keep in the config, and we just reverse it here for convenience.
-        self.annotators: dict[int, str] = {}
+        self.annotators = types.AnnotatorMap()
         self.external_annotations = {}
         for name, value in self._data.get("annotators", {}).items():
             if isinstance(value, int):  # real annotation layer in Label Studio
@@ -48,6 +48,14 @@ class ProjectConfig:
         self.note_ranges = self._data.get("ranges", {})
         for key, values in self.note_ranges.items():
             self.note_ranges[key] = list(self._parse_note_range(values))
+
+        # ** Implied labels **
+        self.implied_labels = types.ImpliedLabels()
+        for key, value in self._data.get("implied-labels", {}).items():
+            # Coerce single labels into a set
+            if not isinstance(value, list):
+                value = {value}
+            self.implied_labels[key] = set(value)
 
     def _parse_note_range(self, value: Union[str, int, list[Union[str, int]]]) -> Iterable[int]:
         if isinstance(value, list):

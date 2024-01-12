@@ -113,7 +113,14 @@ class CohortReader:
         """
         labels = self._select_labels(label_pick)
         note_range = set(guard_iter(note_range)) - self.ignored_notes
-        return agree.confusion_matrix(self.annotations, truth, annotator, note_range, labels=labels)
+        return agree.confusion_matrix(
+            self.annotations,
+            truth,
+            annotator,
+            note_range,
+            labels=labels,
+            implied_labels=self.config.implied_labels,
+        )
 
     def score_reviewer(self, truth: str, annotator: str, note_range, label_pick: str = None):
         """
