@@ -1,5 +1,4 @@
 import os
-import sys
 from typing import Iterable, Optional
 
 from chart_review.common import guard_str, guard_iter, guard_in
