@@ -6,7 +6,7 @@ import os
 import sys
 from typing import Optional
 
-from chart_review import simplify
+from chart_review import simplify, types
 
 
 class IdentifierType(enum.Enum):
@@ -14,14 +14,14 @@ class IdentifierType(enum.Enum):
     ENCOUNTER = enum.auto()
 
 
-def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, list[str]]]:
+def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, types.LabelSet]]:
     """
     Loads a csv and returns a list of labels per row.
 
     CSV format is two columns, where the first is docref/encounter id and the second is a single
     label.
 
-    Returns id_type, {row_id -> list of labels for that ID}
+    Returns id_type, {row_id -> set of labels for that ID}
     """
     id_to_labels = {}
 
@@ -42,9 +42,9 @@ def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, list[str]
 
         for row in reader:
             row_id = row[0]
-            label_list = id_to_labels.setdefault(row_id, [])
+            label_set = id_to_labels.setdefault(row_id, types.LabelSet())
             if row[1]:  # allow for no labels for a row (no positive labels found)
-                label_list.append(row[1])
+                label_set.add(row[1])
 
     return id_type, id_to_labels
 
@@ -99,8 +99,12 @@ def external_id_to_label_studio_id(
 
 
 def merge_external(
-    simple: dict, exported_json: list[dict], project_dir: str, name: str, config: dict
-) -> dict:
+    annotations: types.ProjectAnnotations,
+    exported_json: list[dict],
+    project_dir: str,
+    name: str,
+    config: dict,
+) -> None:
     """Loads an external csv file annotator and merges them into an existing simple dict"""
     if filename := config.get("filename"):
         full_filename = os.path.join(project_dir, filename)
@@ -118,19 +122,13 @@ def merge_external(
         break  # just inspect one
 
     # Convert each row id into an LS id:
-    external_simple = {"files": {}, "annotations": {}}
-    for row_id, label_list in label_map.items():
+    external_mentions = annotations.mentions.setdefault(name, types.Mentions())
+    for row_id, label_set in label_map.items():
         ls_id = external_id_to_label_studio_id(
             exported_json,
             row_id,
             default_id_type=detected_id_type,
         )
-        if ls_id is None:
-            continue
-
-        external_simple["files"][ls_id] = ls_id
-        annotation_list = external_simple["annotations"].setdefault(ls_id, {}).setdefault(name, [])
-        annotation_list.append({"labels": label_list})
-
-    # Merge into existing simple dictionary
-    return simplify.merge_simple(simple, external_simple)
+        if ls_id is not None:
+            all_labels = external_mentions.setdefault(ls_id, set())
+            all_labels |= label_set

@@ -54,7 +54,7 @@ class TestProjectConfig(unittest.TestCase):
         """Verify that we can operate on multiple formats (like json & yaml)."""
         proj_config = self.make_config(text, filename=f"config.{suffix}")
 
-        self.assertEqual(["cough", "fever"], proj_config.class_labels)
+        self.assertEqual({"cough", "fever"}, proj_config.class_labels)
         self.assertEqual({1: "jane", 2: "john"}, proj_config.annotators)
         self.assertEqual({"jane": [3], "john": [1, 3, 5]}, proj_config.note_ranges)
 

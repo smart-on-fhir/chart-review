@@ -1,122 +1,128 @@
 import re
 from collections.abc import Container
-from enum import EnumMeta
 
-from chart_review import common, types
+from chart_review import config, types
 
 
-def merge_simple(source: dict, append: dict) -> dict:
+def simplify_export(
+    exported_json: list[dict], proj_config: config.ProjectConfig
+) -> types.ProjectAnnotations:
     """
-    TODO: refactor JSON manipulation to labelstudio.py
-    @param source: SOURCE of LabelStudio "note" ID mappings
-    @param append: INHERIT LabelStudio "note" ID mappings
-    @return:
-    """
-    merged = {"files": {}, "annotations": {}}
-
-    for file_id, note_id in source["files"].items():
-        merged["files"][file_id] = int(note_id)
-        merged["annotations"][int(note_id)] = source["annotations"][int(note_id)]
-
-        if file_id not in append["files"]:
-            continue
-        append_id = append["files"][file_id]
-        for annotator in append["annotations"][append_id]:
-            for entry in append["annotations"][append_id][annotator]:
-                if annotator not in merged["annotations"][int(note_id)].keys():
-                    merged["annotations"][int(note_id)][annotator] = list()
-                if entry.get("labels"):
-                    merged["annotations"][int(note_id)][annotator].append(entry)
-    return merged
-
-
-def simplify_full(exported_json: str, annotator_enum: types.AnnotatorMap) -> dict:
-    """
-    LabelStudio outputs contain more info than needed for IAA and term_freq.
+    Label Studio outputs contain more info than needed for IAA and term_freq.
 
     * PHI raw physician note text is removed *
-    TODO: refactor JSON manipulation to labelstudio.py
 
-    :param exported_json: file output from LabelStudio
-    :param annotator_enum: dict like {2:annotator1, 6:annotator2}
-    :return: dict key= note_id
+    :param exported_json: exported json from Label Studio
+    :param proj_config: project configuration
+    :return: all project mentions parsed from the Label Studio export
     """
-    simple = {"files": {}, "annotations": {}}
-    for entry in common.read_json(exported_json):
+    annotations = types.ProjectAnnotations()
+    annotations.labels = proj_config.class_labels
+
+    for entry in exported_json:
         note_id = int(entry.get("id"))
-        file_upload = entry.get("file_upload")
-        if file_upload:
-            file_id = simplify_file_id(file_upload)
-            simple["files"][file_id] = int(note_id)
-        else:
-            simple["files"][note_id] = int(note_id)
 
         for annot in entry.get("annotations"):
             completed_by = annot.get("completed_by")
-            annotator = annotator_enum[completed_by]
-            label = []
+            if completed_by not in proj_config.annotators:
+                continue  # we don't know who this is!
+
+            # Grab all valid mentions for this annotator & note
+            labels = types.LabelSet()
+            text_tags = []
             for result in annot.get("result"):
-                match = result.get("value")
-                label.append(match)
+                result_value = result.get("value", {})
+                result_text = result_value.get("text")
+                result_labels = set(result_value.get("labels", []))
 
-            if note_id not in simple["annotations"].keys():
-                simple["annotations"][int(note_id)] = dict()
+                labels |= result_labels
+                text_tags.append(types.LabeledText(result_text, result_labels))
 
-            simple["annotations"][int(note_id)][annotator] = label
-    return simple
+            # Store these mentions in the main annotations list, by author & note
+            annotator = proj_config.annotators[completed_by]
+            annotator_mentions = annotations.mentions.setdefault(annotator, types.Mentions())
+            annotator_mentions[note_id] = labels
+            annot_orig_text_tags = annotations.original_text_mentions.setdefault(annotator, {})
+            annot_orig_text_tags[note_id] = text_tags
+
+    return annotations
 
 
-def simplify_min(exported_json: str, annotator_enum: EnumMeta) -> dict:
+def _find_implied_labels(
+    source_label: str, implied_label_mappings: types.ImpliedLabels, found_labels: set[str] = None
+) -> set[str]:
     """
-    LabelStudio outputs contain more info than needed for IAA and term_freq.
+    Expands the source label into the set of all implied labels.
 
-    * PHI raw physician note text is removed *
-    TODO: deprecated, this shouldn't be used anymore.
-          This was the alternative export format from LabelStudio
-
-    :param exported_json: file output from LabelStudio
-    :param annotator_enum: dict like {2:annotator1, 6:annotator2}
-    :return: dict key= note_id
+    Don't bother passing found_labels in, that's just a helper arg for recursion.
     """
-    simple = dict()
-    for entry in common.read_json(exported_json):
-        note_id = int(entry.get("id"))
-        annotator = annotator_enum(entry.get("annotator")).name
-        label = entry.get("label")
+    if found_labels is None:
+        found_labels = set()
 
-        if not simple.get(note_id):
-            simple[note_id] = dict()
+    if source_label in found_labels:
+        return found_labels
 
-        simple[note_id][annotator] = label
-    return simple
+    found_labels.add(source_label)
+    for implied_label in implied_label_mappings.get(source_label, []):
+        _find_implied_labels(implied_label, implied_label_mappings, found_labels=found_labels)
+
+    return found_labels
 
 
-def simplify_file_id(file_id: str) -> str:
+def _find_implied_mentions(
+    mentions: types.Mentions, implied_label_mappings: types.ImpliedLabels
+) -> types.Mentions:
     """
-    TODO: deprecate, this is LabelStudio:UUID:i2b2 mapping dance logic
-
-    :param file_id: labelstudio-file_id.json.optional.extension.json
-    :return: simple filename like "file_id.json"
+    For every note, expands its labels into the set of all implied labels for that note.
     """
-    prefix = re.search("-", file_id).start()  # UUID split in LabelStudio
-    suffix = re.search(".json", file_id).start()
-    root = file_id[prefix + 1 : suffix]
-    return f"{root}.json"
+    found_mentions = types.Mentions()
+
+    for note_id, labels in mentions.items():
+        implied_mentions = found_mentions.setdefault(note_id, set())
+        for label in labels:
+            implied_mentions |= _find_implied_labels(label, implied_label_mappings)
+
+    return found_mentions
 
 
-def rollup_mentions(simple: dict, annotator: str, note_range: Container[int]) -> types.Mentions:
+def _convert_grouped_mentions(
+    mentions: types.Mentions, grouped_label_mappings: types.GroupedLabels
+) -> types.Mentions:
     """
-    :param simple: prepared map of files and annotations
-    :param annotator: an annotator name
-    :param note_range: collection of LabelStudio document ID
-    :return: dict keys=note_id, values=labels
+    For every note, converts all labels in a group into one label for the group name.
+
+    This is not recursive. (i.e. you can't have complicated grouping configs that combine)
     """
-    rollup = types.Mentions()
+    final_mentions = types.Mentions()
 
-    for note_id, values in simple["annotations"].items():
-        if note_id in note_range:
-            note_rollup = rollup.setdefault(note_id, set())
-            for annot in values.get(annotator, []):
-                note_rollup |= set(annot["labels"])
+    for note_id, labels in mentions.items():
+        for group_name, group_members in grouped_label_mappings.items():
+            if labels & group_members:
+                labels -= group_members
+                labels.add(group_name)
+        final_mentions[note_id] = labels
 
-    return rollup
+    return final_mentions
+
+
+def simplify_mentions(
+    annotations: types.ProjectAnnotations,
+    *,
+    implied_labels: types.ImpliedLabels,
+    grouped_labels: types.GroupedLabels,
+) -> None:
+    # ** Expand all implied labels.
+    annotations.mentions = {
+        annotator: _find_implied_mentions(mentions, implied_labels)
+        for annotator, mentions in annotations.mentions.items()
+    }
+
+    # ** Convert all grouped labels.
+    # First, calculate the new set of valid labels
+    annotations.labels |= set(grouped_labels.keys())
+    annotations.labels = annotations.labels.difference(*grouped_labels.values())
+    # Next, convert old labels to the new group labels
+    annotations.mentions = {
+        annotator: _convert_grouped_mentions(mentions, grouped_labels)
+        for annotator, mentions in annotations.mentions.items()
+    }

@@ -1,29 +1,30 @@
 from ctakesclient.typesystem import Span
 
+from chart_review import types
 
-def calc_term_freq(simple: dict, annotator: str) -> dict:
+
+def calc_term_freq(annotations: types.ProjectAnnotations, annotator: str) -> dict:
     """
     Calculate the frequency of TERMS highlighted for each LABEL (Cough, Dyspnea, etc).
-    :param simple: prepared map of files and annotations
+    :param annotations: prepared map of mentions
     :param annotator: an annotator name
     :return: dict key=TERM val= {label, list of chart_id}
     """
-    term_freq = dict()
-    for note_id, values in simple["annotations"].items():
-        if values.get(annotator):
-            for annot in values.get(annotator):
-                term = annot["text"].upper()
-                label = annot["labels"][0]
-                if len(annot["labels"]) > 1:
-                    raise Exception(f"note_id = {note_id} \t {values}")
+    original_text_mentions = annotations.original_text_mentions.get(annotator, {})
 
-                if term not in term_freq.keys():
-                    term_freq[term] = dict()
+    term_freq = {}
+    for note_id, text_labels in original_text_mentions.items():
+        for text_label in text_labels:
+            if not text_label.text:
+                continue
 
-                if label not in term_freq[term].keys():
-                    term_freq[term][label] = list()
+            term = text_label.text.upper()
+            term_counts = term_freq.setdefault(term, {})
 
-                term_freq[term][label].append(note_id)
+            for label in text_label.labels:
+                term_label_counts = term_counts.setdefault(label, [])
+                term_label_counts.append(note_id)
+
     return term_freq
 
 

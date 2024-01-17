@@ -10,7 +10,7 @@ import json
 ###############################################################################
 
 
-def read_json(path: str) -> dict:
+def read_json(path: str) -> dict | list[dict]:
     """
     Reads json from a file
     :param path: filesystem path

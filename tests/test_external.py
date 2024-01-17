@@ -24,42 +24,20 @@ class TestExternal(unittest.TestCase):
 
             self.assertEqual(
                 {
-                    "files": {1: 1, 2: 2, 3: 3},
-                    "annotations": {
-                        1: {
-                            "human": [
-                                {"labels": ["happy"], "text": "woo"},
-                                {"labels": ["sad"], "text": "sigh"},
-                            ],
-                            # icd10 labels are split into two lists,
-                            # because we used two different docrefs (anon & real)
-                            "icd10-doc": [
-                                {"labels": ["happy", "tired"]},
-                                {"labels": ["sad"]},
-                                {"labels": ["hungry"]},
-                            ],
-                            "icd10-enc": [
-                                {"labels": ["happy", "tired"]},
-                                {"labels": ["sad"]},
-                                {"labels": ["hungry"]},
-                            ],
-                        },
+                    "human": {
+                        1: {"happy", "sad"},
                         # This was a note that didn't appear in the icd10 external annotations
                         # (and also didn't have a positive label by the human reviewer).
                         # Just here to test that it didn't screw anything up.
-                        2: {
-                            "human": [],
-                        },
+                        2: set(),
                         # This was an external annotation that said "saw it,
                         # but no labels for this note"
-                        3: {
-                            "human": [],
-                            "icd10-doc": [],
-                            "icd10-enc": [],
-                        },
+                        3: set(),
                     },
+                    "icd10-doc": {1: {"happy", "hungry", "sad", "tired"}, 3: set()},
+                    "icd10-enc": {1: {"happy", "hungry", "sad", "tired"}, 3: set()},
                 },
-                reader.annotations,
+                reader.annotations.mentions,
             )
 
             # Confirm ranges got auto-detected for both human and icd10
