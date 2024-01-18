@@ -20,7 +20,7 @@ class TestCommandLine(unittest.TestCase):
     def test_accuracy(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             shutil.copytree(f"{DATA_DIR}/cold", tmpdir, dirs_exist_ok=True)
-            cli.main_cli(["accuracy", "--project-dir", tmpdir, "jill", "jane"])
+            cli.main_cli(["accuracy", "--project-dir", tmpdir, "--save", "jill", "jane"])
 
             accuracy_json = common.read_json(f"{tmpdir}/accuracy-jill-jane.json")
             self.assertEqual(
@@ -85,7 +85,7 @@ class TestCommandLine(unittest.TestCase):
     def test_ignored_ids(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             shutil.copytree(f"{DATA_DIR}/ignore", tmpdir, dirs_exist_ok=True)
-            cli.main_cli(["accuracy", "--project-dir", tmpdir, "allison", "adam"])
+            cli.main_cli(["accuracy", "--project-dir", tmpdir, "--save", "allison", "adam"])
 
             # Only two of the five notes should be considered, and we should have full agreement.
             accuracy_json = common.read_json(f"{tmpdir}/accuracy-allison-adam.json")

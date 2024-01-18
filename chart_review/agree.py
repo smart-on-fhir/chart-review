@@ -1,6 +1,7 @@
 from collections.abc import Collection, Iterable
+from typing import Union
 
-from chart_review import simplify, types
+from chart_review import types
 
 
 def confusion_matrix(
@@ -157,10 +158,10 @@ def score_reviewer(
 def csv_table(score: dict, class_labels: Iterable):
     table = list()
     table.append(csv_header(False, True))
-    table.append(csv_row_score(score))
+    table.append(csv_row_score(score, as_string=True))
 
     for label in sorted(class_labels):
-        table.append(csv_row_score(score[label], label))
+        table.append(csv_row_score(score[label], label, as_string=True))
     return "\n".join(table) + "\n"
 
 
@@ -181,16 +182,23 @@ def csv_header(pick_label=False, as_string=False):
     return "\t".join(header)
 
 
-def csv_row_score(score: dict, pick_label=None) -> str:
+def csv_row_score(
+    score: dict, pick_label: str = None, as_string: bool = False
+) -> Union[str, list[str]]:
     """
     Table Row entry
     F1, PPV (precision), Recall (sensitivity), True Pos, False Pos, False Neg
     :param score: dict result from F1 scoring
     :param pick_label: default= None means '*' all classes
+    :param as_string: whether to return a list of string scores or one single string
     :return: str representation of the score
     """
     row = [score[header] for header in csv_header()]
     row = [str(value) for value in row]
+
+    if not as_string:
+        return row
+
     row.append(pick_label if pick_label else "*")
     return "\t".join(row)
 

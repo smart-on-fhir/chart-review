@@ -1,6 +1,6 @@
 """Utility methods"""
 from enum import Enum, EnumMeta
-from typing import Optional
+from typing import Optional, Union
 from collections.abc import Iterable
 import logging
 import json
@@ -10,7 +10,7 @@ import json
 ###############################################################################
 
 
-def read_json(path: str) -> dict | list[dict]:
+def read_json(path: str) -> Union[dict, list[dict]]:
     """
     Reads json from a file
     :param path: filesystem path

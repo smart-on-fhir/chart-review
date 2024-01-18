@@ -5,6 +5,7 @@ requires-python = ">= 3.9"
 dependencies = [
     "ctakesclient",
     "pyyaml >= 6",
+    "rich",
 ]
 description = "Medical Record Chart Review Calculator"
 readme = "README.md"

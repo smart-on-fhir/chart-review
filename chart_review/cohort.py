@@ -130,11 +130,11 @@ class CohortReader:
         table.append(agree.csv_header(False, True))
 
         score = self.score_reviewer(truth, annotator, note_range)
-        table.append(agree.csv_row_score(score))
+        table.append(agree.csv_row_score(score, as_string=True))
 
         for label in self.class_labels:
             score = self.score_reviewer(truth, annotator, note_range, label)
-            table.append(agree.csv_row_score(score, label))
+            table.append(agree.csv_row_score(score, label, as_string=True))
 
         return "\n".join(table) + "\n"
 
