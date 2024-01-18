@@ -23,7 +23,7 @@ def accuracy(reader: cohort.CohortReader, truth: str, annotator: str) -> None:
     table = agree.score_matrix(reader.confusion_matrix(truth, annotator, note_range))
 
     # Now do each labels separately
-    for label in reader.class_labels:
+    for label in sorted(reader.class_labels):
         table[label] = agree.score_matrix(
             reader.confusion_matrix(truth, annotator, note_range, label)
         )

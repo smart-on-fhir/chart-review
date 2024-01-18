@@ -47,6 +47,14 @@ class ProjectConfig:
                 value = {value}
             self.implied_labels[key] = set(value)
 
+        # ** Grouped labels **
+        self.grouped_labels = types.GroupedLabels()
+        for key, value in self._data.get("grouped-labels", {}).items():
+            # Coerce single labels into a set
+            if not isinstance(value, list):
+                value = {value}
+            self.grouped_labels[key] = set(value)
+
     def path(self, filename: str) -> str:
         return os.path.join(self.project_dir, filename)
 
@@ -86,8 +94,8 @@ class ProjectConfig:
             return []
 
     @property
-    def class_labels(self) -> list[str]:
-        return self._data.setdefault("labels", [])
+    def class_labels(self) -> types.LabelSet:
+        return set(self._data.setdefault("labels", []))
 
     @property
     def ignore(self) -> set[str]:

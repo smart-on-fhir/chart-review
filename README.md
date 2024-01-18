@@ -128,7 +128,7 @@ class **Cohort** defines the base class to analyze study cohorts.
 `simplify.py`
 * **rollup**(...) : return _LabelStudioExport_ with 1 "rollup" annotation replacing individual mentions
 
-`mentions.py` (methods are rarely used currently)
+`term_freq.py` (methods are rarely used currently)
 * overlaps(...) : test if two mentions overlap (True/False)
 * calc_term_freq(...) : term frequency of highlighted mention text
 * calc_term_label_confusion : report of exact mentions with 2+ class_labels

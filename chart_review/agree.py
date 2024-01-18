@@ -3,73 +3,31 @@ from collections.abc import Collection, Iterable
 from chart_review import simplify, types
 
 
-def _find_implied_labels(
-    source_label: str, implied_label_mappings: types.ImpliedLabels, found_labels: set[str] = None
-) -> set[str]:
-    """
-    Expands the source label into the set of all implied labels.
-
-    Don't bother passing found_labels in, that's just a helper arg for recursion.
-    """
-    if found_labels is None:
-        found_labels = set()
-
-    if source_label in found_labels:
-        return found_labels
-
-    found_labels.add(source_label)
-    for implied_label in implied_label_mappings.get(source_label, []):
-        _find_implied_labels(implied_label, implied_label_mappings, found_labels=found_labels)
-
-    return found_labels
-
-
-def _find_implied_mentions(
-    mentions: types.Mentions, implied_label_mappings: types.ImpliedLabels
-) -> types.Mentions:
-    """
-    For every note, expands its labels into the set of all implied labels for that note.
-    """
-    found_mentions = types.Mentions()
-
-    for note_id, labels in mentions.items():
-        implied_mentions = found_mentions.setdefault(note_id, set())
-        for label in labels:
-            implied_mentions |= _find_implied_labels(label, implied_label_mappings)
-
-    return found_mentions
-
-
 def confusion_matrix(
-    simple: dict,
+    annotations: types.ProjectAnnotations,
     truth: str,
     annotator: str,
     note_range: Collection[int],
     labels: Iterable[str] = None,
-    implied_labels: types.ImpliedLabels = None,
 ) -> dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
     https://www.researchgate.net/figure/Calculation-of-sensitivity-specificity-and-positive-and-negative-predictive_fig1_49650721
 
     This is the rollup of counting each symptom only once, not multiple times for a single patient.
-    :param simple: prepared map of files and annotations
+    :param annotations: prepared map of annotators & mentions
     :param truth: annotator to use as the ground truth
     :param annotator: another annotator to compare with truth
     :param note_range: collection of LabelStudio document ID
     :param labels: (optional) collection of labels to consider examining
-    :param implied_labels: (optional) ranking of labels from specific -> less specific
     :return: Dict
         "TP": True Positives (agree on positive+ symptom)
         "FP": False Positives (annotator said positive+, truth said No)
         "FN": False Negative (truth said positive+, annotator said No)
         "TN": True Negative (truth and annotator both said No)
     """
-    truth_mentions = simplify.rollup_mentions(simple, truth, note_range)
-    annotator_mentions = simplify.rollup_mentions(simple, annotator, note_range)
-    if implied_labels:
-        truth_mentions = _find_implied_mentions(truth_mentions, implied_labels)
-        annotator_mentions = _find_implied_mentions(annotator_mentions, implied_labels)
+    truth_mentions = annotations.mentions.get(truth, types.Mentions())
+    annotator_mentions = annotations.mentions.get(annotator, types.Mentions())
 
     # Only examine labels that were used by any compared annotators at least once
     label_set = set()
@@ -176,19 +134,23 @@ def avg_scores(first: dict, second: dict, sig_digits=3) -> dict:
 
 
 def score_reviewer(
-    simple: dict, truth: str, annotator: str, note_range: Iterable, labels: Iterable[str] = None
+    annotations: types.ProjectAnnotations,
+    truth: str,
+    annotator: str,
+    note_range: Collection[int],
+    labels: Iterable[str] = None,
 ) -> dict:
     """
     Score reliability of an annotator against a truth annotator.
 
-    :param simple: prepared map of files and annotations
+    :param annotations: prepared map of annotators and mentions
     :param truth: annotator to use as the ground truth
     :param annotator: another annotator to compare with truth
     :param note_range: collection of LabelStudio document ID
-    :param pick_label: (optional) of the CLASS_LABEL to score separately
+    :param labels: (optional) set of labels to score
     :return: dict, keys f1, precision, recall and vals= %score
     """
-    truth_matrix = confusion_matrix(simple, truth, annotator, note_range, labels=labels)
+    truth_matrix = confusion_matrix(annotations, truth, annotator, note_range, labels=labels)
     return score_matrix(truth_matrix)
 
 
@@ -197,7 +159,7 @@ def csv_table(score: dict, class_labels: Iterable):
     table.append(csv_header(False, True))
     table.append(csv_row_score(score))
 
-    for label in class_labels:
+    for label in sorted(class_labels):
         table.append(csv_row_score(score[label], label))
     return "\n".join(table) + "\n"
 
