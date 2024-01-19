@@ -1,6 +1,5 @@
 [project]
 name = "chart-review"
-version = "0.0.1"
 requires-python = ">= 3.9"
 dependencies = [
     "ctakesclient",
@@ -16,10 +15,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
+dynamic = ["version"]
 
 [project.urls]
 Home = "https://smarthealthit.org/cumulus-a-universal-sidecar-for-a-smart-learning-healthcare-system/"
-Documentation = "https://docs.smarthealthit.org/cumulus/"
+Documentation = "https://docs.smarthealthit.org/cumulus/chart-review/"
 Source = "https://github.com/smart-on-fhir/chart-review"
 
 [project.scripts]
@@ -46,4 +46,9 @@ dev = [
 ]
 
 [tool.flit.sdist]
-include = ["chart_review/"]
+include = [
+    "docs/",
+    "tests/",
+    "LICENSE",
+    "*.md",
+]
