@@ -4,7 +4,7 @@ from chart_review import config
 from chart_review import external
 from chart_review.cohort import CohortReader
 
-test_project_dir = '/opt/labelstudio/suicide-icd10/jan22'
+test_project_dir = '/opt/labelstudio/suicide-icd10/jan22-without-history'
 
 class TestLabelstudio2Sql(unittest.TestCase):
 
@@ -88,7 +88,7 @@ class TestLabelstudio2Sql(unittest.TestCase):
         return ctas + '\n,'.join(as_sql) + schema
 
     def test_sql(self):
-        print(self.to_sql('suicide_icd10__psm_notes_balanced_oct26_mentions'))
+        print(self.to_sql('suicide_icd10__psm_notes_balanced_oct26_mentions_jan22'))
 
 
 if __name__ == '__main__':
