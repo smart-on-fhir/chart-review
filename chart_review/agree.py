@@ -86,29 +86,56 @@ def append_matrix(first: dict, second: dict) -> dict:
     return added
 
 
+def score_kappa(matrix: dict) -> float:
+    """
+    Computes Cohen kappa for pair-wise annotators.
+    https://en.wikipedia.org/wiki/Cohen%27s_kappa
+
+    :param matrix: confusion matrix with TN/TP/FN/FP values
+    :return: Cohen kappa statistic
+    """
+    tp = len(matrix["TP"])  # true positive
+    tn = len(matrix["TN"])  # true negative
+    fp = len(matrix["FP"])  # false positive
+    fn = len(matrix["FN"])  # false negative
+    total = tp + tn + fp + fn
+
+    # observed agreement A (Po)
+    observed = (tp + tn) / total
+
+    # expected agreement E (Pe)
+    expected_pos = ((tp + fp) / total) * ((tp + fn) / total)
+    expected_neg = ((tn + fp) / total) * ((tn + fn) / total)
+    expected = expected_pos + expected_neg
+
+    return (observed - expected) / (1 - expected)
+
+
 def score_matrix(matrix: dict, sig_digits=3) -> dict:
     """
-    Score F1 measure with precision (PPV) and recall (sensitivity).
+    Score F1 and Kappa measures with precision (PPV) and recall (sensitivity).
     F1 deliberately ignores "True Negatives" because TN inflates scoring (AUROC)
     @return: dict with keys {'f1', 'precision', 'recall'} vals are %score
     """
-    true_pos = matrix["TP"]
-    true_neg = matrix["TN"]
-    false_pos = matrix["FP"]
-    false_neg = matrix["FN"]
+    true_pos = len(matrix["TP"])
+    true_neg = len(matrix["TN"])
+    false_pos = len(matrix["FP"])
+    false_neg = len(matrix["FN"])
 
-    if 0 == len(true_pos) or 0 == len(true_neg):
+    if 0 == true_pos or 0 == true_neg:
         sens = 0
         spec = 0
         ppv = 0
         npv = 0
         f1 = 0
+        kappa = 0
     else:
-        sens = len(true_pos) / (len(true_pos) + len(false_neg))
-        spec = len(true_neg) / (len(true_neg) + len(false_pos))
-        ppv = len(true_pos) / (len(true_pos) + len(false_pos))
-        npv = len(true_neg) / (len(true_neg) + len(false_neg))
+        sens = true_pos / (true_pos + false_neg)
+        spec = true_neg / (true_neg + false_pos)
+        ppv = true_pos / (true_pos + false_pos)
+        npv = true_neg / (true_neg + false_neg)
         f1 = (2 * ppv * sens) / (ppv + sens)
+        kappa = score_kappa(matrix)
 
     return {
         "F1": round(f1, sig_digits),
@@ -116,10 +143,11 @@ def score_matrix(matrix: dict, sig_digits=3) -> dict:
         "Spec": round(spec, sig_digits),
         "PPV": round(ppv, sig_digits),
         "NPV": round(npv, sig_digits),
-        "TP": len(true_pos),
-        "FP": len(false_pos),
-        "FN": len(false_neg),
-        "TN": len(true_neg),
+        "κ": round(kappa, sig_digits),
+        "TP": true_pos,
+        "FP": false_pos,
+        "FN": false_neg,
+        "TN": true_neg,
     }
 
 
@@ -172,7 +200,7 @@ def csv_header(pick_label=False, as_string=False):
     :param pick_label: default= None
     :return: header
     """
-    as_list = ["F1", "Sens", "Spec", "PPV", "NPV", "TP", "FN", "TN", "FP"]
+    as_list = ["F1", "Sens", "Spec", "PPV", "NPV", "κ", "TP", "FN", "TN", "FP"]
 
     if not as_string:
         return as_list

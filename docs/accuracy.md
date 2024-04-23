@@ -17,14 +17,13 @@ your accuracy scores will be printed to the console.
 ## Example
 
 ```shell
-$ chart-review accuracy jane john
-accuracy-jane-john:
-F1     Sens   Spec   PPV    NPV    TP  FN  TN  FP  Label           
-0.929  0.958  0.908  0.901  0.961  91  4   99  10  *               
-0.895  0.895  0.938  0.895  0.938  17  2   30  2   cough     
-0.815  0.917  0.897  0.733  0.972  11  1   35  4   fever  
-0.959  1.0    0.812  0.921  1.0    35  0   13  3   headache   
-0.966  0.966  0.955  0.966  0.955  28  1   21  1   stuffy-nose
+$ chart-review accuracy jill jane
+accuracy-jill-jane:
+F1     Sens  Spec  PPV  NPV   κ      TP  FN  TN  FP  Label   
+0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
+0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   
+1.0    1.0   1.0   1.0  1.0   1.0    2   0   1   0   Fatigue 
+0      0     0     0    0     0      0   0   1   2   Headache
 ```
 
 ## Options
