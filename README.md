@@ -1,6 +1,6 @@
 # Chart Review
 
-**Measure agreement between chart annotators.**
+**Measure agreement between chart reviewers.**
 
 Whether your chart annotations come from humans, machine-learning, or coded data like ICD-10,
 `chart-review` can compare them to reveal interesting statistics like:
@@ -28,13 +28,13 @@ For guides on installing & using Chart Review,
 $ ls
 config.yaml  labelstudio-export.json
 
-$ chart-review accuracy jane john
-accuracy-jane-john:
-F1     Sens  Spec  PPV  NPV  TP  FN  TN  FP  Label
-0.889  0.8   1.0   1.0  0.5  4   1   1   0   *
-1.0    1.0   1.0   1.0  1.0  1   0   1   0   Cough
-0      0     0     0    0    2   0   0   0   Fatigue
-0      0     0     0    0    1   1   0   0   Headache
+$ chart-review accuracy jill jane
+accuracy-jill-jane:
+F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label   
+0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
+0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   
+1.0    1.0   1.0   1.0  1.0   1.0    2   0   1   0   Fatigue 
+0      0     0     0    0     0      0   0   1   2   Headache
 ```
 
 ## Contributing

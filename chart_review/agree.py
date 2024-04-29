@@ -143,7 +143,7 @@ def score_matrix(matrix: dict, sig_digits=3) -> dict:
         "Spec": round(spec, sig_digits),
         "PPV": round(ppv, sig_digits),
         "NPV": round(npv, sig_digits),
-        "κ": round(kappa, sig_digits),
+        "Kappa": round(kappa, sig_digits),
         "TP": true_pos,
         "FP": false_pos,
         "FN": false_neg,
@@ -200,7 +200,7 @@ def csv_header(pick_label=False, as_string=False):
     :param pick_label: default= None
     :return: header
     """
-    as_list = ["F1", "Sens", "Spec", "PPV", "NPV", "κ", "TP", "FN", "TN", "FP"]
+    as_list = ["F1", "Sens", "Spec", "PPV", "NPV", "Kappa", "TP", "FN", "TN", "FP"]
 
     if not as_string:
         return as_list
