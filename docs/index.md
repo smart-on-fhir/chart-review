@@ -7,7 +7,7 @@ has_children: true
 
 # Chart Review
 
-**Measure agreement between chart annotators.**
+**Measure agreement between chart reviewers.**
 
 Whether your chart annotations come from humans, machine-learning, or coded data like ICD-10,
 Chart Review can compare them to reveal interesting statistics like:

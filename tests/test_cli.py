@@ -30,7 +30,7 @@ class TestCommandLine(unittest.TestCase):
                     "Spec": 0.6,
                     "PPV": 0.6,
                     "NPV": 0.75,
-                    "κ": 0.341,
+                    "Kappa": 0.341,
                     "TP": 3,
                     "FN": 1,
                     "TN": 3,
@@ -45,7 +45,7 @@ class TestCommandLine(unittest.TestCase):
                         "Spec": 1.0,
                         "TN": 1,
                         "TP": 1,
-                        "κ": 0.4,
+                        "Kappa": 0.4,
                     },
                     "Fatigue": {
                         "F1": 1.0,
@@ -57,7 +57,7 @@ class TestCommandLine(unittest.TestCase):
                         "Spec": 1.0,
                         "TN": 1,
                         "TP": 2,
-                        "κ": 1.0,
+                        "Kappa": 1.0,
                     },
                     "Headache": {
                         "F1": 0,
@@ -69,7 +69,7 @@ class TestCommandLine(unittest.TestCase):
                         "Spec": 0,
                         "TN": 1,
                         "TP": 0,
-                        "κ": 0,
+                        "Kappa": 0,
                     },
                 },
                 accuracy_json,
@@ -77,7 +77,7 @@ class TestCommandLine(unittest.TestCase):
 
             accuracy_csv = common.read_text(f"{tmpdir}/accuracy-jill-jane.csv")
             self.assertEqual(
-                """F1	Sens	Spec	PPV	NPV	κ	TP	FN	TN	FP	Label
+                """F1	Sens	Spec	PPV	NPV	Kappa	TP	FN	TN	FP	Label
 0.667	0.75	0.6	0.6	0.75	0.341	3	1	3	2	*
 0.667	0.5	1.0	1.0	0.5	0.4	1	1	1	0	Cough
 1.0	1.0	1.0	1.0	1.0	1.0	2	0	1	0	Fatigue
