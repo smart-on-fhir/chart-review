@@ -13,7 +13,8 @@ Whether your chart annotations come from humans, machine-learning, or coded data
 Chart Review can compare them to reveal interesting statistics like:
 
 **Accuracy**
-* F1-score ([agreement](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1090460/))
+* [F1-score](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1090460/) (agreement)
+* [Cohen's Kappa](https://en.wikipedia.org/wiki/Cohen's_kappa) (agreement)
 * [Sensitivity and Specificity](https://en.wikipedia.org/wiki/Sensitivity_and_specificity)
 * [Positive (PPV) or Negative Predictive Value (NPV)](https://en.wikipedia.org/wiki/Positive_and_negative_predictive_values#Relationship)
 * False Negative Rate (FNR)
