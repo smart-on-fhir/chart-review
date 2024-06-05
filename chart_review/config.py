@@ -35,7 +35,7 @@ class ProjectConfig:
 
         # ** Note ranges **
         # Handle some extra syntax like 1-3 == [1, 2, 3]
-        self.note_ranges = self._data.get("ranges", {})
+        self.note_ranges: dict[str, list[int]] = self._data.get("ranges", {})
         for key, values in self.note_ranges.items():
             self.note_ranges[key] = list(self._parse_note_range(values))
 

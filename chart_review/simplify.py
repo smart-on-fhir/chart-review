@@ -22,7 +22,7 @@ def simplify_export(
     for entry in exported_json:
         note_id = int(entry.get("id"))
 
-        for annot in entry.get("annotations"):
+        for annot in entry.get("annotations", []):
             completed_by = annot.get("completed_by")
             if completed_by not in proj_config.annotators:
                 continue  # we don't know who this is!
@@ -30,7 +30,7 @@ def simplify_export(
             # Grab all valid mentions for this annotator & note
             labels = types.LabelSet()
             text_tags = []
-            for result in annot.get("result"):
+            for result in annot.get("result", []):
                 result_value = result.get("value", {})
                 result_text = result_value.get("text")
                 result_labels = set(result_value.get("labels", []))

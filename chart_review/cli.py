@@ -5,6 +5,7 @@ import sys
 
 from chart_review import cohort, config
 from chart_review.commands.accuracy import accuracy
+from chart_review.commands.info import info
 
 
 ###############################################################################
@@ -35,6 +36,7 @@ def define_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(required=True)
 
     add_accuracy_subparser(subparsers)
+    add_info_subparser(subparsers)
 
     return parser
 
@@ -59,6 +61,25 @@ def run_accuracy(args: argparse.Namespace) -> None:
     proj_config = config.ProjectConfig(args.project_dir, config_path=args.config)
     reader = cohort.CohortReader(proj_config)
     accuracy(reader, args.truth_annotator, args.annotator, save=args.save)
+
+
+###############################################################################
+#
+# Info
+#
+###############################################################################
+
+
+def add_info_subparser(subparsers) -> None:
+    parser = subparsers.add_parser("info")
+    add_project_args(parser)
+    parser.set_defaults(func=run_info)
+
+
+def run_info(args: argparse.Namespace) -> None:
+    proj_config = config.ProjectConfig(args.project_dir, config_path=args.config)
+    reader = cohort.CohortReader(proj_config)
+    info(reader)
 
 
 ###############################################################################

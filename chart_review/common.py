@@ -23,7 +23,7 @@ def read_json(path: str) -> Union[dict, list[dict]]:
         return json.load(f, strict=False)
 
 
-def write_json(path: str, data: dict, indent: Optional[int] = 4) -> None:
+def write_json(path: str, data: dict | list, indent: Optional[int] = 4) -> None:
     """
     Writes data to the given path, in json format
     :param path: filesystem path

@@ -43,9 +43,9 @@ class TestExternal(unittest.TestCase):
             # Confirm ranges got auto-detected for both human and icd10
             self.assertEqual(
                 {
-                    "human": [1, 2, 3],
-                    "icd10-doc": [1, 3],
-                    "icd10-enc": [1, 3],
+                    "human": {1, 2, 3},
+                    "icd10-doc": {1, 3},
+                    "icd10-enc": {1, 3},
                 },
                 reader.note_range,
             )

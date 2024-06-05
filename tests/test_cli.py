@@ -1,5 +1,7 @@
 """Tests for cli.py"""
 
+import contextlib
+import io
 import os
 import shutil
 import tempfile
@@ -86,18 +88,26 @@ class TestCommandLine(unittest.TestCase):
                 accuracy_csv,
             )
 
-    def test_ignored_ids(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            shutil.copytree(f"{DATA_DIR}/ignore", tmpdir, dirs_exist_ok=True)
-            cli.main_cli(["accuracy", "--project-dir", tmpdir, "--save", "allison", "adam"])
+    def test_info(self):
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            cli.main_cli(["info", "--project-dir", f"{DATA_DIR}/cold"])
 
-            # Only two of the five notes should be considered, and we should have full agreement.
-            accuracy_json = common.read_json(f"{tmpdir}/accuracy-allison-adam.json")
-            self.assertEqual(1, accuracy_json["F1"])
-            self.assertEqual(2, accuracy_json["TP"])
-            self.assertEqual(0, accuracy_json["FN"])
-            self.assertEqual(2, accuracy_json["TN"])
-            self.assertEqual(0, accuracy_json["FP"])
+        self.assertEqual(
+            """Annotations:                         
+╭──────────┬─────────────┬──────────╮
+│Annotator │ Chart Count │ Chart IDs│
+├──────────┼─────────────┼──────────┤
+│jane      │ 3           │ 1, 3–4   │
+│jill      │ 4           │ 1–4      │
+│john      │ 3           │ 1–2, 4   │
+╰──────────┴─────────────┴──────────╯
+
+Labels:
+Cough, Fatigue, Headache
+""",  # noqa: W291
+            stdout.getvalue(),
+        )
 
     def test_custom_config(self):
         with tempfile.TemporaryDirectory() as tmpdir:
