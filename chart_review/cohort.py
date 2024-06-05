@@ -32,18 +32,6 @@ class CohortReader:
         for name, value in self.config.external_annotations.items():
             external.merge_external(self.annotations, saved, self.project_dir, name, value)
 
-        # Parse ignored IDs (might be note IDs, might be external IDs)
-        self.ignored_notes: set[int] = set()
-        for ignore_id in self.config.ignore:
-            ls_id = external.external_id_to_label_studio_id(saved, str(ignore_id))
-            if ls_id is None:
-                if isinstance(ignore_id, int):
-                    ls_id = ignore_id  # must be direct note ID
-                else:
-                    # Must just be over-zealous excluding (like automatically from SQL)
-                    continue
-            self.ignored_notes.add(ls_id)
-
         # Consolidate/expand mentions based on config
         simplify.simplify_mentions(
             self.annotations,
@@ -51,12 +39,36 @@ class CohortReader:
             grouped_labels=self.config.grouped_labels,
         )
 
+        # Calculate the final set of note ranges for each annotator
+        self.note_range = self._collect_note_ranges(saved)
+
+    def _collect_note_ranges(self, exported_json: list[dict]) -> dict[str, set[int]]:
         # Detect note ranges if they were not defined in the project config
         # (i.e. default to the full set of annotated notes)
-        self.note_range = self.config.note_ranges
+        note_ranges = {k: set(v) for k, v in self.config.note_ranges.items()}
         for annotator, annotator_mentions in self.annotations.mentions.items():
-            if annotator not in self.note_range:
-                self.note_range[annotator] = sorted(annotator_mentions.keys())
+            if annotator not in note_ranges:
+                note_ranges[annotator] = set(annotator_mentions.keys())
+
+        # Parse ignored IDs (might be note IDs, might be external IDs)
+        ignored_notes: set[int] = set()
+        for ignore_id in self.config.ignore:
+            ls_id = external.external_id_to_label_studio_id(exported_json, str(ignore_id))
+            if ls_id is None:
+                if isinstance(ignore_id, int):
+                    ls_id = ignore_id  # must be direct note ID
+                else:
+                    # Must just be over-zealous excluding (like automatically from SQL)
+                    continue
+            ignored_notes.add(ls_id)
+
+        # Remove any invalid (ignored, non-existent) notes from the range sets
+        all_ls_notes = {int(entry["id"]) for entry in exported_json if "id" in entry}
+        for note_ids in note_ranges.values():
+            note_ids.difference_update(ignored_notes)
+            note_ids.intersection_update(all_ls_notes)
+
+        return note_ranges
 
     @property
     def class_labels(self):
@@ -103,7 +115,7 @@ class CohortReader:
         :return: dict
         """
         labels = self._select_labels(label_pick)
-        note_range = set(guard_iter(note_range)) - self.ignored_notes
+        note_range = set(guard_iter(note_range))
         return agree.confusion_matrix(
             self.annotations,
             truth,
@@ -122,7 +134,7 @@ class CohortReader:
         :return: dict, keys f1, precision, recall and vals= %score
         """
         labels = self._select_labels(label_pick)
-        note_range = set(guard_iter(note_range)) - self.ignored_notes
+        note_range = set(guard_iter(note_range))
         return agree.score_reviewer(self.annotations, truth, annotator, note_range, labels=labels)
 
     def score_reviewer_table_csv(self, truth: str, annotator: str, note_range) -> str:
