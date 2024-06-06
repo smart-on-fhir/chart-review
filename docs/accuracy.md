@@ -18,7 +18,10 @@ your accuracy scores will be printed to the console.
 
 ```shell
 $ chart-review accuracy jill jane
-accuracy-jill-jane:
+Comparing 3 charts (1, 3–4)
+Truth: jill
+Annotator: jane
+
 F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label   
 0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
 0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   

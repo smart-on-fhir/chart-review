@@ -18,6 +18,7 @@ def simplify_export(
     """
     annotations = types.ProjectAnnotations()
     annotations.labels = proj_config.class_labels
+    grab_all_labels = not annotations.labels
 
     for entry in exported_json:
         note_id = int(entry.get("id"))
@@ -37,6 +38,9 @@ def simplify_export(
 
                 labels |= result_labels
                 text_tags.append(types.LabeledText(result_text, result_labels))
+
+            if grab_all_labels:
+                annotations.labels |= labels
 
             # Store these mentions in the main annotations list, by author & note
             annotator = proj_config.annotators[completed_by]
