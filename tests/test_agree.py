@@ -26,7 +26,7 @@ class TestAgreement(unittest.TestCase):
         (
             "bob",
             "alice",
-            None,
+            {},
             {
                 "FN": [{1: "Headache"}, {2: "Cough"}],
                 "FP": [{1: "Cough"}],

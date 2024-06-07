@@ -16,6 +16,37 @@ class TestCohort(unittest.TestCase):
         super().setUp()
         self.maxDiff = None
 
+    def test_no_specified_label(self):
+        """Verify that no label setup grabs all found labels from the export."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json",
+                {
+                    "annotators": {"bob": 1, "alice": 2},
+                },
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "annotations": [
+                            {
+                                "completed_by": 1,
+                                "result": [
+                                    {
+                                        "value": {"labels": ["Label A", "Label B"]},
+                                    }
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            )
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+        self.assertEqual({"Label A", "Label B"}, reader.class_labels)
+
     def test_ignored_ids(self):
         reader = cohort.CohortReader(config.ProjectConfig(f"{DATA_DIR}/ignore"))
 

@@ -93,14 +93,12 @@ class CohortReader:
     def calc_term_label_confusion(self, annotator) -> dict:
         return term_freq.calc_term_label_confusion(self.calc_term_freq(annotator))
 
-    def _select_labels(self, label_pick: str = None) -> Optional[Iterable[str]]:
+    def _select_labels(self, label_pick: str = None) -> Iterable[str]:
         if label_pick:
             guard_in(label_pick, self.class_labels)
             return [label_pick]
-        elif self.class_labels:
-            return self.class_labels
         else:
-            return None
+            return self.class_labels
 
     def confusion_matrix(
         self, truth: str, annotator: str, note_range: Iterable, label_pick: str = None

@@ -5,7 +5,7 @@ import os
 import rich
 import rich.table
 
-from chart_review import agree, cohort, common
+from chart_review import agree, cohort, common, console_utils
 
 
 def accuracy(reader: cohort.CohortReader, truth: str, annotator: str, save: bool = False) -> None:
@@ -19,6 +19,13 @@ def accuracy(reader: cohort.CohortReader, truth: str, annotator: str, save: bool
     :param annotator: the other annotator to compare against truth
     :param save: whether to write the results to disk vs just printing them
     """
+    if truth not in reader.note_range:
+        print(f"Unrecognized annotator '{truth}'")
+        return
+    if annotator not in reader.note_range:
+        print(f"Unrecognized annotator '{annotator}'")
+        return
+
     # Grab the intersection of ranges
     note_range = set(reader.note_range[truth])
     note_range &= set(reader.note_range[annotator])
@@ -32,17 +39,23 @@ def accuracy(reader: cohort.CohortReader, truth: str, annotator: str, save: bool
             reader.confusion_matrix(truth, annotator, note_range, label)
         )
 
-    result_name = f"accuracy-{truth}-{annotator}"
+    note_count = len(note_range)
+    chart_word = "chart" if note_count == 1 else "charts"
+    pretty_ranges = f" ({console_utils.pretty_note_range(note_range)})" if note_count > 0 else ""
+    print(f"Comparing {note_count} {chart_word}{pretty_ranges}")
+    print(f"Truth: {truth}")
+    print(f"Annotator: {annotator}")
+    print()
+
     if save:
         # Write the results out to disk
-        output_stem = os.path.join(reader.project_dir, result_name)
+        output_stem = os.path.join(reader.project_dir, f"accuracy-{truth}-{annotator}")
         common.write_json(f"{output_stem}.json", table)
         print(f"Wrote {output_stem}.json")
         common.write_text(f"{output_stem}.csv", agree.csv_table(table, reader.class_labels))
         print(f"Wrote {output_stem}.csv")
     else:
         # Print the results out to the console
-        print(f"{result_name}:")
         rich_table = rich.table.Table(*agree.csv_header(), "Label", box=None, pad_edge=False)
         rich_table.add_row(*agree.csv_row_score(table), "*")
         for label in sorted(reader.class_labels):
