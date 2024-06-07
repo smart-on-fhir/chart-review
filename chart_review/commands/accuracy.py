@@ -1,11 +1,12 @@
 """Methods for high-level accuracy calculations."""
 
+import argparse
 import os
 
 import rich
 import rich.table
 
-from chart_review import agree, cohort, common, console_utils
+from chart_review import agree, cli_utils, cohort, common, config, console_utils
 
 
 def accuracy(reader: cohort.CohortReader, truth: str, annotator: str, save: bool = False) -> None:
@@ -61,3 +62,19 @@ def accuracy(reader: cohort.CohortReader, truth: str, annotator: str, save: bool
         for label in sorted(reader.class_labels):
             rich_table.add_row(*agree.csv_row_score(table[label]), label)
         rich.get_console().print(rich_table)
+
+
+def make_subparser(parser: argparse.ArgumentParser) -> None:
+    cli_utils.add_project_args(parser)
+    parser.add_argument(
+        "--save", action="store_true", default=False, help="Write stats to CSV & JSON files"
+    )
+    parser.add_argument("truth_annotator")
+    parser.add_argument("annotator")
+    parser.set_defaults(func=run_accuracy)
+
+
+def run_accuracy(args: argparse.Namespace) -> None:
+    proj_config = config.ProjectConfig(args.project_dir, config_path=args.config)
+    reader = cohort.CohortReader(proj_config)
+    accuracy(reader, args.truth_annotator, args.annotator, save=args.save)

@@ -25,12 +25,12 @@ class CohortReader:
         self.project_dir = self.config.project_dir
 
         # Load exported annotations
-        saved = common.read_json(self.config.path("labelstudio-export.json"))
-        self.annotations = simplify.simplify_export(saved, self.config)
+        self.ls_export = common.read_json(self.config.path("labelstudio-export.json"))
+        self.annotations = simplify.simplify_export(self.ls_export, self.config)
 
         # Load external annotations (i.e. from NLP tags or ICD10 codes)
         for name, value in self.config.external_annotations.items():
-            external.merge_external(self.annotations, saved, self.project_dir, name, value)
+            external.merge_external(self.annotations, self.ls_export, self.project_dir, name, value)
 
         # Consolidate/expand mentions based on config
         simplify.simplify_mentions(
@@ -40,15 +40,19 @@ class CohortReader:
         )
 
         # Calculate the final set of note ranges for each annotator
-        self.note_range = self._collect_note_ranges(saved)
+        self.note_range, self.ignored_notes = self._collect_note_ranges(self.ls_export)
 
-    def _collect_note_ranges(self, exported_json: list[dict]) -> dict[str, set[int]]:
+    def _collect_note_ranges(
+        self, exported_json: list[dict]
+    ) -> tuple[dict[str, set[int]], set[int]]:
         # Detect note ranges if they were not defined in the project config
         # (i.e. default to the full set of annotated notes)
         note_ranges = {k: set(v) for k, v in self.config.note_ranges.items()}
         for annotator, annotator_mentions in self.annotations.mentions.items():
             if annotator not in note_ranges:
                 note_ranges[annotator] = set(annotator_mentions.keys())
+
+        all_ls_notes = {int(entry["id"]) for entry in exported_json if "id" in entry}
 
         # Parse ignored IDs (might be note IDs, might be external IDs)
         ignored_notes: set[int] = set()
@@ -60,15 +64,15 @@ class CohortReader:
                 else:
                     # Must just be over-zealous excluding (like automatically from SQL)
                     continue
-            ignored_notes.add(ls_id)
+            if ls_id in all_ls_notes:
+                ignored_notes.add(ls_id)
 
         # Remove any invalid (ignored, non-existent) notes from the range sets
-        all_ls_notes = {int(entry["id"]) for entry in exported_json if "id" in entry}
         for note_ids in note_ranges.values():
             note_ids.difference_update(ignored_notes)
             note_ids.intersection_update(all_ls_notes)
 
-        return note_ranges
+        return note_ranges, ignored_notes
 
     @property
     def class_labels(self):
