@@ -29,18 +29,14 @@ class TestInfo(unittest.TestCase):
         stdout = self.grab_output("--project-dir", f"{DATA_DIR}/cold")
 
         self.assertEqual(
-            """Annotations:                         
-╭──────────┬─────────────┬──────────╮
-│Annotator │ Chart Count │ Chart IDs│
-├──────────┼─────────────┼──────────┤
-│jane      │ 3           │ 1, 3–4   │
-│jill      │ 4           │ 1–4      │
-│john      │ 3           │ 1–2, 4   │
-╰──────────┴─────────────┴──────────╯
-
-Labels:
-Cough, Fatigue, Headache
-""",  # noqa: W291
+            """╭───────────┬─────────────┬───────────╮
+│ Annotator │ Chart Count │ Chart IDs │
+├───────────┼─────────────┼───────────┤
+│ jane      │ 3           │ 1, 3–4    │
+│ jill      │ 4           │ 1–4       │
+│ john      │ 3           │ 1–2, 4    │
+╰───────────┴─────────────┴───────────╯
+""",
             stdout,
         )
 
@@ -48,18 +44,14 @@ Cough, Fatigue, Headache
         stdout = self.grab_output("--project-dir", f"{DATA_DIR}/ignore")
 
         self.assertEqual(
-            """Annotations:                         
-╭──────────┬─────────────┬──────────╮
-│Annotator │ Chart Count │ Chart IDs│
-├──────────┼─────────────┼──────────┤
-│adam      │ 2           │ 1–2      │
-│allison   │ 2           │ 1–2      │
-╰──────────┴─────────────┴──────────╯
- Ignoring 3 charts (3–5)
-
-Labels:
-A, B
-""",  # noqa: W291
+            """╭───────────┬─────────────┬───────────╮
+│ Annotator │ Chart Count │ Chart IDs │
+├───────────┼─────────────┼───────────┤
+│ adam      │ 2           │ 1–2       │
+│ allison   │ 2           │ 1–2       │
+╰───────────┴─────────────┴───────────╯
+  Ignoring 3 charts (3–5)
+""",
             stdout,
         )
 
@@ -166,4 +158,83 @@ A, B
                 "5,,",
             ],
             stdout.splitlines(),
+        )
+
+    def test_labels(self):
+        stdout = self.grab_output("--project-dir", f"{DATA_DIR}/cold", "--labels")
+
+        self.assertEqual(
+            """╭───────────┬─────────────┬──────────╮
+│ Annotator │ Chart Count │ Label    │
+├───────────┼─────────────┼──────────┤
+│ Any       │ 2           │ Cough    │
+│ Any       │ 3           │ Fatigue  │
+│ Any       │ 3           │ Headache │
+├───────────┼─────────────┼──────────┤
+│ jane      │ 1           │ Cough    │
+│ jane      │ 2           │ Fatigue  │
+│ jane      │ 2           │ Headache │
+├───────────┼─────────────┼──────────┤
+│ jill      │ 2           │ Cough    │
+│ jill      │ 3           │ Fatigue  │
+│ jill      │ 0           │ Headache │
+├───────────┼─────────────┼──────────┤
+│ john      │ 1           │ Cough    │
+│ john      │ 2           │ Fatigue  │
+│ john      │ 2           │ Headache │
+╰───────────┴─────────────┴──────────╯
+""",
+            stdout,
+        )
+
+    def test_labels_grouped(self):
+        """Verify that we only show final grouped labels, not intermediate ones"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json",
+                {
+                    "labels": ["fever", "rash", "recent"],
+                    "grouped-labels": {"symptoms": ["fever", "rash"]},
+                },
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [],
+            )
+            stdout = self.grab_output("--labels", "--project-dir", tmpdir)
+
+        self.assertEqual(
+            """╭───────────┬─────────────┬──────────╮
+│ Annotator │ Chart Count │ Label    │
+├───────────┼─────────────┼──────────┤
+│ Any       │ 0           │ recent   │
+│ Any       │ 0           │ symptoms │
+╰───────────┴─────────────┴──────────╯
+""",
+            stdout,
+        )
+
+    def test_labels_ignored(self):
+        """Verify that we show info on ignored notes"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json",
+                {
+                    "ignore": [3, 4, 6],
+                },
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {"id": 3},
+                    {"id": 4},
+                    {"id": 5},
+                    {"id": 6},
+                ],
+            )
+            stdout = self.grab_output("--labels", "--project-dir", tmpdir)
+
+        self.assertEqual(
+            "Ignoring 3 charts (3–4, 6)",
+            stdout.splitlines()[-1].strip(),
         )

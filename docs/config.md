@@ -100,7 +100,7 @@ The new group labels do not need to be a part of your source `labels` list.
 #### Example
 ```yaml
 grouped-labels:
-  ill: [insomnia, chickenpox, ebola]
+  animal: [dog, cat, fox]
 ```
 
 ### `ignore`
