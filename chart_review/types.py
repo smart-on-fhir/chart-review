@@ -7,6 +7,7 @@ from typing import Optional
 AnnotatorMap = dict[int, str]
 
 LabelSet = set[str]
+NoteSet = set[int]
 
 # Map of label_studio_note_id: {all labels for that note}
 # Usually used in the context of a specific annotator's label mentions.

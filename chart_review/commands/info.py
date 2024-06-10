@@ -7,9 +7,10 @@ import sys
 import rich
 import rich.box
 import rich.table
+import rich.text
 import rich.tree
 
-from chart_review import cli_utils, cohort, config, console_utils
+from chart_review import cli_utils, cohort, config, console_utils, types
 
 
 def print_info(reader: cohort.CohortReader) -> None:
@@ -26,10 +27,6 @@ def print_info(reader: cohort.CohortReader) -> None:
         "Chart Count",
         "Chart IDs",
         box=rich.box.ROUNDED,
-        pad_edge=False,
-        title="Annotations:",
-        title_justify="left",
-        title_style="bold",
     )
     for annotator in sorted(reader.note_range):
         notes = reader.note_range[annotator]
@@ -38,26 +35,9 @@ def print_info(reader: cohort.CohortReader) -> None:
             str(len(notes)),
             console_utils.pretty_note_range(notes),
         )
+
     console.print(chart_table)
-
-    # Ignored charts
-    if reader.ignored_notes:
-        ignored_count = len(reader.ignored_notes)
-        chart_word = "chart" if ignored_count == 1 else "charts"
-        pretty_ranges = console_utils.pretty_note_range(reader.ignored_notes)
-        console.print(
-            f" Ignoring {ignored_count} {chart_word} ({pretty_ranges})",
-            highlight=False,
-            style="italic",
-        )
-
-    # Labels
-    console.print()
-    console.print("Labels:", style="bold")
-    if reader.class_labels:
-        console.print(", ".join(sorted(reader.class_labels, key=str.casefold)))
-    else:
-        console.print("None", style="italic", highlight=False)
+    print_ignored_charts(reader)
 
 
 def print_ids(reader: cohort.CohortReader) -> None:
@@ -98,11 +78,68 @@ def print_ids(reader: cohort.CohortReader) -> None:
             writer.writerow([chart_id, None, None])
 
 
+def print_labels(reader: cohort.CohortReader) -> None:
+    """
+    Show label information on the console.
+
+    :param reader: the cohort configuration
+    """
+    # Calculate all label counts for each annotator
+    label_names = sorted(reader.class_labels, key=str.casefold)
+    label_notes: dict[str, dict[str, types.NoteSet]] = {}  # annotator -> label -> note IDs
+    any_annotator_note_sets: dict[str, types.NoteSet] = {}
+    for annotator, mentions in reader.annotations.mentions.items():
+        label_notes[annotator] = {}
+        for name in label_names:
+            note_ids = {note_id for note_id, labels in mentions.items() if name in labels}
+            label_notes[annotator][name] = note_ids
+            any_annotator_note_sets.setdefault(name, types.NoteSet()).update(note_ids)
+
+    label_table = rich.table.Table(
+        "Annotator",
+        "Chart Count",
+        "Label",
+        box=rich.box.ROUNDED,
+    )
+
+    # First add summary entries, for counts across the union of all annotators
+    for name in label_names:
+        count = str(len(any_annotator_note_sets.get(name, {})))
+        label_table.add_row(rich.text.Text("Any", style="italic"), count, name)
+
+    # Now do each annotator as their own little boxed section
+    for annotator in sorted(label_notes.keys(), key=str.casefold):
+        label_table.add_section()
+        for name, note_set in label_notes[annotator].items():
+            count = str(len(note_set))
+            label_table.add_row(annotator, count, name)
+
+    rich.get_console().print(label_table)
+    print_ignored_charts(reader)
+
+
+def print_ignored_charts(reader: cohort.CohortReader):
+    """Prints a line about ignored charts, suitable for underlying a table"""
+    if not reader.ignored_notes:
+        return
+
+    ignored_count = len(reader.ignored_notes)
+    chart_word = "chart" if ignored_count == 1 else "charts"
+    pretty_ranges = console_utils.pretty_note_range(reader.ignored_notes)
+    rich.get_console().print(
+        f"  Ignoring {ignored_count} {chart_word} ({pretty_ranges})",
+        highlight=False,
+        style="italic",
+    )
+
+
 def make_subparser(parser: argparse.ArgumentParser) -> None:
     cli_utils.add_project_args(parser)
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--ids", action="store_true", help="Prints a CSV of ID mappings (chart & FHIR IDs)"
     )
+    mode.add_argument("--labels", action="store_true", help="Prints label info and usage")
     parser.set_defaults(func=run_info)
 
 
@@ -111,5 +148,7 @@ def run_info(args: argparse.Namespace) -> None:
     reader = cohort.CohortReader(proj_config)
     if args.ids:
         print_ids(reader)
+    elif args.labels:
+        print_labels(reader)
     else:
         print_info(reader)

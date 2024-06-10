@@ -16,7 +16,6 @@ This is helpful to examine the computed list of chart ID ranges or labels.
 
 ```shell
 $ chart-review info
-Annotations:                              
 ╭──────────┬─────────────┬──────────╮
 │Annotator │ Chart Count │ Chart IDs│
 ├──────────┼─────────────┼──────────┤
@@ -24,9 +23,6 @@ Annotations:
 │jill      │ 4           │ 1–4      │
 │john      │ 3           │ 1–2, 4   │
 ╰──────────┴─────────────┴──────────╯
-
-Labels:
-Cough, Fatigue, Headache
 ```
 
 ## Options
@@ -57,6 +53,35 @@ chart_id,original_fhir_id,anonymized_fhir_id
 2,Encounter/E898,Encounter/8b0bd207147989492801b7c14eebc015564ab73a07bdabdf9aefc3425eeba982
 2,DocumentReference/D898,DocumentReference/b5e329b752067eca1584f9cd132f40c637d8a9ebd6f2a599794f9436fb83c2eb
 2,DocumentReference/D899,DocumentReference/605338cd18c2617864db23fd5fd956f3e806af2021ffa6d11c34cac998eb3b6d
+```
+
+### `--labels`
+
+Prints some statistics on the project labels and how often each annotator used each label.
+
+#### Example
+
+```shell
+$ chart-review info --labels
+╭───────────┬─────────────┬──────────╮
+│ Annotator │ Chart Count │ Label    │
+├───────────┼─────────────┼──────────┤
+│ Any       │ 2           │ Cough    │
+│ Any       │ 3           │ Fatigue  │
+│ Any       │ 3           │ Headache │
+├───────────┼─────────────┼──────────┤
+│ jane      │ 1           │ Cough    │
+│ jane      │ 2           │ Fatigue  │
+│ jane      │ 2           │ Headache │
+├───────────┼─────────────┼──────────┤
+│ jill      │ 2           │ Cough    │
+│ jill      │ 3           │ Fatigue  │
+│ jill      │ 0           │ Headache │
+├───────────┼─────────────┼──────────┤
+│ john      │ 1           │ Cough    │
+│ john      │ 2           │ Fatigue  │
+│ john      │ 2           │ Headache │
+╰───────────┴─────────────┴──────────╯
 ```
 
 ### `--config=PATH`

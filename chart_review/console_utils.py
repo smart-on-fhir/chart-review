@@ -1,7 +1,9 @@
 """Helper methods for printing to the console."""
 
+from chart_review import types
 
-def pretty_note_range(notes: set[int]) -> str:
+
+def pretty_note_range(notes: types.NoteSet) -> str:
     """
     Returns a pretty, human-readable string for a set of notes.
 

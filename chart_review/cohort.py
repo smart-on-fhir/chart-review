@@ -28,6 +28,10 @@ class CohortReader:
         self.ls_export = common.read_json(self.config.path("labelstudio-export.json"))
         self.annotations = simplify.simplify_export(self.ls_export, self.config)
 
+        # Add a placeholder for any annotators that don't have mentions for some reason
+        for annotator in self.config.annotators.values():
+            self.annotations.mentions.setdefault(annotator, types.Mentions())
+
         # Load external annotations (i.e. from NLP tags or ICD10 codes)
         for name, value in self.config.external_annotations.items():
             external.merge_external(self.annotations, self.ls_export, self.project_dir, name, value)
@@ -42,9 +46,15 @@ class CohortReader:
         # Calculate the final set of note ranges for each annotator
         self.note_range, self.ignored_notes = self._collect_note_ranges(self.ls_export)
 
+        # Remove any ignored notes from the mentions table, for ease of consuming code
+        for mentions in self.annotations.mentions.values():
+            for note in self.ignored_notes:
+                if note in mentions:
+                    del mentions[note]
+
     def _collect_note_ranges(
         self, exported_json: list[dict]
-    ) -> tuple[dict[str, set[int]], set[int]]:
+    ) -> tuple[dict[str, types.NoteSet], types.NoteSet]:
         # Detect note ranges if they were not defined in the project config
         # (i.e. default to the full set of annotated notes)
         note_ranges = {k: set(v) for k, v in self.config.note_ranges.items()}
@@ -55,7 +65,7 @@ class CohortReader:
         all_ls_notes = {int(entry["id"]) for entry in exported_json if "id" in entry}
 
         # Parse ignored IDs (might be note IDs, might be external IDs)
-        ignored_notes: set[int] = set()
+        ignored_notes = types.NoteSet()
         for ignore_id in self.config.ignore:
             ls_id = external.external_id_to_label_studio_id(exported_json, str(ignore_id))
             if ls_id is None:
