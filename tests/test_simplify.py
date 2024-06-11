@@ -1,14 +1,13 @@
 """Tests for simplify.py"""
 
-import unittest
-
 import ddt
 
 from chart_review import simplify, types
+from tests import base
 
 
 @ddt.ddt
-class TestSimplify(unittest.TestCase):
+class TestSimplify(base.TestCase):
     """Test case for annotation simplification"""
 
     @ddt.data(

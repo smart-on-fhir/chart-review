@@ -1,11 +1,10 @@
 """Tests for term_freq.py"""
 
-import unittest
-
 from chart_review import term_freq, types
+from tests import base
 
 
-class TestMentions(unittest.TestCase):
+class TestMentions(base.TestCase):
     """Test case for term frequency calculations"""
 
     def test_calc_term_freq(self):

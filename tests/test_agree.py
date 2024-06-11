@@ -1,14 +1,13 @@
 """Tests for agree.py"""
 
-import unittest
-
 import ddt
 
 from chart_review import agree, types
+from tests import base
 
 
 @ddt.ddt
-class TestAgreement(unittest.TestCase):
+class TestAgreement(base.TestCase):
     """Test case for basic agreement logic"""
 
     @ddt.data(

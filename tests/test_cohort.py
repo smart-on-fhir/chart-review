@@ -1,20 +1,13 @@
 """Tests for cohort.py"""
 
-import os
 import tempfile
-import unittest
 
 from chart_review import cohort, common, config
+from tests import base
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
-
-class TestCohort(unittest.TestCase):
+class TestCohort(base.TestCase):
     """Test case for basic cohort management"""
-
-    def setUp(self):
-        super().setUp()
-        self.maxDiff = None
 
     def test_no_specified_label(self):
         """Verify that no label setup grabs all found labels from the export."""
@@ -48,7 +41,7 @@ class TestCohort(unittest.TestCase):
         self.assertEqual({"Label A", "Label B"}, reader.class_labels)
 
     def test_ignored_ids(self):
-        reader = cohort.CohortReader(config.ProjectConfig(f"{DATA_DIR}/ignore"))
+        reader = cohort.CohortReader(config.ProjectConfig(f"{self.DATA_DIR}/ignore"))
 
         # Confirm 3, 4, and 5 got ignored
         self.assertEqual(

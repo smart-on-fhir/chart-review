@@ -2,20 +2,16 @@
 
 import os
 import tempfile
-import unittest
 
 import ddt
 
 from chart_review import common, config
+from tests import base
 
 
 @ddt.ddt
-class TestProjectConfig(unittest.TestCase):
+class TestProjectConfig(base.TestCase):
     """Test case for basic config parsing"""
-
-    def setUp(self):
-        super().setUp()
-        self.maxDiff = None
 
     def make_config(self, conf_text: str, filename: str = "config.yaml") -> config.ProjectConfig:
         tmpdir = tempfile.TemporaryDirectory()
