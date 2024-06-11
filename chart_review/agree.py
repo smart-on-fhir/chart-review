@@ -183,12 +183,12 @@ def score_reviewer(
     return score_matrix(truth_matrix)
 
 
-def csv_table(score: dict, class_labels: Iterable):
+def csv_table(score: dict, class_labels: types.LabelSet):
     table = list()
     table.append(csv_header(False, True))
     table.append(csv_row_score(score, as_string=True))
 
-    for label in sorted(class_labels):
+    for label in sorted(class_labels, key=str.casefold):
         table.append(csv_row_score(score[label], label, as_string=True))
     return "\n".join(table) + "\n"
 

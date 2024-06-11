@@ -1,32 +1,16 @@
 """Tests for commands/info.py"""
 
-import contextlib
-import io
-import os
 import tempfile
-import unittest
 
-from chart_review import cli, common
-
-DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+from chart_review import common
+from tests import base
 
 
-class TestInfo(unittest.TestCase):
+class TestInfo(base.TestCase):
     """Test case for the top-level info code"""
 
-    def setUp(self):
-        super().setUp()
-        self.maxDiff = None
-
-    @staticmethod
-    def grab_output(*args) -> str:
-        stdout = io.StringIO()
-        with contextlib.redirect_stdout(stdout):
-            cli.main_cli(["info", *args])
-        return stdout.getvalue()
-
     def test_info(self):
-        stdout = self.grab_output("--project-dir", f"{DATA_DIR}/cold")
+        stdout = self.run_cli("info", "--project-dir", f"{self.DATA_DIR}/cold")
 
         self.assertEqual(
             """╭───────────┬─────────────┬───────────╮
@@ -41,7 +25,7 @@ class TestInfo(unittest.TestCase):
         )
 
     def test_info_ignored(self):
-        stdout = self.grab_output("--project-dir", f"{DATA_DIR}/ignore")
+        stdout = self.run_cli("info", "--project-dir", f"{self.DATA_DIR}/ignore")
 
         self.assertEqual(
             """╭───────────┬─────────────┬───────────╮
@@ -71,7 +55,7 @@ class TestInfo(unittest.TestCase):
                     },
                 ],
             )
-            stdout = self.grab_output("--ids", "--project-dir", tmpdir)
+            stdout = self.run_cli("info", "--ids", "--project-dir", tmpdir)
 
         lines = stdout.splitlines()
         self.assertEqual(2, len(lines))
@@ -144,7 +128,7 @@ class TestInfo(unittest.TestCase):
                     },
                 ],
             )
-            stdout = self.grab_output("--ids", "--project-dir", tmpdir)
+            stdout = self.run_cli("info", "--ids", "--project-dir", tmpdir)
 
         self.assertEqual(
             [
@@ -161,7 +145,7 @@ class TestInfo(unittest.TestCase):
         )
 
     def test_labels(self):
-        stdout = self.grab_output("--project-dir", f"{DATA_DIR}/cold", "--labels")
+        stdout = self.run_cli("info", "--project-dir", f"{self.DATA_DIR}/cold", "--labels")
 
         self.assertEqual(
             """╭───────────┬─────────────┬──────────╮
@@ -201,7 +185,7 @@ class TestInfo(unittest.TestCase):
                 f"{tmpdir}/labelstudio-export.json",
                 [],
             )
-            stdout = self.grab_output("--labels", "--project-dir", tmpdir)
+            stdout = self.run_cli("info", "--labels", "--project-dir", tmpdir)
 
         self.assertEqual(
             """╭───────────┬─────────────┬──────────╮
@@ -232,7 +216,7 @@ class TestInfo(unittest.TestCase):
                     {"id": 6},
                 ],
             )
-            stdout = self.grab_output("--labels", "--project-dir", tmpdir)
+            stdout = self.run_cli("info", "--labels", "--project-dir", tmpdir)
 
         self.assertEqual(
             "Ignoring 3 charts (3–4, 6)",
