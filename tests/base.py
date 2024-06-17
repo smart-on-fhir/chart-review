@@ -19,7 +19,13 @@ class TestCase(unittest.TestCase):
 
     @staticmethod
     def run_cli(*args) -> str:
-        stdout = io.StringIO()
-        with contextlib.redirect_stdout(stdout):
+        with TestCase.capture_stdout() as stdout:
             cli.main_cli(list(args))
         return stdout.getvalue()
+
+    @staticmethod
+    @contextlib.contextmanager
+    def capture_stdout() -> io.StringIO:
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            yield stdout

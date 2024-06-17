@@ -3,14 +3,21 @@
 import argparse
 import sys
 
+import chart_review
 from chart_review.commands import accuracy, info
 
 
 def define_parser() -> argparse.ArgumentParser:
     """Fills out an argument parser with all the CLI options."""
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(required=True)
 
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"chart-review {chart_review.__version__}",
+    )
+
+    subparsers = parser.add_subparsers(required=True)
     accuracy.make_subparser(subparsers.add_parser("accuracy"))
     info.make_subparser(subparsers.add_parser("info"))
 
