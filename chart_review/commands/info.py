@@ -118,6 +118,22 @@ def print_labels(reader: cohort.CohortReader) -> None:
     print_ignored_charts(reader)
 
 
+def print_ls_labels(reader: cohort.CohortReader) -> None:
+    """
+    Print Label Studio export's labels.
+
+    :param reader: the cohort configuration
+    """
+    writer = csv.writer(sys.stdout)
+    writer.writerow(["chart_id", "annotator", "label", "mention"])
+
+    for annotator, mentions in reader.annotations.original_text_mentions.items():
+        for note_id, labeled_texts in mentions.items():
+            for label_text in labeled_texts:
+                for label in label_text.labels:
+                    writer.writerow([str(note_id), annotator, label, label_text.text])
+
+
 def print_ignored_charts(reader: cohort.CohortReader):
     """Prints a line about ignored charts, suitable for underlying a table"""
     if not reader.ignored_notes:
@@ -140,6 +156,7 @@ def make_subparser(parser: argparse.ArgumentParser) -> None:
         "--ids", action="store_true", help="Prints a CSV of ID mappings (chart & FHIR IDs)"
     )
     mode.add_argument("--labels", action="store_true", help="Prints label info and usage")
+    mode.add_argument("--ls-labels", action="store_true", help="Prints a CSV of LS labels")
     parser.set_defaults(func=run_info)
 
 
@@ -150,5 +167,7 @@ def run_info(args: argparse.Namespace) -> None:
         print_ids(reader)
     elif args.labels:
         print_labels(reader)
+    elif args.ls_labels:
+        print_ls_labels(reader)
     else:
         print_info(reader)
