@@ -3,23 +3,18 @@
 import argparse
 import sys
 
-import chart_review
-from chart_review.commands import accuracy, info
+from chart_review.commands import accuracy, default, ids, labels
 
 
 def define_parser() -> argparse.ArgumentParser:
     """Fills out an argument parser with all the CLI options."""
     parser = argparse.ArgumentParser()
+    default.make_subparser(parser)
 
-    parser.add_argument(
-        "--version",
-        action="version",
-        version=f"chart-review {chart_review.__version__}",
-    )
-
-    subparsers = parser.add_subparsers(required=True)
-    accuracy.make_subparser(subparsers.add_parser("accuracy"))
-    info.make_subparser(subparsers.add_parser("info"))
+    subparsers = parser.add_subparsers()
+    accuracy.make_subparser(subparsers.add_parser("accuracy", help="calculate F1 and Kappa scores"))
+    ids.make_subparser(subparsers.add_parser("ids", help="map Label Studio IDs to FHIR IDs"))
+    labels.make_subparser(subparsers.add_parser("labels", help="show label usage by annotator"))
 
     return parser
 

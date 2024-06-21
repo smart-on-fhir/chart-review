@@ -1,6 +1,8 @@
 """Helper methods for printing to the console."""
 
-from chart_review import types
+import rich
+
+from chart_review import cohort, types
 
 
 def pretty_note_range(notes: types.NoteSet) -> str:
@@ -34,3 +36,18 @@ def pretty_note_range(notes: types.NoteSet) -> str:
     end_range()
 
     return ", ".join(ranges)
+
+
+def print_ignored_charts(reader: cohort.CohortReader):
+    """Prints a line about ignored charts, suitable for underlying a table"""
+    if not reader.ignored_notes:
+        return
+
+    ignored_count = len(reader.ignored_notes)
+    chart_word = "chart" if ignored_count == 1 else "charts"
+    pretty_ranges = pretty_note_range(reader.ignored_notes)
+    rich.get_console().print(
+        f"  Ignoring {ignored_count} {chart_word} ({pretty_ranges})",
+        highlight=False,
+        style="italic",
+    )

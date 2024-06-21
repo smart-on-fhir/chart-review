@@ -21,7 +21,6 @@ nav_order: 1
 
 ## Run Chart Review
 
-The only current command is `accuracy`,
-which will print agreement statistics between two annotators.
+Run `chart-review` in your project directory for some basic chart info.
 
-Read more about it in its own [accuracy command documentation](accuracy.md).
+Or run `chart-review --help` for a list of commands.
