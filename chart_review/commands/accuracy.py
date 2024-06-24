@@ -8,27 +8,29 @@ import rich.box
 import rich.table
 import rich.text
 
-from chart_review import agree, cli_utils, cohort, common, config, console_utils
+from chart_review import agree, cli_utils, common, console_utils
 
 
-def accuracy(
-    reader: cohort.CohortReader,
-    truth: str,
-    annotator: str,
-    save: bool = False,
-    verbose: bool = False,
-) -> None:
+def make_subparser(parser: argparse.ArgumentParser) -> None:
+    cli_utils.add_project_args(parser)
+    output_group = cli_utils.add_output_args(parser)
+    output_group.add_argument("--save", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--verbose", action="store_true", help="show each chart’s labels")
+    parser.add_argument("truth_annotator")
+    parser.add_argument("annotator")
+    parser.set_defaults(func=print_accuracy)
+
+
+def print_accuracy(args: argparse.Namespace) -> None:
     """
     High-level accuracy calculation between two annotators.
 
     The results will be written to the project directory.
-
-    :param reader: the cohort configuration
-    :param truth: the truth annotator
-    :param annotator: the other annotator to compare against truth
-    :param save: whether to write the results to disk vs just printing them
-    :param verbose: whether to print per-chart/per-label classifications
     """
+    reader = cli_utils.get_cohort_reader(args)
+    truth = args.truth_annotator
+    annotator = args.annotator
+
     if truth not in reader.note_range:
         print(f"Unrecognized annotator '{truth}'")
         return
@@ -48,64 +50,60 @@ def accuracy(
         matrices[label] = reader.confusion_matrix(truth, annotator, note_range, label)
 
     # Now score them
-    scores = agree.score_matrix(matrices[None])
+    scores = {None: agree.score_matrix(matrices[None])}
     for label in labels:
         scores[label] = agree.score_matrix(matrices[label])
 
     console = rich.get_console()
 
+    if args.verbose:
+        # Print a table of each chart/label combo - useful for reviewing where an annotator
+        # went wrong.
+        table = cli_utils.create_table("Chart ID", "Label", "Classification")
+        for note_id in sorted(note_range):
+            table.add_section()
+            for label in labels:
+                for classification in ["TN", "TP", "FN", "FP"]:
+                    if {note_id: label} in matrices[label][classification]:
+                        style = "bold" if classification[0] == "F" else None  # highlight errors
+                        class_text = rich.text.Text(classification, style=style)
+                        table.add_row(str(note_id), label, class_text)
+                        break
+    else:
+        # Normal F1/Kappa scores
+        table = rich.table.Table(*agree.csv_header(), "Label", box=None, pad_edge=False)
+        table.add_row(*agree.csv_row_score(scores[None]), "*")
+        for label in labels:
+            table.add_row(*agree.csv_row_score(scores[label]), label)
+
+    if args.csv:
+        cli_utils.print_table_as_csv(table)
+        return
+
+    # OK we aren't printing a CSV file to stdout, so we can include a bit more explanation
+    # as a little header to the real results.
     note_count = len(note_range)
     chart_word = "chart" if note_count == 1 else "charts"
     pretty_ranges = f" ({console_utils.pretty_note_range(note_range)})" if note_count > 0 else ""
     console.print(f"Comparing {note_count} {chart_word}{pretty_ranges}")
     console.print(f"Truth: {truth}")
     console.print(f"Annotator: {annotator}")
-
     console.print()
-    if save:
-        # Write the results out to disk
+
+    if args.save:  # deprecated/hidden since 2.0, but still supported for now
         output_stem = os.path.join(reader.project_dir, f"accuracy-{truth}-{annotator}")
+
+        # JSON: Historically, this has been formatted with the global label results intermixed
+        # with the specific label names, so reproduce that historical formatting here.
+        # Note: this could bite us if the user ever has a label like "Kappa", which is why the
+        # above code avoids intermixing, but we'll keep this as-is for now.
+        scores.update(scores[None])
+        del scores[None]
         common.write_json(f"{output_stem}.json", scores)
         console.print(f"Wrote {output_stem}.json")
+
+        # CSV: we should really use a .tsv suffix here, but keeping .csv for historical reasons
         common.write_text(f"{output_stem}.csv", agree.csv_table(scores, reader.class_labels))
         console.print(f"Wrote {output_stem}.csv")
     else:
-        # Print the results out to the console
-        rich_table = rich.table.Table(*agree.csv_header(), "Label", box=None, pad_edge=False)
-        rich_table.add_row(*agree.csv_row_score(scores), "*")
-        for label in labels:
-            rich_table.add_row(*agree.csv_row_score(scores[label]), label)
-        console.print(rich_table)
-
-    if verbose:
-        # Print a table of each chart/label combo - useful for reviewing where an annotator
-        # went wrong.
-        verbose_table = rich.table.Table(
-            "Chart ID", "Label", "Classification", box=rich.box.ROUNDED
-        )
-        for note_id in sorted(note_range):
-            verbose_table.add_section()
-            for label in labels:
-                for classification in ["TN", "TP", "FN", "FP"]:
-                    if {note_id: label} in matrices[label][classification]:
-                        style = "bold" if classification[0] == "F" else None  # highlight errors
-                        class_text = rich.text.Text(classification, style=style)
-                        verbose_table.add_row(str(note_id), label, class_text)
-                        break
-        console.print()
-        console.print(verbose_table)
-
-
-def make_subparser(parser: argparse.ArgumentParser) -> None:
-    cli_utils.add_project_args(parser)
-    parser.add_argument("--save", action="store_true", help="Write stats to CSV & JSON files")
-    parser.add_argument("--verbose", action="store_true", help="Explain each chart’s labels")
-    parser.add_argument("truth_annotator")
-    parser.add_argument("annotator")
-    parser.set_defaults(func=run_accuracy)
-
-
-def run_accuracy(args: argparse.Namespace) -> None:
-    proj_config = config.ProjectConfig(args.project_dir, config_path=args.config)
-    reader = cohort.CohortReader(proj_config)
-    accuracy(reader, args.truth_annotator, args.annotator, save=args.save, verbose=args.verbose)
+        console.print(table)

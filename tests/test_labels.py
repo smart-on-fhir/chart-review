@@ -10,7 +10,7 @@ class TestLabels(base.TestCase):
     """Test case for the top-level labels code"""
 
     def test_labels(self):
-        stdout = self.run_cli("--project-dir", f"{self.DATA_DIR}/cold", "labels")
+        stdout = self.run_cli("labels", path=f"{self.DATA_DIR}/cold")
 
         self.assertEqual(
             """╭───────────┬─────────────┬──────────╮
@@ -50,7 +50,7 @@ class TestLabels(base.TestCase):
                 f"{tmpdir}/labelstudio-export.json",
                 [],
             )
-            stdout = self.run_cli("labels", "--project-dir", tmpdir)
+            stdout = self.run_cli("labels", path=tmpdir)
 
         self.assertEqual(
             """╭───────────┬─────────────┬──────────╮
@@ -81,9 +81,32 @@ class TestLabels(base.TestCase):
                     {"id": 6},
                 ],
             )
-            stdout = self.run_cli("labels", "--project-dir", tmpdir)
+            stdout = self.run_cli("labels", path=tmpdir)
 
         self.assertEqual(
             "Ignoring 3 charts (3–4, 6)",
             stdout.splitlines()[-1].strip(),
+        )
+
+    def test_labels_csv(self):
+        """Verify that can print in CSV format"""
+        stdout = self.run_cli("labels", "--csv", path=f"{self.DATA_DIR}/cold")
+
+        self.assertEqual(
+            [
+                "annotator,chart_count,label",
+                "Any,2,Cough",
+                "Any,3,Fatigue",
+                "Any,3,Headache",
+                "jane,1,Cough",
+                "jane,2,Fatigue",
+                "jane,2,Headache",
+                "jill,2,Cough",
+                "jill,3,Fatigue",
+                "jill,0,Headache",
+                "john,1,Cough",
+                "john,2,Fatigue",
+                "john,2,Headache",
+            ],
+            stdout.splitlines(),
         )

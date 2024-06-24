@@ -31,13 +31,7 @@ F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label
 
 ## Options
 
-### `--save`
-
-Use this to write a JSON and CSV file to the project directory,
-rather than printing to the console.
-Useful for passing results around in a machine-parsable format.
-
-### `--verbose`
+### --verbose
 
 Use this to also print out a table of per-chart/per-label classifications.
 This is helpful for investigating where specifically the two annotators agreed or not.
@@ -49,12 +43,6 @@ $ chart-review accuracy jill jane --verbose
 Comparing 3 charts (1, 3–4)
 Truth: jill
 Annotator: jane
-
-F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label   
-0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
-0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   
-1.0    1.0   1.0   1.0  1.0   1.0    2   0   1   0   Fatigue 
-0      0     0     0    0     0      0   0   1   2   Headache
 
 ╭──────────┬──────────┬────────────────╮
 │ Chart ID │ Label    │ Classification │
@@ -71,4 +59,35 @@ F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label
 │ 4        │ Fatigue  │ TP             │
 │ 4        │ Headache │ FP             │
 ╰──────────┴──────────┴────────────────╯
+```
+
+### --csv
+
+Print the accuracy chart in a machine-parseable CSV format.
+
+Can be used with both the default or verbose modes.
+
+#### Examples
+
+```shell
+$ chart-review accuracy jill jane --csv
+f1,sens,spec,ppv,npv,kappa,tp,fn,tn,fp,label
+0.667,0.75,0.6,0.6,0.75,0.341,3,1,3,2,*
+0.667,0.5,1.0,1.0,0.5,0.4,1,1,1,0,Cough
+1.0,1.0,1.0,1.0,1.0,1.0,2,0,1,0,Fatigue
+0,0,0,0,0,0,0,0,1,2,Headache
+```
+
+```shell
+$ chart-review accuracy jill jane --verbose --csv
+chart_id,label,classification
+1,Cough,TP
+1,Fatigue,TP
+1,Headache,FP
+3,Cough,TN
+3,Fatigue,TN
+3,Headache,TN
+4,Cough,FN
+4,Fatigue,TP
+4,Headache,FP
 ```

@@ -35,3 +35,31 @@ $ chart-review labels
 │ john      │ 2           │ Headache │
 ╰───────────┴─────────────┴──────────╯
 ```
+
+## Options
+
+### --csv
+
+Print the labels in a machine-parseable CSV format.
+
+#### Examples
+```shell
+$ chart-review labels --csv > labels.csv
+```
+
+```shell
+$ chart-review labels --csv
+annotator,chart_count,label
+Any,2,Cough
+Any,3,Fatigue
+Any,3,Headache
+jane,1,Cough
+jane,2,Fatigue
+jane,2,Headache
+jill,2,Cough
+jill,3,Fatigue
+jill,0,Headache
+john,1,Cough
+john,2,Fatigue
+john,2,Headache
+```
