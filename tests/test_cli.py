@@ -1,5 +1,8 @@
 """Tests for cli.py"""
 
+import shutil
+import tempfile
+
 import chart_review
 from chart_review import cli
 from tests import base
@@ -7,6 +10,21 @@ from tests import base
 
 class TestCommandLine(base.TestCase):
     """Test case for the CLI entry point"""
+
+    def assert_cold_output(self, output):
+        self.assertEqual(
+            """╭───────────┬─────────────┬───────────╮
+│ Annotator │ Chart Count │ Chart IDs │
+├───────────┼─────────────┼───────────┤
+│ jane      │ 3           │ 1, 3–4    │
+│ jill      │ 4           │ 1–4       │
+│ john      │ 3           │ 1–2, 4    │
+╰───────────┴─────────────┴───────────╯
+
+Pass --help to see more options.
+""",
+            output,
+        )
 
     def test_version(self):
         # Manually capture stdout (rather than helper self.run_cli) because --version actually
@@ -22,24 +40,11 @@ class TestCommandLine(base.TestCase):
         self.assertEqual(f"chart-review {version}\n", stdout.getvalue())
 
     def test_default_info(self):
-        stdout = self.run_cli("--project-dir", f"{self.DATA_DIR}/cold")
-
-        self.assertEqual(
-            """╭───────────┬─────────────┬───────────╮
-│ Annotator │ Chart Count │ Chart IDs │
-├───────────┼─────────────┼───────────┤
-│ jane      │ 3           │ 1, 3–4    │
-│ jill      │ 4           │ 1–4       │
-│ john      │ 3           │ 1–2, 4    │
-╰───────────┴─────────────┴───────────╯
-
-Pass --help to see more options.
-""",
-            stdout,
-        )
+        stdout = self.run_cli(path=f"{self.DATA_DIR}/cold")
+        self.assert_cold_output(stdout)
 
     def test_default_info_ignored(self):
-        stdout = self.run_cli("--project-dir", f"{self.DATA_DIR}/ignore")
+        stdout = self.run_cli(path=f"{self.DATA_DIR}/ignore")
 
         self.assertEqual(
             """╭───────────┬─────────────┬───────────╮
@@ -54,3 +59,10 @@ Pass --help to see more options.
 """,
             stdout,
         )
+
+    def test_custom_config(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            shutil.copy(f"{self.DATA_DIR}/cold/labelstudio-export.json", tmpdir)
+            # mostly confirm it doesn't just error out
+            stdout = self.run_cli(f"--config={self.DATA_DIR}/cold/config.yaml", path=tmpdir)
+            self.assert_cold_output(stdout)

@@ -18,7 +18,8 @@ class TestCase(unittest.TestCase):
         self.maxDiff = None
 
     @staticmethod
-    def run_cli(*args) -> str:
+    def run_cli(*args, path: str) -> str:
+        args = ("--project-dir", path) + args
         with TestCase.capture_stdout() as stdout:
             cli.main_cli(list(args))
         return stdout.getvalue()

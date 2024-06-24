@@ -10,10 +10,41 @@ from tests import base
 class TestAccuracy(base.TestCase):
     """Test case for the top-level accuracy code"""
 
-    def test_accuracy(self):
+    def test_default_output(self):
+        stdout = self.run_cli("accuracy", "jill", "jane", path=f"{self.DATA_DIR}/cold")
+
+        self.assertEqual(
+            """Comparing 3 charts (1, 3–4)
+Truth: jill
+Annotator: jane
+
+F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label   
+0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
+0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   
+1.0    1.0   1.0   1.0  1.0   1.0    2   0   1   0   Fatigue 
+0      0     0     0    0     0      0   0   1   2   Headache
+""",  # noqa: W291
+            stdout,
+        )
+
+    def test_csv(self):
+        stdout = self.run_cli("accuracy", "--csv", "jill", "jane", path=f"{self.DATA_DIR}/cold")
+
+        self.assertEqual(
+            [
+                "f1,sens,spec,ppv,npv,kappa,tp,fn,tn,fp,label",
+                "0.667,0.75,0.6,0.6,0.75,0.341,3,1,3,2,*",
+                "0.667,0.5,1.0,1.0,0.5,0.4,1,1,1,0,Cough",
+                "1.0,1.0,1.0,1.0,1.0,1.0,2,0,1,0,Fatigue",
+                "0,0,0,0,0,0,0,0,1,2,Headache",
+            ],
+            stdout.splitlines(),
+        )
+
+    def test_save(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             shutil.copytree(f"{self.DATA_DIR}/cold", tmpdir, dirs_exist_ok=True)
-            self.run_cli("accuracy", "--project-dir", tmpdir, "--save", "jill", "jane")
+            self.run_cli("accuracy", "--save", "jill", "jane", path=tmpdir)
 
             accuracy_json = common.read_json(f"{tmpdir}/accuracy-jill-jane.json")
             self.assertEqual(
@@ -79,20 +110,20 @@ class TestAccuracy(base.TestCase):
                 accuracy_csv,
             )
 
+    def test_save_and_csv_conflict(self):
+        """Verify that --save and --csv can't run together"""
+        with self.assertRaises(SystemExit) as cm:
+            self.run_cli(
+                "accuracy", "--save", "--csv", "jill", "jane", path=f"{self.DATA_DIR}/cold"
+            )
+        self.assertEqual(2, cm.exception.code)
+
     def test_verbose(self):
-        output = self.run_cli(
-            "accuracy", "--project-dir", f"{self.DATA_DIR}/cold", "--verbose", "jill", "jane"
-        )
+        output = self.run_cli("accuracy", "--verbose", "jill", "jane", path=f"{self.DATA_DIR}/cold")
         self.assertEqual(
             """Comparing 3 charts (1, 3–4)
 Truth: jill
 Annotator: jane
-
-F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label   
-0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
-0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   
-1.0    1.0   1.0   1.0  1.0   1.0    2   0   1   0   Fatigue 
-0      0     0     0    0     0      0   0   1   2   Headache
 
 ╭──────────┬──────────┬────────────────╮
 │ Chart ID │ Label    │ Classification │
@@ -113,15 +144,23 @@ F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label
             output,
         )
 
-    def test_custom_config(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            shutil.copy(f"{self.DATA_DIR}/cold/labelstudio-export.json", tmpdir)
-            self.run_cli(
-                "accuracy",
-                "--project-dir",
-                tmpdir,
-                "-c",
-                f"{self.DATA_DIR}/cold/config.yaml",
-                "jane",
-                "john",
-            )  # just confirm it doesn't error out
+    def test_verbose_cvs(self):
+        """Verify we can also print verbose results in CSV format"""
+        stdout = self.run_cli(
+            "accuracy", "--verbose", "--csv", "jill", "jane", path=f"{self.DATA_DIR}/cold"
+        )
+        self.assertEqual(
+            [
+                "chart_id,label,classification",
+                "1,Cough,TP",
+                "1,Fatigue,TP",
+                "1,Headache,FP",
+                "3,Cough,TN",
+                "3,Fatigue,TN",
+                "3,Headache,TN",
+                "4,Cough,FN",
+                "4,Fatigue,TP",
+                "4,Headache,FP",
+            ],
+            stdout.splitlines(),
+        )

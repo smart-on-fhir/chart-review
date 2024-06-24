@@ -51,6 +51,21 @@ chart-review --help
 
 Read the [first-time setup docs](setup.md) for more.
 
+## Example
+
+```shell
+$ chart-review
+╭───────────┬─────────────┬───────────╮
+│ Annotator │ Chart Count │ Chart IDs │
+├───────────┼─────────────┼───────────┤
+│ jane      │ 3           │ 1, 3–4    │
+│ jill      │ 4           │ 1–4       │
+│ john      │ 3           │ 1–2, 4    │
+╰───────────┴─────────────┴───────────╯
+
+Pass --help to see more options.
+```
+
 ## Source Code
 Chart Review is open source.
 If you'd like to browse its code or contribute changes yourself,

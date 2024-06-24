@@ -10,6 +10,7 @@ from chart_review import cli_utils, console_utils, types
 
 def make_subparser(parser: argparse.ArgumentParser) -> None:
     cli_utils.add_project_args(parser)
+    cli_utils.add_output_args(parser)
     parser.set_defaults(func=print_labels)
 
 
@@ -28,12 +29,7 @@ def print_labels(args: argparse.Namespace) -> None:
             label_notes[annotator][name] = note_ids
             any_annotator_note_sets.setdefault(name, types.NoteSet()).update(note_ids)
 
-    label_table = rich.table.Table(
-        "Annotator",
-        "Chart Count",
-        "Label",
-        box=rich.box.ROUNDED,
-    )
+    label_table = cli_utils.create_table("Annotator", "Chart Count", "Label")
 
     # First add summary entries, for counts across the union of all annotators
     for name in label_names:
@@ -47,5 +43,8 @@ def print_labels(args: argparse.Namespace) -> None:
             count = str(len(note_set))
             label_table.add_row(annotator, count, name)
 
-    rich.get_console().print(label_table)
-    console_utils.print_ignored_charts(reader)
+    if args.csv:
+        cli_utils.print_table_as_csv(label_table)
+    else:
+        rich.get_console().print(label_table)
+        console_utils.print_ignored_charts(reader)
