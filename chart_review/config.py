@@ -4,6 +4,7 @@ import re
 import sys
 from typing import Iterable, Optional, Union
 
+import rich.console
 import yaml
 
 from chart_review import types
@@ -13,12 +14,25 @@ class ProjectConfig:
     _NUMBER_REGEX = re.compile(r"\d+")
     _RANGE_REGEX = re.compile(r"\d+-\d+")
 
-    def __init__(self, project_dir: str, config_path: Optional[str] = None):
+    def __init__(self, project_dir: Optional[str] = None, config_path: Optional[str] = None):
         """
         :param project_dir: str like /opt/labelstudio/study_name
         """
-        self.project_dir = project_dir
-        self._data = self._load_config(config_path)
+        self.project_dir = project_dir or "."
+        try:
+            self._data = self._load_config(config_path)
+        except FileNotFoundError as exc:
+            # Be very helpful - this is likely the user's first experience with this project.
+            stderr = rich.console.Console(stderr=True)
+            stderr.print(exc, style="bold red", highlight=False)
+            stderr.print()
+            stderr.print("This does not appear to be a chart-review project folder.")
+            stderr.print(
+                "See https://docs.smarthealthit.org/cumulus/chart-review/ to set up your project."
+            )
+            stderr.print()
+            stderr.print("Or pass --help for usage info.")
+            sys.exit(2)
 
         # ** Annotators **
         # Internally, we're often dealing with numeric ID as the primary annotator identifier,

@@ -20,3 +20,37 @@ class TestCommandLine(base.TestCase):
 
         version = chart_review.__version__
         self.assertEqual(f"chart-review {version}\n", stdout.getvalue())
+
+    def test_default_info(self):
+        stdout = self.run_cli("--project-dir", f"{self.DATA_DIR}/cold")
+
+        self.assertEqual(
+            """╭───────────┬─────────────┬───────────╮
+│ Annotator │ Chart Count │ Chart IDs │
+├───────────┼─────────────┼───────────┤
+│ jane      │ 3           │ 1, 3–4    │
+│ jill      │ 4           │ 1–4       │
+│ john      │ 3           │ 1–2, 4    │
+╰───────────┴─────────────┴───────────╯
+
+Pass --help to see more options.
+""",
+            stdout,
+        )
+
+    def test_default_info_ignored(self):
+        stdout = self.run_cli("--project-dir", f"{self.DATA_DIR}/ignore")
+
+        self.assertEqual(
+            """╭───────────┬─────────────┬───────────╮
+│ Annotator │ Chart Count │ Chart IDs │
+├───────────┼─────────────┼───────────┤
+│ adam      │ 2           │ 1–2       │
+│ allison   │ 2           │ 1–2       │
+╰───────────┴─────────────┴───────────╯
+  Ignoring 3 charts (3–5)
+
+Pass --help to see more options.
+""",
+            stdout,
+        )

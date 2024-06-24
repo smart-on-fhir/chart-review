@@ -31,16 +31,6 @@ F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label
 
 ## Options
 
-### `--config=PATH`
-
-Use this to point to a secondary (non-default) config file.
-Useful if you have multiple label setups (e.g. one grouped into a binary label and one not).
-
-### `--project-dir=DIR`
-
-Use this to run `chart-review` outside of your project dir.
-Config files, external annotations, etc will be looked for in that directory. 
-
 ### `--save`
 
 Use this to write a JSON and CSV file to the project directory,
