@@ -44,11 +44,9 @@ class CohortReader:
         # Calculate the final set of note ranges for each annotator
         self.note_range, self.ignored_notes = self._collect_note_ranges(self.ls_export)
 
-        # Remove any ignored notes from the mentions table, for ease of consuming code
-        for mentions in self.annotations.mentions.values():
-            for note in self.ignored_notes:
-                if note in mentions:
-                    del mentions[note]
+        # Remove any ignored notes from the annotations, for ease of consuming code
+        for note in self.ignored_notes:
+            self.annotations.remove(note)
 
     def _collect_note_ranges(
         self, exported_json: list[dict]

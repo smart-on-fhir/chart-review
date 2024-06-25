@@ -39,3 +39,12 @@ class ProjectAnnotations:
     original_text_mentions: dict[str, dict[int, list[LabeledText]]] = dataclasses.field(
         default_factory=dict
     )
+
+    def remove(self, chart_id: int):
+        # Remove any instance of this chart ID
+        for mentions in self.mentions.values():
+            if chart_id in mentions:
+                del mentions[chart_id]
+        for mentions in self.original_text_mentions.values():
+            if chart_id in mentions:
+                del mentions[chart_id]

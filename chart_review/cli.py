@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-from chart_review.commands import accuracy, default, ids, labels
+from chart_review.commands import accuracy, default, ids, labels, mentions
 
 
 def define_parser() -> argparse.ArgumentParser:
@@ -15,6 +15,7 @@ def define_parser() -> argparse.ArgumentParser:
     accuracy.make_subparser(subparsers.add_parser("accuracy", help="calculate F1 and Kappa scores"))
     ids.make_subparser(subparsers.add_parser("ids", help="map Label Studio IDs to FHIR IDs"))
     labels.make_subparser(subparsers.add_parser("labels", help="show label usage by annotator"))
+    mentions.make_subparser(subparsers.add_parser("mentions", help="show each mention of a label"))
 
     return parser
 
