@@ -1,13 +1,7 @@
-from typing import Iterable, Optional
+from typing import Iterable
 
 from chart_review.common import guard_str, guard_iter, guard_in
-from chart_review import agree
-from chart_review import common
-from chart_review import config
-from chart_review import external
-from chart_review import term_freq
-from chart_review import simplify
-from chart_review import types
+from chart_review import agree, common, config, errors, external, term_freq, simplify, types
 
 
 class CohortReader:
@@ -25,7 +19,11 @@ class CohortReader:
         self.project_dir = self.config.project_dir
 
         # Load exported annotations
-        self.ls_export = common.read_json(self.config.path("labelstudio-export.json"))
+        try:
+            self.ls_export = common.read_json(self.config.path("labelstudio-export.json"))
+        except Exception as exc:
+            errors.exit_for_invalid_project(str(exc))
+
         self.annotations = simplify.simplify_export(self.ls_export, self.config)
 
         # Add a placeholder for any annotators that don't have mentions for some reason

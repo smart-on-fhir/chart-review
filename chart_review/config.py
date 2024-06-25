@@ -7,7 +7,7 @@ from typing import Iterable, Optional, Union
 import rich.console
 import yaml
 
-from chart_review import types
+from chart_review import errors, types
 
 
 class ProjectConfig:
@@ -20,19 +20,9 @@ class ProjectConfig:
         """
         self.project_dir = project_dir or "."
         try:
-            self._data = self._load_config(config_path)
-        except FileNotFoundError as exc:
-            # Be very helpful - this is likely the user's first experience with this project.
-            stderr = rich.console.Console(stderr=True)
-            stderr.print(exc, style="bold red", highlight=False)
-            stderr.print()
-            stderr.print("This does not appear to be a chart-review project folder.")
-            stderr.print(
-                "See https://docs.smarthealthit.org/cumulus/chart-review/ to set up your project."
-            )
-            stderr.print()
-            stderr.print("Or pass --help for usage info.")
-            sys.exit(2)
+            self._data = self._load_config(config_path) or {}
+        except Exception as exc:
+            errors.exit_for_invalid_project(str(exc))
 
         # ** Annotators **
         # Internally, we're often dealing with numeric ID as the primary annotator identifier,

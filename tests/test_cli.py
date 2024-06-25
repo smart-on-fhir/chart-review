@@ -4,7 +4,7 @@ import shutil
 import tempfile
 
 import chart_review
-from chart_review import cli
+from chart_review import cli, common, errors
 from tests import base
 
 
@@ -66,3 +66,23 @@ Pass --help to see more options.
             # mostly confirm it doesn't just error out
             stdout = self.run_cli(f"--config={self.DATA_DIR}/cold/config.yaml", path=tmpdir)
             self.assert_cold_output(stdout)
+
+    def test_missing_config(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with self.assertRaises(SystemExit) as cm:
+                self.run_cli(path=tmpdir)
+        self.assertEqual(cm.exception.code, errors.ERROR_INVALID_PROJECT)
+
+    def test_empty_config(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_text(f"{tmpdir}/config.yaml", "")
+            with self.assertRaises(SystemExit) as cm:
+                self.run_cli(path=tmpdir)
+        self.assertEqual(cm.exception.code, errors.ERROR_INVALID_PROJECT)
+
+    def test_missing_export(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(f"{tmpdir}/config.yaml", {"annotators": {"me": 1}})
+            with self.assertRaises(SystemExit) as cm:
+                self.run_cli(path=tmpdir)
+        self.assertEqual(cm.exception.code, errors.ERROR_INVALID_PROJECT)
