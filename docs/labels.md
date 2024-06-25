@@ -8,32 +8,32 @@ nav_order: 7
 
 # The Labels Command
 
-The `labels` prints some statistics on the project labels
+The `labels` command prints some statistics on the project labels
 and how often each annotator used each label.
 
 ## Example
 
 ```shell
 $ chart-review labels
-╭───────────┬─────────────┬──────────╮
-│ Annotator │ Chart Count │ Label    │
-├───────────┼─────────────┼──────────┤
-│ Any       │ 2           │ Cough    │
-│ Any       │ 3           │ Fatigue  │
-│ Any       │ 3           │ Headache │
-├───────────┼─────────────┼──────────┤
-│ jane      │ 1           │ Cough    │
-│ jane      │ 2           │ Fatigue  │
-│ jane      │ 2           │ Headache │
-├───────────┼─────────────┼──────────┤
-│ jill      │ 2           │ Cough    │
-│ jill      │ 3           │ Fatigue  │
-│ jill      │ 0           │ Headache │
-├───────────┼─────────────┼──────────┤
-│ john      │ 1           │ Cough    │
-│ john      │ 2           │ Fatigue  │
-│ john      │ 2           │ Headache │
-╰───────────┴─────────────┴──────────╯
+╭───────────┬──────────┬─────────────╮
+│ Annotator │ Label    │ Chart Count │
+├───────────┼──────────┼─────────────┤
+│ Any       │ Cough    │ 2           │
+│ Any       │ Fatigue  │ 3           │
+│ Any       │ Headache │ 3           │
+├───────────┼──────────┼─────────────┤
+│ jane      │ Cough    │ 1           │
+│ jane      │ Fatigue  │ 2           │
+│ jane      │ Headache │ 2           │
+├───────────┼──────────┼─────────────┤
+│ jill      │ Cough    │ 2           │
+│ jill      │ Fatigue  │ 3           │
+│ jill      │ Headache │ 0           │
+├───────────┼──────────┼─────────────┤
+│ john      │ Cough    │ 1           │
+│ john      │ Fatigue  │ 2           │
+│ john      │ Headache │ 2           │
+╰───────────┴──────────┴─────────────╯
 ```
 
 ## Options
@@ -49,17 +49,17 @@ $ chart-review labels --csv > labels.csv
 
 ```shell
 $ chart-review labels --csv
-annotator,chart_count,label
-Any,2,Cough
-Any,3,Fatigue
-Any,3,Headache
-jane,1,Cough
-jane,2,Fatigue
-jane,2,Headache
-jill,2,Cough
-jill,3,Fatigue
-jill,0,Headache
-john,1,Cough
-john,2,Fatigue
-john,2,Headache
+annotator,label,chart_count
+Any,Cough,2
+Any,Fatigue,3
+Any,Headache,3
+jane,Cough,1
+jane,Fatigue,2
+jane,Headache,2
+jill,Cough,2
+jill,Fatigue,3
+jill,Headache,0
+john,Cough,1
+john,Fatigue,2
+john,Headache,2
 ```

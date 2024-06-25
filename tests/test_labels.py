@@ -13,25 +13,25 @@ class TestLabels(base.TestCase):
         stdout = self.run_cli("labels", path=f"{self.DATA_DIR}/cold")
 
         self.assertEqual(
-            """╭───────────┬─────────────┬──────────╮
-│ Annotator │ Chart Count │ Label    │
-├───────────┼─────────────┼──────────┤
-│ Any       │ 2           │ Cough    │
-│ Any       │ 3           │ Fatigue  │
-│ Any       │ 3           │ Headache │
-├───────────┼─────────────┼──────────┤
-│ jane      │ 1           │ Cough    │
-│ jane      │ 2           │ Fatigue  │
-│ jane      │ 2           │ Headache │
-├───────────┼─────────────┼──────────┤
-│ jill      │ 2           │ Cough    │
-│ jill      │ 3           │ Fatigue  │
-│ jill      │ 0           │ Headache │
-├───────────┼─────────────┼──────────┤
-│ john      │ 1           │ Cough    │
-│ john      │ 2           │ Fatigue  │
-│ john      │ 2           │ Headache │
-╰───────────┴─────────────┴──────────╯
+            """╭───────────┬──────────┬─────────────╮
+│ Annotator │ Label    │ Chart Count │
+├───────────┼──────────┼─────────────┤
+│ Any       │ Cough    │ 2           │
+│ Any       │ Fatigue  │ 3           │
+│ Any       │ Headache │ 3           │
+├───────────┼──────────┼─────────────┤
+│ jane      │ Cough    │ 1           │
+│ jane      │ Fatigue  │ 2           │
+│ jane      │ Headache │ 2           │
+├───────────┼──────────┼─────────────┤
+│ jill      │ Cough    │ 2           │
+│ jill      │ Fatigue  │ 3           │
+│ jill      │ Headache │ 0           │
+├───────────┼──────────┼─────────────┤
+│ john      │ Cough    │ 1           │
+│ john      │ Fatigue  │ 2           │
+│ john      │ Headache │ 2           │
+╰───────────┴──────────┴─────────────╯
 """,
             stdout,
         )
@@ -53,12 +53,12 @@ class TestLabels(base.TestCase):
             stdout = self.run_cli("labels", path=tmpdir)
 
         self.assertEqual(
-            """╭───────────┬─────────────┬──────────╮
-│ Annotator │ Chart Count │ Label    │
-├───────────┼─────────────┼──────────┤
-│ Any       │ 0           │ recent   │
-│ Any       │ 0           │ symptoms │
-╰───────────┴─────────────┴──────────╯
+            """╭───────────┬──────────┬─────────────╮
+│ Annotator │ Label    │ Chart Count │
+├───────────┼──────────┼─────────────┤
+│ Any       │ recent   │ 0           │
+│ Any       │ symptoms │ 0           │
+╰───────────┴──────────┴─────────────╯
 """,
             stdout,
         )
@@ -90,23 +90,19 @@ class TestLabels(base.TestCase):
 
     def test_labels_csv(self):
         """Verify that can print in CSV format"""
-        stdout = self.run_cli("labels", "--csv", path=f"{self.DATA_DIR}/cold")
+        stdout = self.run_cli("labels", "--csv", path=f"{self.DATA_DIR}/external")
 
         self.assertEqual(
             [
-                "annotator,chart_count,label",
-                "Any,2,Cough",
-                "Any,3,Fatigue",
-                "Any,3,Headache",
-                "jane,1,Cough",
-                "jane,2,Fatigue",
-                "jane,2,Headache",
-                "jill,2,Cough",
-                "jill,3,Fatigue",
-                "jill,0,Headache",
-                "john,1,Cough",
-                "john,2,Fatigue",
-                "john,2,Headache",
+                "annotator,label,chart_count",
+                "Any,happy,1",
+                "Any,sad,1",
+                "human,happy,1",
+                "human,sad,1",
+                "icd10-doc,happy,1",
+                "icd10-doc,sad,1",
+                "icd10-enc,happy,1",
+                "icd10-enc,sad,1",
             ],
             stdout.splitlines(),
         )

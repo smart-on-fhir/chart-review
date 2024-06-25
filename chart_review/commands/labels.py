@@ -29,19 +29,19 @@ def print_labels(args: argparse.Namespace) -> None:
             label_notes[annotator][name] = note_ids
             any_annotator_note_sets.setdefault(name, types.NoteSet()).update(note_ids)
 
-    label_table = cli_utils.create_table("Annotator", "Chart Count", "Label")
+    label_table = cli_utils.create_table("Annotator", "Label", "Chart Count")
 
     # First add summary entries, for counts across the union of all annotators
     for name in label_names:
         count = str(len(any_annotator_note_sets.get(name, {})))
-        label_table.add_row(rich.text.Text("Any", style="italic"), count, name)
+        label_table.add_row(rich.text.Text("Any", style="italic"), name, count)
 
     # Now do each annotator as their own little boxed section
     for annotator in sorted(label_notes.keys(), key=str.casefold):
         label_table.add_section()
         for name, note_set in label_notes[annotator].items():
             count = str(len(note_set))
-            label_table.add_row(annotator, count, name)
+            label_table.add_row(annotator, name, count)
 
     if args.csv:
         cli_utils.print_table_as_csv(label_table)

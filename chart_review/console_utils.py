@@ -39,7 +39,15 @@ def pretty_note_range(notes: types.NoteSet) -> str:
 
 
 def print_ignored_charts(reader: cohort.CohortReader):
-    """Prints a line about ignored charts, suitable for underlying a table"""
+    """
+    Prints a line about ignored charts, suitable for underlying a table.
+
+    It's recommended that any CLI command that shows individual chart IDs
+    call this for their normal output view (i.e. not a formatted view like --csv).
+
+    For commands that just show aggregate chart numbers,
+    use your judgement if it helps or is just confusing extra info.
+    """
     if not reader.ignored_notes:
         return
 
