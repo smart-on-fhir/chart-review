@@ -104,17 +104,6 @@ def print_line(heading=None) -> None:
 ###############################################################################
 # Helper Functions: enum type smoothing
 ###############################################################################
-def guard_str(object) -> str:
-    if isinstance(object, Enum):
-        return str(object.name)
-    elif isinstance(object, EnumMeta):
-        return str(object.name)
-    elif isinstance(object, str):
-        return object
-    else:
-        raise Exception(f"expected str|Enum but got {type(object)}")
-
-
 def guard_iter(object) -> Iterable:
     if isinstance(object, Enum):
         return guard_iter(object.value)

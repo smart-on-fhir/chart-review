@@ -46,6 +46,14 @@
                 "Fatigue"
               ]
             }
+          },
+          {
+            "value": {
+              "text": "sigh",
+              "labels": [
+                "Fatigue"
+              ]
+            }
           }
         ]
       },
@@ -106,6 +114,14 @@
                 "Fatigue"
               ]
             }
+          },
+          {
+            "value": {
+              "text": "ouch",
+              "labels": [
+                "Fatigue"
+              ]
+            }
           }
         ]
       }
@@ -136,6 +152,14 @@
           {
             "value": {
               "text": "sleepy",
+              "labels": [
+                "Fatigue"
+              ]
+            }
+          },
+          {
+            "value": {
+              "text": "sigh",
               "labels": [
                 "Fatigue"
               ]

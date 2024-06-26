@@ -26,7 +26,7 @@ def print_info(args: argparse.Namespace) -> None:
         notes = reader.note_range[annotator]
         chart_table.add_row(
             annotator,
-            str(len(notes)),
+            f"{len(notes):,}",
             console_utils.pretty_note_range(notes),
         )
 

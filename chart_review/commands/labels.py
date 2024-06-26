@@ -33,7 +33,7 @@ def print_labels(args: argparse.Namespace) -> None:
 
     # First add summary entries, for counts across the union of all annotators
     for name in label_names:
-        count = str(len(any_annotator_note_sets.get(name, {})))
+        count = f"{len(any_annotator_note_sets.get(name, {})):,}"
         label_table.add_row(rich.text.Text("Any", style="italic"), name, count)
 
     # Now do each annotator as their own little boxed section

@@ -1,7 +1,7 @@
 ---
 title: Labels Command
 parent: Chart Review
-nav_order: 7
+nav_order: 8
 # audience: lightly technical folks
 # type: how-to
 ---
