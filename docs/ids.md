@@ -70,7 +70,7 @@ $ chart-review ids
 
 ## Options
 
-### --csv
+### \-\-csv
 
 Print the IDs in a machine-parseable CSV format.
 

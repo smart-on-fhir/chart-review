@@ -40,7 +40,7 @@ $ chart-review mentions
 
 ## Options
 
-### --csv
+### \-\-csv
 
 Print the mentions in a machine-parseable CSV format.
 

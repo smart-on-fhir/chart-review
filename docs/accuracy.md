@@ -31,7 +31,7 @@ F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label
 
 ## Options
 
-### --verbose
+### \-\-verbose
 
 Use this to also print out a table of per-chart/per-label classifications.
 This is helpful for investigating where specifically the two annotators agreed or not.
@@ -61,7 +61,7 @@ Annotator: jane
 ╰──────────┴──────────┴────────────────╯
 ```
 
-### --csv
+### \-\-csv
 
 Print the accuracy chart in a machine-parseable CSV format.
 
