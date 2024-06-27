@@ -1,7 +1,7 @@
 from typing import Iterable
 
-from chart_review.common import guard_str, guard_iter, guard_in
-from chart_review import agree, common, config, errors, external, term_freq, simplify, types
+from chart_review.common import guard_iter, guard_in
+from chart_review import agree, common, config, errors, external, simplify, types
 
 
 class CohortReader:
@@ -84,25 +84,6 @@ class CohortReader:
     def class_labels(self):
         return self.annotations.labels
 
-    def calc_term_freq(self, annotator) -> dict:
-        """
-        Calculate Term Frequency of highlighted mentions.
-        :param annotator: an annotator name
-        :return: dict key=TERM val= {label, list of chart_id}
-        """
-        return term_freq.calc_term_freq(self.annotations, guard_str(annotator))
-
-    def calc_label_freq(self, annotator) -> dict:
-        """
-        Calculate Term Frequency of highlighted mentions.
-        :param annotator: an annotator name
-        :return: dict key=TERM val= {label, list of chart_id}
-        """
-        return term_freq.calc_label_freq(self.calc_term_freq(annotator))
-
-    def calc_term_label_confusion(self, annotator) -> dict:
-        return term_freq.calc_term_label_confusion(self.calc_term_freq(annotator))
-
     def _select_labels(self, label_pick: str = None) -> Iterable[str]:
         if label_pick:
             guard_in(label_pick, self.class_labels)
@@ -131,37 +112,3 @@ class CohortReader:
             note_range,
             labels=labels,
         )
-
-    def score_reviewer(self, truth: str, annotator: str, note_range, label_pick: str = None):
-        """
-        Score reliability of rater at the level of all symptom *PREVALENCE*
-        :param truth: annotator to use as the ground truth
-        :param annotator: another annotator to compare with truth
-        :param note_range: default= all in corpus
-        :param label_pick: (optional) of the CLASS_LABEL to score separately
-        :return: dict, keys f1, precision, recall and vals= %score
-        """
-        labels = self._select_labels(label_pick)
-        note_range = set(guard_iter(note_range))
-        return agree.score_reviewer(self.annotations, truth, annotator, note_range, labels=labels)
-
-    def score_reviewer_table_csv(self, truth: str, annotator: str, note_range) -> str:
-        table = list()
-        table.append(agree.csv_header(False, True))
-
-        score = self.score_reviewer(truth, annotator, note_range)
-        table.append(agree.csv_row_score(score, as_string=True))
-
-        for label in self.class_labels:
-            score = self.score_reviewer(truth, annotator, note_range, label)
-            table.append(agree.csv_row_score(score, label, as_string=True))
-
-        return "\n".join(table) + "\n"
-
-    def score_reviewer_table_dict(self, truth, annotator, note_range) -> dict:
-        table = self.score_reviewer(truth, annotator, note_range)
-
-        for label in self.class_labels:
-            table[label] = self.score_reviewer(truth, annotator, note_range, label)
-
-        return table

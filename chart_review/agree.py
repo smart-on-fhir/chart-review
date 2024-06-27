@@ -151,38 +151,6 @@ def score_matrix(matrix: dict, sig_digits=3) -> dict:
     }
 
 
-def avg_scores(first: dict, second: dict, sig_digits=3) -> dict:
-    merged = {}
-    for header in csv_header():
-        added = first[header] + second[header]
-        if header in ["TP", "FP", "FN", "TN"]:
-            merged[header] = added
-        else:
-            merged[header] = round(added / 2, sig_digits)
-    return merged
-
-
-def score_reviewer(
-    annotations: types.ProjectAnnotations,
-    truth: str,
-    annotator: str,
-    note_range: Collection[int],
-    labels: Iterable[str] = None,
-) -> dict:
-    """
-    Score reliability of an annotator against a truth annotator.
-
-    :param annotations: prepared map of annotators and mentions
-    :param truth: annotator to use as the ground truth
-    :param annotator: another annotator to compare with truth
-    :param note_range: collection of LabelStudio document ID
-    :param labels: (optional) set of labels to score
-    :return: dict, keys f1, precision, recall and vals= %score
-    """
-    truth_matrix = confusion_matrix(annotations, truth, annotator, note_range, labels=labels)
-    return score_matrix(truth_matrix)
-
-
 def csv_table(score: dict, class_labels: types.LabelSet):
     table = list()
     table.append(csv_header(False, True))
@@ -229,22 +197,3 @@ def csv_row_score(
 
     row.append(pick_label if pick_label else "*")
     return "\t".join(row)
-
-
-def true_prevalence(prevalence_apparent: float, sensitivity: float, specificity: float):
-    """
-    See paper: "The apparent prevalence, the true prevalence"
-    https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9195606
-
-    Using Eq. 4. it can be calculated:
-    True prevalence = (Apparent prevalence + Sp - 1)/(Se + Sp - 1)
-
-    :param prevalence_apparent: estimated prevalence, concretely:
-        the %NLP labled positives / cohort
-
-    :param: sensitivity: of the class label (where prevalence was measured)
-    :param: specificity: of the class label (where prevalence was measured)
-
-    :return: float adjusted prevalence
-    """
-    return round((prevalence_apparent + specificity - 1) / (sensitivity + specificity - 1), 5)

@@ -19,20 +19,21 @@ class TestMentions(base.TestCase):
 │ jane      │ 1        │ achoo   │ Cough    │
 │ jane      │ 1        │ sigh    │ Fatigue  │
 │ jane      │ 1        │ sigh    │ Headache │
-│ jane      │ 4        │ sleepy  │ Fatigue  │
 │ jane      │ 4        │ pain    │ Headache │
+│ jane      │ 4        │ sigh    │ Fatigue  │
+│ jane      │ 4        │ sleepy  │ Fatigue  │
 ├───────────┼──────────┼─────────┼──────────┤
 │ jill      │ 1        │ achoo   │ Cough    │
 │ jill      │ 1        │ sigh    │ Fatigue  │
 │ jill      │ 2        │ ouch    │ Fatigue  │
-│ jill      │ 4        │ sleepy  │ Fatigue  │
 │ jill      │ 4        │ pain    │ Cough    │
+│ jill      │ 4        │ sleepy  │ Fatigue  │
 ├───────────┼──────────┼─────────┼──────────┤
 │ john      │ 1        │ achoo   │ Cough    │
 │ john      │ 1        │ sigh    │ Fatigue  │
 │ john      │ 2        │ ouch    │ Headache │
-│ john      │ 4        │ sleepy  │ Fatigue  │
 │ john      │ 4        │ pain    │ Headache │
+│ john      │ 4        │ sleepy  │ Fatigue  │
 ╰───────────┴──────────┴─────────┴──────────╯
 """,
             stdout,
@@ -67,8 +68,8 @@ class TestMentions(base.TestCase):
             """╭───────────┬──────────┬─────────┬───────╮
 │ Annotator │ Chart ID │ Mention │ Label │
 ├───────────┼──────────┼─────────┼───────┤
-│ human     │ 1        │ woo     │ happy │
 │ human     │ 1        │ sigh    │ sad   │
+│ human     │ 1        │ woo     │ happy │
 ╰───────────┴──────────┴─────────┴───────╯
 """,
             stdout,
@@ -101,9 +102,9 @@ class TestMentions(base.TestCase):
                 """╭───────────┬──────────┬────────────┬───────╮
 │ Annotator │ Chart ID │ Mention    │ Label │
 ├───────────┼──────────┼────────────┼───────┤
-│ chris     │ 1        │ Cute Li🦁n │ Cat   │
-│ chris     │ 1        │ Multi      │ Cat   │
-│           │          │ Line-on    │       │
+│ chris     │ 1        │ cute li🦁n │ Cat   │
+│ chris     │ 1        │ multi      │ Cat   │
+│           │          │ line-on    │       │
 ╰───────────┴──────────┴────────────┴───────╯
 """,
                 stdout,
@@ -148,6 +149,49 @@ class TestMentions(base.TestCase):
                 stdout,
             )
 
+    def test_duplicate_mention(self):
+        """Verify that we don't show two copies of the same information"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json",
+                {
+                    "annotators": {"chris": 1},
+                    "labels": ["LabelA", "LabelB"],
+                },
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "annotations": [
+                            {
+                                "completed_by": 1,
+                                "result": [
+                                    {"value": {"text": "dup", "labels": ["LabelA"]}},
+                                    {"value": {"text": "dup", "labels": ["LabelA"]}},
+                                    {"value": {"text": "new", "labels": ["LabelA"]}},
+                                    {"value": {"text": "new", "labels": ["LabelB"]}},
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            )
+            stdout = self.run_cli("mentions", path=tmpdir)
+
+            self.assertEqual(
+                """╭───────────┬──────────┬─────────┬────────╮
+│ Annotator │ Chart ID │ Mention │ Label  │
+├───────────┼──────────┼─────────┼────────┤
+│ chris     │ 1        │ dup     │ LabelA │
+│ chris     │ 1        │ new     │ LabelA │
+│ chris     │ 1        │ new     │ LabelB │
+╰───────────┴──────────┴─────────┴────────╯
+""",
+                stdout,
+            )
+
     def test_csv(self):
         """Verify that can print in CSV format"""
         stdout = self.run_cli("mentions", "--csv", path=f"{self.DATA_DIR}/external")
@@ -155,8 +199,8 @@ class TestMentions(base.TestCase):
         self.assertEqual(
             [
                 "annotator,chart_id,mention,label",
-                "human,1,woo,happy",
                 "human,1,sigh,sad",
+                "human,1,woo,happy",
             ],
             stdout.splitlines(),
         )
