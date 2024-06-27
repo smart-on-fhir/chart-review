@@ -38,7 +38,7 @@ $ chart-review labels
 
 ## Options
 
-### --csv
+### \-\-csv
 
 Print the labels in a machine-parseable CSV format.
 

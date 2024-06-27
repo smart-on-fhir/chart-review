@@ -55,7 +55,7 @@ $ chart-review frequency
 
 ## Options
 
-### --csv
+### \-\-csv
 
 Print the frequencies in a machine-parseable CSV format.
 
