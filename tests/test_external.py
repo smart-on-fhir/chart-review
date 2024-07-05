@@ -1,6 +1,8 @@
 """Tests for external.py"""
 
-from chart_review import cohort, config
+import tempfile
+
+from chart_review import cohort, common, config
 from tests import base
 
 
@@ -37,3 +39,41 @@ class TestExternal(base.TestCase):
             },
             reader.note_range,
         )
+
+    def test_assumes_encounter_id(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": {"filename": "ext.csv"}}}
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {"id": 1, "data": {"enc_id": "could-be-either", "docref_mappings": {}}},
+                    {"id": 2, "data": {"docref_mappings": {"could-be-either": "anon"}}},
+                ],
+            )
+            common.write_text(f"{tmpdir}/ext.csv", "blarg,label\ncould-be-either,Confusing")
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+        self.assertEqual({"ext": {1}}, reader.note_range)
+
+    def test_bad_annotator_config(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": "ext.csv"}}  # no filename:
+            )
+            common.write_json(f"{tmpdir}/labelstudio-export.json", [{"id": 1}])
+
+            with self.assertRaisesRegex(ValueError, "^Did not understand config"):
+                cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+    def test_missing_label_studio_data(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": {"filename": "ext.csv"}}}
+            )
+            common.write_json(f"{tmpdir}/labelstudio-export.json", [{"id": 1, "data": {}}])
+            common.write_text(f"{tmpdir}/ext.csv", "blarg,label\nenc-id,Fever")
+
+            with self.assertRaisesRegex(ValueError, "^Your Label Studio export does not include"):
+                cohort.CohortReader(config.ProjectConfig(tmpdir))

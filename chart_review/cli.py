@@ -30,8 +30,9 @@ def main_cli(argv: list[str] = None) -> None:
         args = parser.parse_args(argv)
         args.func(args)
     except Exception as exc:
-        sys.exit(str(exc))
+        print(str(exc), file=sys.stderr)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
-    main_cli()
+    main_cli()  # pragma: no cover

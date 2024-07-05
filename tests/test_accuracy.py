@@ -164,3 +164,17 @@ Annotator: jane
             ],
             stdout.splitlines(),
         )
+
+    def test_bad_truth(self):
+        """Verify that we do something suitable for bad arguments"""
+        # Truth
+        with self.capture_stderr() as stderr:
+            with self.assertRaises(SystemExit):
+                self.run_cli("accuracy", "nope1", "nope2", path=f"{self.DATA_DIR}/cold")
+        self.assertEqual("Unrecognized annotator 'nope1'\n", stderr.getvalue())
+
+        # Annotator
+        with self.capture_stderr() as stderr:
+            with self.assertRaises(SystemExit):
+                self.run_cli("accuracy", "jill", "nope2", path=f"{self.DATA_DIR}/cold")
+        self.assertEqual("Unrecognized annotator 'nope2'\n", stderr.getvalue())

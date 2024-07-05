@@ -1,4 +1,4 @@
-BLARG_ID,SYMPTOM
+ENC_ID,SYMPTOM
 "ABC-Enc","happy"
 "ABC","ignored"
 "ABC-Enc","tired"

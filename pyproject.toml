@@ -39,6 +39,7 @@ line-length = 100
 tests = [
     "ddt",
     "pytest",
+    "pytest-cov",
 ]
 dev = [
     "bandit[toml]",

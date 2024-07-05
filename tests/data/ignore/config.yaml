@@ -6,3 +6,4 @@ ignore:
   - 3-Enc
   - Encounter/Anon-4-Enc
   - 5
+  - Encounter/Unknown  # just test we don't blow up
