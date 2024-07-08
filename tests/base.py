@@ -30,3 +30,10 @@ class TestCase(unittest.TestCase):
         stdout = io.StringIO()
         with contextlib.redirect_stdout(stdout):
             yield stdout
+
+    @staticmethod
+    @contextlib.contextmanager
+    def capture_stderr() -> io.StringIO:
+        stderr = io.StringIO()
+        with contextlib.redirect_stderr(stderr):
+            yield stderr

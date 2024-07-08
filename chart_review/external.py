@@ -106,16 +106,16 @@ def merge_external(
     config: dict,
 ) -> None:
     """Loads an external csv file annotator and merges them into an existing simple dict"""
-    if filename := config.get("filename"):
+    if isinstance(config, dict) and (filename := config.get("filename")):
         full_filename = os.path.join(project_dir, filename)
         detected_id_type, label_map = _load_csv_labels(full_filename)
     else:
-        sys.exit(f"Did not understand config for external annotator '{name}'")
+        raise ValueError(f"Did not understand config for external annotator '{name}'")
 
     # Inspect exported json to see if it has the metadata we'll need.
     for row in exported_json:
         if "docref_mappings" not in row.get("data", {}):
-            sys.exit(
+            raise ValueError(
                 "Your Label Studio export does not include DocRef/Encounter ID mapping metadata!\n"
                 "Consider re-uploading your notes using Cumulus ETL's chart-review command."
             )

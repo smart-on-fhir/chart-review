@@ -13,7 +13,7 @@ concurrency:
 jobs:
   unittest:
     name: unit tests
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         # don't go crazy with the Python versions as they eat up CI minutes
@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -34,10 +34,20 @@ jobs:
 
       - name: Test with pytest
         run: |
-          python -m pytest
+          python -m pytest --cov=chart_review --cov-report=xml
+
+      - name: Check coverage report
+        if: github.ref != 'refs/heads/main'
+        uses: orgoro/coverage@v3.1
+        with:
+          coverageFile: coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          thresholdAll: .99
+          thresholdNew: 1
+          thresholdModified: 1
 
   lint:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 

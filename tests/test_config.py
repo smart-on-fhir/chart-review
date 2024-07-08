@@ -56,16 +56,18 @@ class TestProjectConfig(base.TestCase):
 
     def test_range_syntax(self):
         """Verify that we support interesting note range syntax options."""
-        proj_config = self.make_config(
+        with self.capture_stderr() as stderr:
+            proj_config = self.make_config(
+                """
+                ranges:
+                    bare_num: 1
+                    string_num: "2"
+                    range: 3-5
+                    reference: bare_num
+                    array: [1, "2", range]
+                    invalid: [not_defined, 1]
             """
-            ranges:
-                bare_num: 1
-                string_num: "2"
-                range: 3-5
-                reference: bare_num
-                array: [1, "2", range]
-        """
-        )
+            )
 
         self.assertEqual(
             {
@@ -74,8 +76,28 @@ class TestProjectConfig(base.TestCase):
                 "range": [3, 4, 5],
                 "reference": [1],
                 "array": [1, 2, 3, 4, 5],
+                "invalid": [1],
             },
             proj_config.note_ranges,
+        )
+        self.assertEqual(stderr.getvalue(), "Unknown note range 'not_defined'\n")
+
+    def test_grouped_labels(self):
+        """Verify that we grab the label config correctly."""
+        proj_config = self.make_config(
+            """
+            grouped-labels:
+                A: B
+                C: [D, E]
+            """
+        )
+
+        self.assertEqual(
+            {
+                "A": {"B"},
+                "C": {"D", "E"},
+            },
+            proj_config.grouped_labels,
         )
 
     def test_implied_labels(self):

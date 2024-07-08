@@ -32,11 +32,9 @@ def print_accuracy(args: argparse.Namespace) -> None:
     annotator = args.annotator
 
     if truth not in reader.note_range:
-        print(f"Unrecognized annotator '{truth}'")
-        return
+        raise ValueError(f"Unrecognized annotator '{truth}'")
     if annotator not in reader.note_range:
-        print(f"Unrecognized annotator '{annotator}'")
-        return
+        raise ValueError(f"Unrecognized annotator '{annotator}'")
 
     # Grab the intersection of ranges
     note_range = set(reader.note_range[truth])

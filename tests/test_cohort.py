@@ -67,3 +67,41 @@ class TestCohort(base.TestCase):
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
 
             self.assertEqual({"bob": {1, 3}}, reader.note_range)
+
+    def test_unknown_annotators_are_ignored(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(f"{tmpdir}/config.json", {"annotators": {"bob": 1}})
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {"id": 1, "annotations": [{"completed_by": 1}, {"completed_by": 2}]},
+                ],
+            )
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+            self.assertEqual({"bob": {1}}, reader.note_range)
+
+    def test_implied_labels_get_expanded(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json",
+                {
+                    "annotators": {"bob": 1},
+                    "implied-labels": {
+                        "cat": ["animal", "cat"],
+                        "animal": "alive",
+                    },
+                },
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "annotations": [
+                            {"completed_by": 1, "result": [{"value": {"labels": ["cat"]}}]},
+                        ],
+                    }
+                ],
+            )
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+            self.assertEqual({"bob": {1: {"cat", "animal", "alive"}}}, reader.annotations.mentions)

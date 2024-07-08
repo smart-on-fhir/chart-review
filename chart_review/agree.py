@@ -62,28 +62,9 @@ def confusion_matrix(
             elif not truth_positive and not annotator_positive:
                 TN.append(key)
             else:
-                raise Exception("Guard: Impossible comparison of reviewers")
+                raise Exception("Guard: Impossible comparison of reviewers")  # pragma: no cover
 
     return {"TP": TP, "FN": FN, "FP": FP, "TN": TN}
-
-
-def append_matrix(first: dict, second: dict) -> dict:
-    """
-    Append two different confusion_matrix matrix dictionaries.
-
-    For example, (Annotator1 VS NLP) appended to (Annotator2 vs NLP).
-
-    TODO: Warning: assumes first and second have no overlapping NoteRange,
-          may not be applicable for other studies.
-
-    :param first: confusion_matrix matrix
-    :param second: confusion_matrix matrix
-    :return:
-    """
-    added = {}
-    for header in ["TP", "FP", "FN", "TN"]:
-        added[header] = first[header] + second[header]
-    return added
 
 
 def score_kappa(matrix: dict) -> float:

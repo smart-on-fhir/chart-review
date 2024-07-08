@@ -1,6 +1,5 @@
 from typing import Iterable
 
-from chart_review.common import guard_iter, guard_in
 from chart_review import agree, common, config, errors, external, simplify, types
 
 
@@ -86,13 +85,12 @@ class CohortReader:
 
     def _select_labels(self, label_pick: str = None) -> Iterable[str]:
         if label_pick:
-            guard_in(label_pick, self.class_labels)
             return [label_pick]
         else:
             return self.class_labels
 
     def confusion_matrix(
-        self, truth: str, annotator: str, note_range: Iterable, label_pick: str = None
+        self, truth: str, annotator: str, note_range: types.NoteSet, label_pick: str = None
     ) -> dict:
         """
         This is the rollup of counting each symptom only once, not multiple times.
@@ -104,7 +102,6 @@ class CohortReader:
         :return: dict
         """
         labels = self._select_labels(label_pick)
-        note_range = set(guard_iter(note_range))
         return agree.confusion_matrix(
             self.annotations,
             truth,
