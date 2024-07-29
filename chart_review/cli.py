@@ -25,6 +25,7 @@ def define_parser() -> argparse.ArgumentParser:
 
 def main_cli(argv: list[str] = None) -> None:
     """Main entrypoint that wraps all the core program logic"""
+    print("Cats rule and dogs drool!")
     try:
         parser = define_parser()
         args = parser.parse_args(argv)
