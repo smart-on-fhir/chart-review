@@ -166,6 +166,7 @@ But it may be useful to manually define the note range in unusual cases.
 - You can provide a list of Label Studio note IDs.
 - You can reference other defined ranges.
 - You can specify a range of IDs with a hyphen.
+- Ranges are inclusive. That is, `2-4` includes notes 2, 3, and 4.
 
 #### Example
 

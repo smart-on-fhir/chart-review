@@ -71,13 +71,19 @@ class ProjectConfig:
         if config_path is None:
             # Support config.json in case folks prefer that
             try:
-                return self._read_yaml(self.path("config.json"))
+                config = self._read_yaml(self.path("config.json"))
             except FileNotFoundError:
-                return self._read_yaml(self.path("config.yaml"))
+                config = self._read_yaml(self.path("config.yaml"))
+        else:
+            # Don't resolve config_path relative to the project dir, because
+            # this will have come from the command line and will resolve relative to `pwd`.
+            config = self._read_yaml(config_path)
 
-        # Don't resolve config_path relative to the project dir, because
-        # this will have come from the command line and will resolve relative to `pwd`.
-        return self._read_yaml(config_path)
+        # Do some minimal validation on the config file
+        if not isinstance(config, dict):
+            raise ValueError("Config file is not in the expected dictionary format.")
+
+        return config
 
     def _parse_note_range(self, value: Union[str, int, list[Union[str, int]]]) -> Iterable[int]:
         if isinstance(value, list):
