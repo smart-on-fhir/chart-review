@@ -73,9 +73,10 @@ Pass --help to see more options.
                 self.run_cli(path=tmpdir)
         self.assertEqual(cm.exception.code, errors.ERROR_INVALID_PROJECT)
 
-    def test_empty_config(self):
+    def test_bad_config(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            common.write_text(f"{tmpdir}/config.yaml", "")
+            shutil.copy(f"{self.DATA_DIR}/cold/labelstudio-export.json", tmpdir)
+            common.write_text(f"{tmpdir}/config.json", "[1, 2]")
             with self.assertRaises(SystemExit) as cm:
                 self.run_cli(path=tmpdir)
         self.assertEqual(cm.exception.code, errors.ERROR_INVALID_PROJECT)
