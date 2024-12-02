@@ -18,7 +18,7 @@ classifiers = [
 dynamic = ["version"]
 
 [project.urls]
-Home = "https://smarthealthit.org/cumulus-a-universal-sidecar-for-a-smart-learning-healthcare-system/"
+Home = "https://smarthealthit.org/cumulus/"
 Documentation = "https://docs.smarthealthit.org/cumulus/chart-review/"
 Source = "https://github.com/smart-on-fhir/chart-review"
 
