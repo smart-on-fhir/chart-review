@@ -43,7 +43,7 @@ tests = [
 ]
 dev = [
     "bandit[toml]",
-    "black >= 24, < 25",
+    "black >= 24, < 26",
     "pycodestyle",
     "pylint",
 ]
