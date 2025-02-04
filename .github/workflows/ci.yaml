@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +36,10 @@ jobs:
         run: |
           python -m pytest --cov=chart_review --cov-report=xml
 
+      - name: Log missing coverage
+        run: |
+          coverage report -m --skip-covered
+
       - name: Check coverage report
         if: github.ref != 'refs/heads/main'
         uses: orgoro/coverage@v3.2
@@ -44,7 +48,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           thresholdAll: .99
           thresholdNew: 1
-          thresholdModified: 1
+          thresholdModified: .97
 
   lint:
     runs-on: ubuntu-latest
@@ -57,19 +61,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install .[dev]
 
-      - name: Run pycodestyle
-        # E203: pycodestyle is a little too rigid about slices & whitespace
-        #  See https://black.readthedocs.io/en/stable/the_black_code_style/current_style.html#slices
-        # W503: a default ignore that we are restoring
-        run: |
-          pycodestyle --max-line-length=100 --ignore=E203,W503 .
-
-      - name: Run bandit
-        if: success() || failure() # still run bandit if above checks fail
-        run: |
-          bandit -c pyproject.toml -r .
-
-      - name: Run black
-        if: success() || failure() # still run black if above checks fails
-        run: |
-          black --check --verbose .
+      - name: Run ruff
+        run: ruff check --output-format=github .

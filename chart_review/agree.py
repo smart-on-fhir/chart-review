@@ -1,15 +1,15 @@
 from collections.abc import Collection, Iterable
-from typing import Union
+from typing import Optional, Union
 
-from chart_review import types
+from chart_review import defines
 
 
 def confusion_matrix(
-    annotations: types.ProjectAnnotations,
+    annotations: defines.ProjectAnnotations,
     truth: str,
     annotator: str,
     note_range: Collection[int],
-    labels: Iterable[str] = None,
+    labels: Optional[Iterable[str]] = None,
 ) -> dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
@@ -27,8 +27,8 @@ def confusion_matrix(
         "FN": False Negative (truth said positive+, annotator said No)
         "TN": True Negative (truth and annotator both said No)
     """
-    truth_mentions = annotations.mentions.get(truth, types.Mentions())
-    annotator_mentions = annotations.mentions.get(annotator, types.Mentions())
+    truth_mentions = annotations.mentions.get(truth, defines.Mentions())
+    annotator_mentions = annotations.mentions.get(annotator, defines.Mentions())
 
     # Only examine labels that were used by any compared annotators at least once
     label_set = set()
@@ -132,7 +132,7 @@ def score_matrix(matrix: dict, sig_digits=3) -> dict:
     }
 
 
-def csv_table(score: dict, class_labels: types.LabelSet):
+def csv_table(score: dict, class_labels: defines.LabelSet):
     table = list()
     table.append(csv_header(False, True))
     table.append(csv_row_score(score, as_string=True))
@@ -160,7 +160,7 @@ def csv_header(pick_label=False, as_string=False):
 
 
 def csv_row_score(
-    score: dict, pick_label: str = None, as_string: bool = False
+    score: dict, pick_label: Optional[str] = None, as_string: bool = False
 ) -> Union[str, list[str]]:
     """
     Table Row entry

@@ -1,6 +1,7 @@
-from typing import Iterable
+from collections.abc import Iterable
+from typing import Optional
 
-from chart_review import agree, common, config, errors, external, simplify, types
+from chart_review import agree, common, config, defines, errors, external, simplify
 
 
 class CohortReader:
@@ -27,7 +28,7 @@ class CohortReader:
 
         # Add a placeholder for any annotators that don't have mentions for some reason
         for annotator in self.config.annotators.values():
-            self.annotations.mentions.setdefault(annotator, types.Mentions())
+            self.annotations.mentions.setdefault(annotator, defines.Mentions())
 
         # Load external annotations (i.e. from NLP tags or ICD10 codes)
         for name, value in self.config.external_annotations.items():
@@ -49,7 +50,7 @@ class CohortReader:
 
     def _collect_note_ranges(
         self, exported_json: list[dict]
-    ) -> tuple[dict[str, types.NoteSet], types.NoteSet]:
+    ) -> tuple[dict[str, defines.NoteSet], defines.NoteSet]:
         # Detect note ranges if they were not defined in the project config
         # (i.e. default to the full set of annotated notes)
         note_ranges = {k: set(v) for k, v in self.config.note_ranges.items()}
@@ -60,7 +61,7 @@ class CohortReader:
         all_ls_notes = {int(entry["id"]) for entry in exported_json if "id" in entry}
 
         # Parse ignored IDs (might be note IDs, might be external IDs)
-        ignored_notes = types.NoteSet()
+        ignored_notes = defines.NoteSet()
         for ignore_id in self.config.ignore:
             ls_id = external.external_id_to_label_studio_id(exported_json, str(ignore_id))
             if ls_id is None:
@@ -83,14 +84,18 @@ class CohortReader:
     def class_labels(self):
         return self.annotations.labels
 
-    def _select_labels(self, label_pick: str = None) -> Iterable[str]:
+    def _select_labels(self, label_pick: Optional[str] = None) -> Iterable[str]:
         if label_pick:
             return [label_pick]
         else:
             return self.class_labels
 
     def confusion_matrix(
-        self, truth: str, annotator: str, note_range: types.NoteSet, label_pick: str = None
+        self,
+        truth: str,
+        annotator: str,
+        note_range: defines.NoteSet,
+        label_pick: Optional[str] = None,
     ) -> dict:
         """
         This is the rollup of counting each symptom only once, not multiple times.

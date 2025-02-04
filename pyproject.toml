@@ -29,12 +29,6 @@ chart-review = "chart_review.cli:main_cli"
 requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
 
-[tool.bandit]
-exclude_dirs = ["tests"]
-
-[tool.black]
-line-length = 100
-
 [project.optional-dependencies]
 tests = [
     "ddt",
@@ -42,10 +36,10 @@ tests = [
     "pytest-cov",
 ]
 dev = [
-    "bandit[toml]",
-    "black >= 24, < 25",
-    "pycodestyle",
-    "pylint",
+    "pre-commit",
+    # Ruff is using minor versions for breaking changes until their 1.0 release.
+    # See https://docs.astral.sh/ruff/versioning/
+    "ruff < 0.10",  # keep in rough sync with pre-commit-config.yaml
 ]
 
 [tool.flit.sdist]
@@ -55,3 +49,23 @@ include = [
     "LICENSE",
     "*.md",
 ]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+allowed-confusables = ["’", "–"]  # allow proper apostrophes/dashes
+select = [
+    "A",  # prevent using keywords that clobber python builtins
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "I",  # isort
+    "PLE",  # pylint errors
+    "RUF",  # the ruff developer's own rules
+    "S",  # bandit security warnings
+    "UP",  # alert you when better syntax is available in your python version
+]
+
+[tool.ruff.lint.per-file-ignores]
+"**/__init__.py" = ["F401"]  # init files hold API, so not using imports is intentional
+"tests/**" = ["S"]  # tests do suspicious stuff that's fine, actually

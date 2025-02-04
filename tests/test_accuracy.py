@@ -3,7 +3,7 @@
 import shutil
 import tempfile
 
-from chart_review import cli, common
+from chart_review import common
 from tests import base
 
 
@@ -23,7 +23,7 @@ F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label
 0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   
 1.0    1.0   1.0   1.0  1.0   1.0    2   0   1   0   Fatigue 
 0      0     0     0    0     0      0   0   1   2   Headache
-""",  # noqa: W291
+""",
             stdout,
         )
 
@@ -140,7 +140,7 @@ Annotator: jane
 │ 4        │ Fatigue  │ TP             │
 │ 4        │ Headache │ FP             │
 ╰──────────┴──────────┴────────────────╯
-""",  # noqa: W291
+""",
             output,
         )
 

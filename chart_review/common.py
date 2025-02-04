@@ -1,10 +1,8 @@
 """Utility methods"""
 
-from enum import Enum, EnumMeta
-from typing import Optional, Union
-from collections.abc import Iterable
-import logging
 import json
+import logging
+from typing import Optional, Union
 
 ###############################################################################
 # Helper Functions: read/write JSON and text
@@ -19,7 +17,7 @@ def read_json(path: str) -> Union[dict, list[dict]]:
     """
     logging.debug("read_json() %s", path)
 
-    with open(path, "r") as f:
+    with open(path) as f:
         return json.load(f, strict=False)
 
 
@@ -44,7 +42,7 @@ def read_text(path: str) -> str:
     """
     logging.debug("read_text() %s", path)
 
-    with open(path, "r") as f:
+    with open(path) as f:
         return f.read()
 
 

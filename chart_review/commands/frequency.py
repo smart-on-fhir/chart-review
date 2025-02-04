@@ -5,7 +5,7 @@ import rich.box
 import rich.table
 import rich.text
 
-from chart_review import cli_utils, console_utils, types
+from chart_review import cli_utils, console_utils, defines
 
 
 def make_subparser(parser: argparse.ArgumentParser) -> None:
@@ -40,7 +40,7 @@ def print_frequency(args: argparse.Namespace) -> None:
                         all_text_to_count[text] = all_text_to_count.get(text, 0) + 1
 
                         # And finally, add it to our running term-confusion tracker
-                        text_labels.setdefault(text, types.LabelSet()).add(label)
+                        text_labels.setdefault(text, defines.LabelSet()).add(label)
 
     # Now group up the data into a formatted table
     table = cli_utils.create_table("Annotator", "Label", "Mention", "Count")
@@ -73,5 +73,5 @@ def print_frequency(args: argparse.Namespace) -> None:
         console_utils.print_ignored_charts(reader)
         if has_term_confusion:
             rich.get_console().print(
-                f"  * This text has multiple associated labels.", style="italic"
+                "  * This text has multiple associated labels.", style="italic"
             )
