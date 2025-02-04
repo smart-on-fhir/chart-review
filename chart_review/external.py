@@ -6,7 +6,7 @@ import os
 import sys
 from typing import Optional
 
-from chart_review import simplify, types
+from chart_review import defines
 
 
 class IdentifierType(enum.Enum):
@@ -14,7 +14,7 @@ class IdentifierType(enum.Enum):
     ENCOUNTER = enum.auto()
 
 
-def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, types.LabelSet]]:
+def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, defines.LabelSet]]:
     """
     Loads a csv and returns a list of labels per row.
 
@@ -25,7 +25,7 @@ def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, types.Lab
     """
     id_to_labels = {}
 
-    with open(filename, "r", newline="", encoding="utf8") as csvfile:
+    with open(filename, newline="", encoding="utf8") as csvfile:
         reader = csv.reader(csvfile)
 
         header = next(reader, None)  # should be [row_id, label]
@@ -42,7 +42,7 @@ def _load_csv_labels(filename: str) -> tuple[IdentifierType, dict[str, types.Lab
 
         for row in reader:
             row_id = row[0]
-            label_set = id_to_labels.setdefault(row_id, types.LabelSet())
+            label_set = id_to_labels.setdefault(row_id, defines.LabelSet())
             if row[1]:  # allow for no labels for a row (no positive labels found)
                 label_set.add(row[1])
 
@@ -99,7 +99,7 @@ def external_id_to_label_studio_id(
 
 
 def merge_external(
-    annotations: types.ProjectAnnotations,
+    annotations: defines.ProjectAnnotations,
     exported_json: list[dict],
     project_dir: str,
     name: str,
@@ -122,7 +122,7 @@ def merge_external(
         break  # just inspect one
 
     # Convert each row id into an LS id:
-    external_mentions = annotations.mentions.setdefault(name, types.Mentions())
+    external_mentions = annotations.mentions.setdefault(name, defines.Mentions())
     for row_id, label_set in label_map.items():
         ls_id = external_id_to_label_studio_id(
             exported_json,

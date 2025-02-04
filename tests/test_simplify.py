@@ -2,7 +2,7 @@
 
 import ddt
 
-from chart_review import simplify, types
+from chart_review import defines, simplify
 from tests import base
 
 
@@ -18,7 +18,7 @@ class TestSimplify(base.TestCase):
     @ddt.unpack
     def test_simplify_mentions(self, input_labels, expected_labels):
         """Verify that we handle implied and grouped labels."""
-        annotations = types.ProjectAnnotations(
+        annotations = defines.ProjectAnnotations(
             # Note that the group names are not part of this label set yet.
             # This set generally starts with just the human-tagged input labels.
             labels={"Animal", "Cat", "Dangerous", "Lion", "Pet", "Venomous"},
@@ -42,7 +42,7 @@ class TestSimplify(base.TestCase):
 
     def test_binary_grouping(self):
         """Verify that grouping all labels down to a simple yes/no works as expected."""
-        annotations = types.ProjectAnnotations(
+        annotations = defines.ProjectAnnotations(
             labels={"Blue", "Green", "Red"},
             mentions={
                 "paint-bot": {

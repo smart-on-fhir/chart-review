@@ -19,9 +19,9 @@ class TestCase(unittest.TestCase):
 
     @staticmethod
     def run_cli(*args, path: str) -> str:
-        args = ("--project-dir", path) + args
+        args = ["--project-dir", path, *args]
         with TestCase.capture_stdout() as stdout:
-            cli.main_cli(list(args))
+            cli.main_cli(args)
         return stdout.getvalue()
 
     @staticmethod

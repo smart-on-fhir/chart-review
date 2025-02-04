@@ -2,12 +2,12 @@ import itertools
 import os
 import re
 import sys
-from typing import Iterable, Optional, Union
+from collections.abc import Iterable
+from typing import Optional, Union
 
-import rich.console
 import yaml
 
-from chart_review import errors, types
+from chart_review import defines, errors
 
 
 class ProjectConfig:
@@ -29,7 +29,7 @@ class ProjectConfig:
         # since that's what is stored in Label Studio. So that's what we return from this method.
         # But as humans writing config files, it's more natural to think of "name -> id".
         # So that's what we keep in the config, and we just reverse it here for convenience.
-        self.annotators = types.AnnotatorMap()
+        self.annotators = defines.AnnotatorMap()
         self.external_annotations = {}
         for name, value in self._data.get("annotators", {}).items():
             if isinstance(value, int):  # real annotation layer in Label Studio
@@ -44,7 +44,7 @@ class ProjectConfig:
             self.note_ranges[key] = list(self._parse_note_range(values))
 
         # ** Implied labels **
-        self.implied_labels = types.ImpliedLabels()
+        self.implied_labels = defines.ImpliedLabels()
         for key, value in self._data.get("implied-labels", {}).items():
             # Coerce single labels into a set
             if not isinstance(value, list):
@@ -52,7 +52,7 @@ class ProjectConfig:
             self.implied_labels[key] = set(value)
 
         # ** Grouped labels **
-        self.grouped_labels = types.GroupedLabels()
+        self.grouped_labels = defines.GroupedLabels()
         for key, value in self._data.get("grouped-labels", {}).items():
             # Coerce single labels into a set
             if not isinstance(value, list):
@@ -104,7 +104,7 @@ class ProjectConfig:
             return []
 
     @property
-    def class_labels(self) -> types.LabelSet:
+    def class_labels(self) -> defines.LabelSet:
         return set(self._data.setdefault("labels", []))
 
     @property

@@ -2,10 +2,10 @@
 
 import rich
 
-from chart_review import cohort, types
+from chart_review import cohort, defines
 
 
-def pretty_note_range(notes: types.NoteSet) -> str:
+def pretty_note_range(notes: defines.NoteSet) -> str:
     """
     Returns a pretty, human-readable string for a set of notes.
 

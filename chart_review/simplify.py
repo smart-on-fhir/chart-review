@@ -1,12 +1,11 @@
-import re
-from collections.abc import Container
+from typing import Optional
 
-from chart_review import config, types
+from chart_review import config, defines
 
 
 def simplify_export(
     exported_json: list[dict], proj_config: config.ProjectConfig
-) -> types.ProjectAnnotations:
+) -> defines.ProjectAnnotations:
     """
     Label Studio outputs contain more info than needed for IAA and term_freq.
 
@@ -16,7 +15,7 @@ def simplify_export(
     :param proj_config: project configuration
     :return: all project mentions parsed from the Label Studio export
     """
-    annotations = types.ProjectAnnotations()
+    annotations = defines.ProjectAnnotations()
     annotations.labels = proj_config.class_labels
     grab_all_labels = not annotations.labels
 
@@ -29,7 +28,7 @@ def simplify_export(
                 continue  # we don't know who this is!
 
             # Grab all valid mentions for this annotator & note
-            labels = types.LabelSet()
+            labels = defines.LabelSet()
             text_tags = []
             for result in annot.get("result", []):
                 result_value = result.get("value", {})
@@ -37,14 +36,14 @@ def simplify_export(
                 result_labels = set(result_value.get("labels", []))
 
                 labels |= result_labels
-                text_tags.append(types.LabeledText(result_text, result_labels))
+                text_tags.append(defines.LabeledText(result_text, result_labels))
 
             if grab_all_labels:
                 annotations.labels |= labels
 
             # Store these mentions in the main annotations list, by author & note
             annotator = proj_config.annotators[completed_by]
-            annotator_mentions = annotations.mentions.setdefault(annotator, types.Mentions())
+            annotator_mentions = annotations.mentions.setdefault(annotator, defines.Mentions())
             annotator_mentions[note_id] = labels
             annot_orig_text_tags = annotations.original_text_mentions.setdefault(annotator, {})
             annot_orig_text_tags[note_id] = text_tags
@@ -53,7 +52,9 @@ def simplify_export(
 
 
 def _find_implied_labels(
-    source_label: str, implied_label_mappings: types.ImpliedLabels, found_labels: set[str] = None
+    source_label: str,
+    implied_label_mappings: defines.ImpliedLabels,
+    found_labels: Optional[set[str]] = None,
 ) -> set[str]:
     """
     Expands the source label into the set of all implied labels.
@@ -74,12 +75,12 @@ def _find_implied_labels(
 
 
 def _find_implied_mentions(
-    mentions: types.Mentions, implied_label_mappings: types.ImpliedLabels
-) -> types.Mentions:
+    mentions: defines.Mentions, implied_label_mappings: defines.ImpliedLabels
+) -> defines.Mentions:
     """
     For every note, expands its labels into the set of all implied labels for that note.
     """
-    found_mentions = types.Mentions()
+    found_mentions = defines.Mentions()
 
     for note_id, labels in mentions.items():
         implied_mentions = found_mentions.setdefault(note_id, set())
@@ -90,14 +91,14 @@ def _find_implied_mentions(
 
 
 def _convert_grouped_mentions(
-    mentions: types.Mentions, grouped_label_mappings: types.GroupedLabels
-) -> types.Mentions:
+    mentions: defines.Mentions, grouped_label_mappings: defines.GroupedLabels
+) -> defines.Mentions:
     """
     For every note, converts all labels in a group into one label for the group name.
 
     This is not recursive. (i.e. you can't have complicated grouping configs that combine)
     """
-    final_mentions = types.Mentions()
+    final_mentions = defines.Mentions()
 
     for note_id, labels in mentions.items():
         for group_name, group_members in grouped_label_mappings.items():
@@ -110,10 +111,10 @@ def _convert_grouped_mentions(
 
 
 def simplify_mentions(
-    annotations: types.ProjectAnnotations,
+    annotations: defines.ProjectAnnotations,
     *,
-    implied_labels: types.ImpliedLabels,
-    grouped_labels: types.GroupedLabels,
+    implied_labels: defines.ImpliedLabels,
+    grouped_labels: defines.GroupedLabels,
 ) -> None:
     # ** Expand all implied labels.
     annotations.mentions = {

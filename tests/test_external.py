@@ -60,7 +60,8 @@ class TestExternal(base.TestCase):
     def test_bad_annotator_config(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             common.write_json(
-                f"{tmpdir}/config.json", {"annotators": {"ext": "ext.csv"}}  # no filename:
+                f"{tmpdir}/config.json",
+                {"annotators": {"ext": "ext.csv"}},  # no filename:
             )
             common.write_json(f"{tmpdir}/labelstudio-export.json", [{"id": 1}])
 

@@ -2,7 +2,7 @@
 
 import ddt
 
-from chart_review import agree, types
+from chart_review import agree, defines
 from tests import base
 
 
@@ -48,7 +48,7 @@ class TestAgreement(base.TestCase):
     @ddt.unpack
     def test_confusion_matrix_counts(self, truth, annotator, labels, expected_matrix):
         """Verify that we can make a simple confusion matrix."""
-        annotations = types.ProjectAnnotations(
+        annotations = defines.ProjectAnnotations(
             labels={"Cough", "Fever", "Headache"},
             mentions={
                 "alice": {1: {"Cough"}, 2: {"Fever"}},

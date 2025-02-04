@@ -5,7 +5,7 @@ import rich.box
 import rich.table
 import rich.text
 
-from chart_review import cli_utils, console_utils, types
+from chart_review import cli_utils, console_utils, defines
 
 
 def make_subparser(parser: argparse.ArgumentParser) -> None:
@@ -20,14 +20,14 @@ def print_labels(args: argparse.Namespace) -> None:
 
     # Calculate all label counts for each annotator
     label_names = sorted(reader.class_labels, key=str.casefold)
-    label_notes: dict[str, dict[str, types.NoteSet]] = {}  # annotator -> label -> note IDs
-    any_annotator_note_sets: dict[str, types.NoteSet] = {}
+    label_notes: dict[str, dict[str, defines.NoteSet]] = {}  # annotator -> label -> note IDs
+    any_annotator_note_sets: dict[str, defines.NoteSet] = {}
     for annotator, mentions in reader.annotations.mentions.items():
         label_notes[annotator] = {}
         for name in label_names:
             note_ids = {note_id for note_id, labels in mentions.items() if name in labels}
             label_notes[annotator][name] = note_ids
-            any_annotator_note_sets.setdefault(name, types.NoteSet()).update(note_ids)
+            any_annotator_note_sets.setdefault(name, defines.NoteSet()).update(note_ids)
 
     label_table = cli_utils.create_table("Annotator", "Label", "Chart Count")
 
