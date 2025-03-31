@@ -5,6 +5,7 @@ dependencies = [
     "ctakesclient",
     "pyyaml >= 6",
     "rich",
+    "scipy",
 ]
 description = "Medical Record Chart Review Calculator"
 readme = "README.md"

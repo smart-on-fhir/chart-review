@@ -36,6 +36,9 @@ def print_accuracy(args: argparse.Namespace) -> None:
     if annotator not in reader.note_range:
         raise ValueError(f"Unrecognized annotator '{annotator}'")
 
+    if truth == annotator:
+        raise ValueError("Can’t compare the same annotator with themselves.")
+
     # Grab the intersection of ranges
     note_range = set(reader.note_range[truth])
     note_range &= set(reader.note_range[annotator])
@@ -69,7 +72,7 @@ def print_accuracy(args: argparse.Namespace) -> None:
                         break
     else:
         # Normal F1/Kappa scores
-        table = rich.table.Table(*agree.csv_header(), "Label", box=None, pad_edge=False)
+        table = cli_utils.create_table(*agree.csv_header(), "Label", dense=True)
         table.add_row(*agree.csv_row_score(scores[None]), "*")
         for label in labels:
             table.add_row(*agree.csv_row_score(scores[label]), label)

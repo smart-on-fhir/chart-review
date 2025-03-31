@@ -1,0 +1,402 @@
+[
+  {
+    "id": 1,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A", "C"]}}]}
+    ]
+  },
+  {
+    "id": 2,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 3,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": []}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["B"]}}]}
+    ]
+  },
+  {
+    "id": 4,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A", "B", "C"]}}]}
+    ]
+  },
+  {
+    "id": 5,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A", "C"]}}]}
+    ]
+  },
+  {
+    "id": 6,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 7,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 8,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 9,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 10,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 11,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 12,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 13,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 14,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 15,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 16,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 17,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 18,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 19,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 20,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["C"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 21,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 22,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 23,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 24,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 25,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 26,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 27,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 28,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 29,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["B"]}}]}
+    ]
+  },
+  {
+    "id": 30,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 31,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B", "C"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": []}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A", "B", "C"]}}]}
+    ]
+  },
+  {
+    "id": 32,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 33,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["B"]}}]}
+    ]
+  },
+  {
+    "id": 34,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["B", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A"]}}]}
+    ]
+  },
+  {
+    "id": 35,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["B","C"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": []}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["B", "C"]}}]}
+    ]
+  },
+  {
+    "id": 36,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 37,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A", "B"]}}]}
+    ]
+  },
+  {
+    "id": 38,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A"]}}]}
+    ]
+  },
+  {
+    "id": 39,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B", "C"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 40,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B", "C"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 41,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["B"]}}]}
+    ]
+  },
+  {
+    "id": 42,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A"]}}]}
+    ]
+  },
+  {
+    "id": 43,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 44,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B", "C"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 45,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": []}}]}
+    ]
+  },
+  {
+    "id": 46,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": []}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A"]}}]}
+    ]
+  },
+  {
+    "id": 47,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A", "C"]}}]}
+    ]
+  },
+  {
+    "id": 48,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B", "C"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["C"]}}]}
+    ]
+  },
+  {
+    "id": 49,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A"]}}]}
+    ]
+  },
+  {
+    "id": 50,
+    "annotations": [
+      {"completed_by": 1, "result": [{"value": {"labels": ["A", "B"]}}]},
+      {"completed_by": 2, "result": [{"value": {"labels": ["A", "C"]}}]},
+      {"completed_by": 3, "result": [{"value": {"labels": ["A"]}}]}
+    ]
+  }
+]

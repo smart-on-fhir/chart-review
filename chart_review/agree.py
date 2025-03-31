@@ -178,3 +178,59 @@ def csv_row_score(
 
     row.append(pick_label if pick_label else "*")
     return "\t".join(row)
+
+
+def contingency_table(
+    annotations: defines.ProjectAnnotations,
+    truth: str,
+    annotator1: str,
+    annotator2: str,
+    note_range: Collection[int],
+    labels: Optional[Iterable[str]] = None,
+) -> dict[str, list]:
+    # Grab all mentions
+    mentions = {
+        annotator: annotations.mentions.get(annotator, defines.Mentions())
+        for annotator in {truth, annotator1, annotator2}
+    }
+
+    # Only examine labels that were used by any compared annotators at least once
+    label_set = set()
+    for mentions_set in mentions.values():
+        for mention_labels in mentions_set.values():
+            label_set |= set(mention_labels)
+    if labels:
+        label_set &= set(labels)
+
+    BC = []  # both correct
+    OL = []  # only left
+    OR = []  # only right
+    BW = []  # both wrong
+
+    for note_id in note_range:
+        truth_note_mentions = mentions[truth].get(note_id, set())
+
+        for label in sorted(label_set):
+            key = {note_id: label}
+
+            correctness = []
+            for annotator in [annotator1, annotator2]:
+                annotator_note_mentions = mentions[annotator].get(note_id, set())
+
+                truth_positive = label in truth_note_mentions
+                annotator_positive = label in annotator_note_mentions
+
+                correctness.append(truth_positive == annotator_positive)
+
+            if correctness == [True, True]:
+                BC.append(key)
+            elif correctness == [True, False]:
+                OL.append(key)
+            elif correctness == [False, True]:
+                OR.append(key)
+            elif correctness == [False, False]:
+                BW.append(key)
+            else:
+                raise Exception("Guard: Impossible comparison of reviewers")  # pragma: no cover
+
+    return {"BC": BC, "OL": OL, "OR": OR, "BW": BW}

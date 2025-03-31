@@ -4,7 +4,7 @@ import argparse
 import sys
 from typing import Optional
 
-from chart_review.commands import accuracy, default, frequency, ids, labels, mentions
+from chart_review.commands import accuracy, default, frequency, ids, labels, mcnemar, mentions
 
 
 def define_parser() -> argparse.ArgumentParser:
@@ -19,6 +19,7 @@ def define_parser() -> argparse.ArgumentParser:
     )
     ids.make_subparser(subparsers.add_parser("ids", help="map Label Studio IDs to FHIR IDs"))
     labels.make_subparser(subparsers.add_parser("labels", help="show label usage by annotator"))
+    mcnemar.make_subparser(subparsers.add_parser("mcnemar", help="calculate McNemar’s test"))
     mentions.make_subparser(subparsers.add_parser("mentions", help="show each mention of a label"))
 
     return parser
