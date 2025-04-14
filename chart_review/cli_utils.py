@@ -43,16 +43,19 @@ def get_cohort_reader(args: argparse.Namespace) -> cohort.CohortReader:
     return cohort.CohortReader(proj_config)
 
 
-def create_table(*headers) -> rich.table.Table:
+def create_table(*headers, dense: bool = False) -> rich.table.Table:
     """
     Creates a table with standard chart-review formatting.
 
     You can use your own table formatting if you have particular needs,
     but this should be your default table creator.
     """
-    table = rich.table.Table(box=rich.box.ROUNDED)
-    for header in headers:
-        table.add_column(header, overflow="fold")
+    if dense:
+        table = rich.table.Table(*headers, box=None, pad_edge=False)
+    else:
+        table = rich.table.Table(box=rich.box.ROUNDED)
+        for header in headers:
+            table.add_column(header, overflow="fold")
     return table
 
 

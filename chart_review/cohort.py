@@ -114,3 +114,33 @@ class CohortReader:
             note_range,
             labels=labels,
         )
+
+    def contingency_table(
+        self,
+        truth: str,
+        annotator1: str,
+        annotator2: str,
+        note_range: defines.NoteSet,
+        label_pick: Optional[str] = None,
+    ) -> dict:
+        """
+        Calculate a contingency table for truth and two annotators.
+
+        https://en.wikipedia.org/wiki/Contingency_table
+
+        :param truth: annotator to use as the ground truth
+        :param annotator1: one annotator to compare
+        :param annotator2: another annotator to compare
+        :param note_range: collection of LabelStudio document ID
+        :param label_pick: (optional) of the CLASS_LABEL to score separately
+        :return: dict
+        """
+        labels = self._select_labels(label_pick)
+        return agree.contingency_table(
+            self.annotations,
+            truth,
+            annotator1,
+            annotator2,
+            note_range,
+            labels=labels,
+        )
