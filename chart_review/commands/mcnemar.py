@@ -68,8 +68,8 @@ def print_mcnemar(args: argparse.Namespace) -> None:
         m = matrices[label]
         mcn, pval = _mcnemar(len(m["OL"]), len(m["OR"]), continuity_correction=True)
         table.add_row(
-            empty_val if mcn is None else str(round(mcn, 3)),
-            str(round(pval, 3)),
+            empty_val if mcn is None else _small_float(mcn),
+            _small_float(pval),
             str(len(m["BC"])),
             str(len(m["OL"])),
             str(len(m["OR"])),
@@ -92,6 +92,15 @@ def print_mcnemar(args: argparse.Namespace) -> None:
     console.print()
 
     console.print(table)
+
+
+def _small_float(number: float) -> str:
+    rounded = str(round(number, 3))
+    if number == 0 or rounded != "0.0":
+        return rounded
+
+    # Too small for simple rounding, use scientific notation instead
+    return f"{number:.2e}"
 
 
 # From https://en.wikipedia.org/wiki/McNemar's_test

@@ -18,11 +18,11 @@ class TestMcNemar(base.TestCase):
 Truth: alice
 Annotators: bob, carla
 
-McNemar  P-value  BC  OL  OR  BW  Label
-12.375   0.0      20  61  27  42  *    
-6.5      0.011    10  20  6   14  A    
-N/A      0.035    1   16  6   27  B    
-2.025    0.155    9   25  15  1   C    
+McNemar  P-value   BC  OL  OR  BW  Label
+12.375   4.35e-04  20  61  27  42  *    
+6.5      0.011     10  20  6   14  A    
+N/A      0.035     1   16  6   27  B    
+2.025    0.155     9   25  15  1   C    
 """,
             stdout,
         )
@@ -35,7 +35,7 @@ N/A      0.035    1   16  6   27  B
         self.assertEqual(
             [
                 "mcnemar,p-value,bc,ol,or,bw,label",
-                "12.375,0.0,20,61,27,42,*",
+                "12.375,4.35e-04,20,61,27,42,*",
                 "6.5,0.011,10,20,6,14,A",
                 ",0.035,1,16,6,27,B",
                 "2.025,0.155,9,25,15,1,C",
