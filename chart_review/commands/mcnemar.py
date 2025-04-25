@@ -34,6 +34,7 @@ def print_mcnemar(args: argparse.Namespace) -> None:
     truth = args.truth_annotator
     annotator1 = args.annotator1
     annotator2 = args.annotator2
+    continuity_correction = args.continuity_correction
 
     all_people = {truth, annotator1, annotator2}
     annotators = [annotator1, annotator2]
@@ -66,7 +67,9 @@ def print_mcnemar(args: argparse.Namespace) -> None:
     empty_val = "" if args.csv else "N/A"
     for label in labels:
         m = matrices[label]
-        mcn, pval = _mcnemar(len(m["OL"]), len(m["OR"]), continuity_correction=True)
+        mcn, pval = _mcnemar(
+            len(m["OL"]), len(m["OR"]), continuity_correction=continuity_correction
+        )
         table.add_row(
             empty_val if mcn is None else _small_float(mcn),
             _small_float(pval),

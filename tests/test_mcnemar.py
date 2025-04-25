@@ -19,6 +19,33 @@ Truth: alice
 Annotators: bob, carla
 
 McNemar  P-value   BC  OL  OR  BW  Label
+13.136   2.90e-04  20  61  27  42  *    
+7.538    0.006     10  20  6   14  A    
+N/A      0.035     1   16  6   27  B    
+2.5      0.114     9   25  15  1   C    
+""",
+            stdout,
+        )
+
+    def test_continutity_correction(self):
+        stdout = self.run_cli(
+            "mcnemar",
+            "--continuity-correction",
+            "alice",
+            "bob",
+            "carla",
+            path=f"{self.DATA_DIR}/many-notes",
+        )
+
+        # This tests that the continuity correction effects the rows
+        # that use the chi-squared distribution to generate their mcnemar value
+        # i.e. the first, second, and fourth row - they all have (OR + OL) >= 25
+        self.assertEqual(
+            """Comparing 50 charts (1–50)
+Truth: alice
+Annotators: bob, carla
+
+McNemar  P-value   BC  OL  OR  BW  Label
 12.375   4.35e-04  20  61  27  42  *    
 6.5      0.011     10  20  6   14  A    
 N/A      0.035     1   16  6   27  B    
@@ -35,10 +62,10 @@ N/A      0.035     1   16  6   27  B
         self.assertEqual(
             [
                 "mcnemar,p-value,bc,ol,or,bw,label",
-                "12.375,4.35e-04,20,61,27,42,*",
-                "6.5,0.011,10,20,6,14,A",
+                "13.136,2.90e-04,20,61,27,42,*",
+                "7.538,0.006,10,20,6,14,A",
                 ",0.035,1,16,6,27,B",
-                "2.025,0.155,9,25,15,1,C",
+                "2.5,0.114,9,25,15,1,C",
             ],
             stdout.splitlines(),
         )
