@@ -18,7 +18,6 @@ def make_subparser(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("truth_annotator")
     parser.add_argument("annotator1")
     parser.add_argument("annotator2")
-    parser.add_argument("--continuity-correction", action="store_true")
     parser.set_defaults(func=print_mcnemar)
 
 
