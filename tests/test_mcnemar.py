@@ -31,6 +31,7 @@ N/A      0.035     1   16  6   27  B
         stdout = self.run_cli(
             "mcnemar", "--csv", "alice", "bob", "carla", path=f"{self.DATA_DIR}/many-notes"
         )
+
         self.assertEqual(
             [
                 "mcnemar,p-value,bc,ol,or,bw,label",
