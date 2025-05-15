@@ -92,7 +92,7 @@ def score_kappa(matrix: dict) -> float:
     return (observed - expected) / (1 - expected)
 
 
-def score_matrix(matrix: dict, sig_digits=3) -> dict:
+def score_matrix(matrix: dict) -> dict:
     """
     Score F1 and Kappa measures with precision (PPV) and recall (sensitivity).
     F1 deliberately ignores "True Negatives" because TN inflates scoring (AUROC)
@@ -119,12 +119,12 @@ def score_matrix(matrix: dict, sig_digits=3) -> dict:
         kappa = score_kappa(matrix)
 
     return {
-        "F1": round(f1, sig_digits),
-        "Sens": round(sens, sig_digits),
-        "Spec": round(spec, sig_digits),
-        "PPV": round(ppv, sig_digits),
-        "NPV": round(npv, sig_digits),
-        "Kappa": round(kappa, sig_digits),
+        "F1": f1,
+        "Sens": sens,
+        "Spec": spec,
+        "PPV": ppv,
+        "NPV": npv,
+        "Kappa": kappa,
         "TP": true_pos,
         "FP": false_pos,
         "FN": false_neg,
@@ -171,7 +171,7 @@ def csv_row_score(
     :return: str representation of the score
     """
     row = [score[header] for header in csv_header()]
-    row = [str(value) for value in row]
+    row = [str(round(value, 3)) for value in row]
 
     if not as_string:
         return row

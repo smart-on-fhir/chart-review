@@ -89,10 +89,21 @@ def print_accuracy(args: argparse.Namespace) -> None:
     console.print(f"Comparing {note_count} {chart_word}{pretty_ranges}")
     console.print(f"Truth: {truth}")
     console.print(f"Annotator: {annotator}")
+
+    if not args.verbose and labels:
+        # Calculate Macro F1 as a convenience
+        macro_f1 = sum(scores[label]["F1"] for label in labels) / len(labels)
+        console.print(f"Macro F1: {round(macro_f1, 3)}")
+
     console.print()
 
     if args.save:  # deprecated/hidden since 2.0, but still supported for now
         output_stem = os.path.join(reader.project_dir, f"accuracy-{truth}-{annotator}")
+
+        # Round before we hit disk
+        for label_scores in scores.values():
+            for key, value in label_scores.items():
+                label_scores[key] = round(value, 3)
 
         # JSON: Historically, this has been formatted with the global label results intermixed
         # with the specific label names, so reproduce that historical formatting here.
@@ -100,6 +111,7 @@ def print_accuracy(args: argparse.Namespace) -> None:
         # above code avoids intermixing, but we'll keep this as-is for now.
         scores.update(scores[None])
         del scores[None]
+
         common.write_json(f"{output_stem}.json", scores)
         console.print(f"Wrote {output_stem}.json")
 

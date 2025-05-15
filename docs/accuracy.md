@@ -21,6 +21,7 @@ $ chart-review accuracy jill jane
 Comparing 3 charts (1, 3–4)
 Truth: jill
 Annotator: jane
+Macro F1: 0.556
 
 F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label   
 0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
