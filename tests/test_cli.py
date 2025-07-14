@@ -68,10 +68,24 @@ Pass --help to see more options.
             self.assert_cold_output(stdout)
 
     def test_missing_config(self):
+        """Still works, just with rough defaults"""
         with tempfile.TemporaryDirectory() as tmpdir:
-            with self.assertRaises(SystemExit) as cm:
-                self.run_cli(path=tmpdir)
-        self.assertEqual(cm.exception.code, errors.ERROR_INVALID_PROJECT)
+            shutil.copy(f"{self.DATA_DIR}/cold/labelstudio-export.json", tmpdir)
+            stdout = self.run_cli(path=tmpdir)
+
+            self.assertEqual(
+                """╭───────────┬─────────────┬───────────╮
+│ Annotator │ Chart Count │ Chart IDs │
+├───────────┼─────────────┼───────────┤
+│ 3         │ 4           │ 1–4       │
+│ 5         │ 3           │ 1–2, 4    │
+│ 6         │ 4           │ 1–4       │
+╰───────────┴─────────────┴───────────╯
+
+Pass --help to see more options.
+""",
+                stdout,
+            )
 
     def test_bad_config(self):
         with tempfile.TemporaryDirectory() as tmpdir:

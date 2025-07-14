@@ -80,6 +80,18 @@ class TestCohort(base.TestCase):
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
             self.assertEqual({"bob": {1}}, reader.note_range)
 
+    def test_default_annotator_config(self):
+        """Should use a string version of the completed_by ID for the names"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {"id": 1, "annotations": [{"completed_by": 1}, {"completed_by": 2}]},
+                ],
+            )
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+            self.assertEqual({"1": {1}, "2": {1}}, reader.note_range)
+
     def test_implied_labels_get_expanded(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             common.write_json(

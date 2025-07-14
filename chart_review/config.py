@@ -73,7 +73,10 @@ class ProjectConfig:
             try:
                 config = self._read_yaml(self.path("config.json"))
             except FileNotFoundError:
-                config = self._read_yaml(self.path("config.yaml"))
+                try:
+                    config = self._read_yaml(self.path("config.yaml"))
+                except FileNotFoundError:
+                    config = {}
         else:
             # Don't resolve config_path relative to the project dir, because
             # this will have come from the command line and will resolve relative to `pwd`.
