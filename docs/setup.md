@@ -10,7 +10,7 @@ nav_order: 1
 
 ## Installing
 
-`pip install chart-review`
+`pipx install chart-review`
 
 ## Make Project Directory
 

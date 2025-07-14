@@ -23,9 +23,13 @@ def simplify_export(
         note_id = int(entry.get("id"))
 
         for annot in entry.get("annotations", []):
+            # Determine annotator
             completed_by = annot.get("completed_by")
-            if completed_by not in proj_config.annotators:
-                continue  # we don't know who this is!
+            if completed_by is None:
+                continue  # we don't know who annotated this!
+            if proj_config.annotators and completed_by not in proj_config.annotators:
+                continue  # user specified an annotators config, and this one doesn't fit
+            annotator = proj_config.annotators.get(completed_by, str(completed_by))
 
             # Grab all valid mentions for this annotator & note
             labels = defines.LabelSet()
@@ -42,7 +46,6 @@ def simplify_export(
                 annotations.labels |= labels
 
             # Store these mentions in the main annotations list, by author & note
-            annotator = proj_config.annotators[completed_by]
             annotator_mentions = annotations.mentions.setdefault(annotator, defines.Mentions())
             annotator_mentions[note_id] = labels
             annot_orig_text_tags = annotations.original_text_mentions.setdefault(annotator, {})

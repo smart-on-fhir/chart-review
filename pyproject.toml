@@ -9,9 +9,8 @@ dependencies = [
 ]
 description = "Medical Record Chart Review Calculator"
 readme = "README.md"
-license = { text="Apache License 2.0" }
+license = "Apache-2.0"
 classifiers = [
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -27,7 +26,7 @@ Source = "https://github.com/smart-on-fhir/chart-review"
 chart-review = "chart_review.cli:main_cli"
 
 [build-system]
-requires = ["flit_core >=3.4,<4"]
+requires = ["flit_core >=3.12,<4"]
 build-backend = "flit_core.buildapi"
 
 [project.optional-dependencies]
@@ -40,7 +39,7 @@ dev = [
     "pre-commit",
     # Ruff is using minor versions for breaking changes until their 1.0 release.
     # See https://docs.astral.sh/ruff/versioning/
-    "ruff < 0.10",  # keep in rough sync with pre-commit-config.yaml
+    "ruff < 0.13",  # keep in rough sync with pre-commit-config.yaml
 ]
 
 [tool.flit.sdist]

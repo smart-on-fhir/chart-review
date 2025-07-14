@@ -45,7 +45,7 @@ But calculating accuracy between human annotators can be done entirely without t
 ## Installing & Using
 
 ```shell
-pip install chart-review
+pipx install chart-review
 chart-review --help
 ```
 

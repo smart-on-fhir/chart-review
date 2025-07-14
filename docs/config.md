@@ -29,16 +29,19 @@ secondary config will be used instead of the default config.
 
 ## Required Fields
 
-The only truly required field is `annotators`,
-which provides a mapping from names to Label Studio ID values.
+All fields have some reasonable default, and thus none are required.
+In fact, you can skip using a config file altogether, if the defaults work for you.
 
-Every other field has some reasonable default.
+But it's strongly recommended to make a config for at least the `annotators` field,
+because otherwise you'll be stuck talking about "annotator 1 and 2" instead of "Alice and Bob".
 
 ## Field Definitions
 
 ### `annotators`
 
-This is a required mapping of human-readable names to Label Studio IDs.
+This is a mapping of human-readable names to Label Studio IDs.
+
+Any Label Studio ID not mentioned in this mapping will be ignored.
 
 #### Example
 
