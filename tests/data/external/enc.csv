@@ -3,6 +3,6 @@ ENC_ID,SYMPTOM
 "ABC","ignored"
 "ABC-Enc","tired"
 "Encounter/Anon-ABC-Enc","sad"
-"DocumentReference/Anon-ABC","hungry"
+"DiagnosticReport/Anon-ABC","hungry"
 "Unmatched","lost"
 "No-Symptoms-Enc",
