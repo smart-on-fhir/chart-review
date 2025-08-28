@@ -35,6 +35,8 @@ def simplify_export(
             labels = defines.LabelSet()
             text_tags = []
             for result in annot.get("result", []):
+                if result.get("origin") not in {None, "manual"}:
+                    continue  # avoid counting predictions as human annotators
                 result_value = result.get("value", {})
                 result_text = result_value.get("text")
                 result_labels = set(result_value.get("labels", []))
