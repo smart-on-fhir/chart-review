@@ -69,7 +69,7 @@ class CohortReader:
                     ls_id = ignore_id  # must be direct note ID
                 else:
                     # Must just be over-zealous excluding (like automatically from SQL)
-                    continue
+                    continue  # pragma: no cover
             if ls_id in all_ls_notes:
                 ignored_notes.add(ls_id)
 

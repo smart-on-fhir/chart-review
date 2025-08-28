@@ -80,6 +80,51 @@ class TestCohort(base.TestCase):
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
             self.assertEqual({"bob": {1}}, reader.note_range)
 
+    def test_uncredited_annotations_are_ignored(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "annotations": [
+                            {
+                                "completed_by": 1,
+                                "result": [{"value": {"labels": ["cat"]}}],
+                            },
+                            {
+                                # No completed_by
+                                "result": [{"value": {"labels": ["bear"]}}],
+                            },
+                        ],
+                    },
+                ],
+            )
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+            self.assertEqual({"1": {1: {"cat"}}}, reader.annotations.mentions)
+
+    def test_prediction_annotations_are_ignored(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "annotations": [
+                            {
+                                "completed_by": 1,
+                                "result": [
+                                    {"origin": "prediction", "value": {"labels": ["cat"]}},
+                                    {"origin": "manual", "value": {"labels": ["bear"]}},
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            )
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+            self.assertEqual({"1": {1: {"bear"}}}, reader.annotations.mentions)
+
     def test_default_annotator_config(self):
         """Should use a string version of the completed_by ID for the names"""
         with tempfile.TemporaryDirectory() as tmpdir:

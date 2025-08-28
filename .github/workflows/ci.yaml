@@ -46,9 +46,9 @@ jobs:
         with:
           coverageFile: coverage.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          thresholdAll: .99
+          thresholdAll: 1
           thresholdNew: 1
-          thresholdModified: .97
+          thresholdModified: 1
 
   lint:
     runs-on: ubuntu-latest
