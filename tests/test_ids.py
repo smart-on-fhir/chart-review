@@ -65,9 +65,10 @@ class TestIDs(base.TestCase):
                     {
                         "id": 4,
                         # full encounter info, no docref mappings
+                        # (using modern, full field names)
                         "data": {
-                            "enc_id": "a",
-                            "anon_id": "b",
+                            "encounter_id": "a",
+                            "anon_encounter_id": "b",
                         },
                     },
                     {

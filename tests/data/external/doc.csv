@@ -1,8 +1,8 @@
 doc_id,symptom
-"ABC","happy"
+"DiagnosticReport/ABC","happy"
 "ABC-Enc","ignored"
-"ABC","tired"
-"DocumentReference/Anon-ABC","sad"
+"DiagnosticReport/ABC","tired"
+"DiagnosticReport/Anon-ABC","sad"
 "Encounter/Anon-ABC-Enc","hungry"
 "Unmatched","lost"
 "No-Symptoms",

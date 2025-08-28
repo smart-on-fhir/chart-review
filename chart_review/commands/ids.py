@@ -29,8 +29,18 @@ def print_ids(args: argparse.Namespace) -> None:
         printed = False
 
         # Grab encounters first
-        orig_id = f"Encounter/{chart_data['enc_id']}" if "enc_id" in chart_data else ""
-        anon_id = f"Encounter/{chart_data['anon_id']}" if "anon_id" in chart_data else ""
+        if "encounter_id" in chart_data:
+            orig_id = f"Encounter/{chart_data['encounter_id']}"
+        elif "enc_id" in chart_data:
+            orig_id = f"Encounter/{chart_data['enc_id']}"
+        else:
+            orig_id = ""
+        if "anon_encounter_id" in chart_data:
+            anon_id = f"Encounter/{chart_data['anon_encounter_id']}"
+        elif "anon_id" in chart_data:
+            anon_id = f"Encounter/{chart_data['anon_id']}"
+        else:
+            anon_id = ""
         if orig_id or anon_id:
             table.add_row(chart_id, orig_id, anon_id)
             printed = True

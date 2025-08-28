@@ -29,7 +29,7 @@
       "enc_id": "ABC-Enc",
       "anon_id": "Anon-ABC-Enc",
       "docref_mappings": {
-        "ABC": "Anon-ABC"
+        "DiagnosticReport/ABC": "DiagnosticReport/Anon-ABC"
       }
     }
   },
@@ -46,7 +46,7 @@
       "enc_id": "Not-In-External-Enc",
       "anon_id": "Not-In-External-Enc",
       "docref_mappings": {
-        "Not-In-External": "Not-In-External"
+        "DiagnosticReport/Not-In-External": "DiagnosticReport/Not-In-External"
       }
     }
   },
@@ -63,7 +63,7 @@
       "enc_id": "No-Symptoms-Enc",
       "anon_id": "Anon-No-Symptoms-Enc",
       "docref_mappings": {
-        "No-Symptoms": "Anon-No-Symptoms"
+        "DocumentReference/No-Symptoms": "Anon-No-Symptoms"
       }
     }
   }
