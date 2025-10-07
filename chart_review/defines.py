@@ -1,7 +1,6 @@
 """Various type declarations for better type hinting."""
 
 import dataclasses
-from typing import Optional
 
 # Map of label_studio_user_id: human name
 AnnotatorMap = dict[int, str]
@@ -22,7 +21,7 @@ GroupedLabels = dict[str, LabelSet]
 
 @dataclasses.dataclass
 class LabeledText:
-    text: Optional[str]
+    text: str | None
     labels: LabelSet
 
 

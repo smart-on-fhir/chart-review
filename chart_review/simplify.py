@@ -1,5 +1,3 @@
-from typing import Optional
-
 from chart_review import config, defines
 
 
@@ -59,7 +57,7 @@ def simplify_export(
 def _find_implied_labels(
     source_label: str,
     implied_label_mappings: defines.ImpliedLabels,
-    found_labels: Optional[set[str]] = None,
+    found_labels: set[str] | None = None,
 ) -> set[str]:
     """
     Expands the source label into the set of all implied labels.

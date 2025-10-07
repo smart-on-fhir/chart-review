@@ -2,14 +2,13 @@
 
 import json
 import logging
-from typing import Optional, Union
 
 ###############################################################################
 # Helper Functions: read/write JSON and text
 ###############################################################################
 
 
-def read_json(path: str) -> Union[dict, list[dict]]:
+def read_json(path: str) -> dict | list[dict]:
     """
     Reads json from a file
     :param path: filesystem path
@@ -21,7 +20,7 @@ def read_json(path: str) -> Union[dict, list[dict]]:
         return json.load(f, strict=False)
 
 
-def write_json(path: str, data: Union[dict, list], indent: Optional[int] = 4) -> None:
+def write_json(path: str, data: dict | list, indent: int | None = 4) -> None:
     """
     Writes data to the given path, in json format
     :param path: filesystem path

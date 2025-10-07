@@ -1,7 +1,6 @@
 """Methods for McNemar calculations."""
 
 import argparse
-from typing import Optional
 
 import rich
 import rich.box
@@ -105,7 +104,7 @@ def _small_float(number: float) -> str:
 # From https://en.wikipedia.org/wiki/McNemar's_test
 # Licensed as CC-BY-SA-4.0
 # With small tweaks to fit our style and return the McNemar test value.
-def _mcnemar(b: int, c: int, continuity_correction: bool = False) -> tuple[Optional[float], float]:
+def _mcnemar(b: int, c: int, continuity_correction: bool = False) -> tuple[float | None, float]:
     n_min, n_max = sorted([b, c])
     corr = 1 if continuity_correction else 0
     if (n_min + n_max) < 25:
