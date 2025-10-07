@@ -1,5 +1,4 @@
 from collections.abc import Iterable
-from typing import Optional
 
 from chart_review import agree, common, config, defines, errors, external, simplify
 
@@ -84,7 +83,7 @@ class CohortReader:
     def class_labels(self):
         return self.annotations.labels
 
-    def _select_labels(self, label_pick: Optional[str] = None) -> Iterable[str]:
+    def _select_labels(self, label_pick: str | None = None) -> Iterable[str]:
         if label_pick:
             return [label_pick]
         else:
@@ -95,7 +94,7 @@ class CohortReader:
         truth: str,
         annotator: str,
         note_range: defines.NoteSet,
-        label_pick: Optional[str] = None,
+        label_pick: str | None = None,
     ) -> dict:
         """
         This is the rollup of counting each symptom only once, not multiple times.
@@ -121,7 +120,7 @@ class CohortReader:
         annotator1: str,
         annotator2: str,
         note_range: defines.NoteSet,
-        label_pick: Optional[str] = None,
+        label_pick: str | None = None,
     ) -> dict:
         """
         Calculate a contingency table for truth and two annotators.

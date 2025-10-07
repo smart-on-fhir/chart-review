@@ -1,5 +1,4 @@
 from collections.abc import Collection, Iterable
-from typing import Optional, Union
 
 from chart_review import defines
 
@@ -9,7 +8,7 @@ def confusion_matrix(
     truth: str,
     annotator: str,
     note_range: Collection[int],
-    labels: Optional[Iterable[str]] = None,
+    labels: Iterable[str] | None = None,
 ) -> dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
@@ -160,8 +159,8 @@ def csv_header(pick_label=False, as_string=False):
 
 
 def csv_row_score(
-    score: dict, pick_label: Optional[str] = None, as_string: bool = False
-) -> Union[str, list[str]]:
+    score: dict, pick_label: str | None = None, as_string: bool = False
+) -> str | list[str]:
     """
     Table Row entry
     F1, PPV (precision), Recall (sensitivity), True Pos, False Pos, False Neg
@@ -186,7 +185,7 @@ def contingency_table(
     annotator1: str,
     annotator2: str,
     note_range: Collection[int],
-    labels: Optional[Iterable[str]] = None,
+    labels: Iterable[str] | None = None,
 ) -> dict[str, list]:
     # Grab all mentions
     mentions = {

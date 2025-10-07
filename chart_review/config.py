@@ -3,7 +3,6 @@ import os
 import re
 import sys
 from collections.abc import Iterable
-from typing import Optional, Union
 
 import yaml
 
@@ -14,7 +13,7 @@ class ProjectConfig:
     _NUMBER_REGEX = re.compile(r"\d+")
     _RANGE_REGEX = re.compile(r"\d+-\d+")
 
-    def __init__(self, project_dir: Optional[str] = None, config_path: Optional[str] = None):
+    def __init__(self, project_dir: str | None = None, config_path: str | None = None):
         """
         :param project_dir: str like /opt/labelstudio/study_name
         """
@@ -67,7 +66,7 @@ class ProjectConfig:
         with open(path, encoding="utf8") as f:
             return yaml.safe_load(f)
 
-    def _load_config(self, config_path: Optional[str]) -> dict:
+    def _load_config(self, config_path: str | None) -> dict:
         if config_path is None:
             # Support config.json in case folks prefer that
             try:
@@ -88,7 +87,7 @@ class ProjectConfig:
 
         return config
 
-    def _parse_note_range(self, value: Union[str, int, list[Union[str, int]]]) -> Iterable[int]:
+    def _parse_note_range(self, value: str | int | list[str | int]) -> Iterable[int]:
         if isinstance(value, list):
             return list(itertools.chain.from_iterable(self._parse_note_range(v) for v in value))
         elif isinstance(value, int):

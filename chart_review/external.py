@@ -3,7 +3,6 @@
 import csv
 import os
 import sys
-from typing import Optional
 
 from chart_review import defines
 
@@ -45,7 +44,7 @@ def _load_csv_labels(filename: str) -> dict[str, defines.LabelSet]:
     return id_to_labels
 
 
-def _note_ref_to_label_studio_id(exported_json: list[dict], note_ref: str) -> Optional[int]:
+def _note_ref_to_label_studio_id(exported_json: list[dict], note_ref: str) -> int | None:
     """Looks at the metadata in LS and grabs the note ID that holds the provided note ref"""
     for row in exported_json:
         mappings = row.get("data", {}).get("docref_mappings", {})
@@ -60,7 +59,7 @@ def _note_ref_to_label_studio_id(exported_json: list[dict], note_ref: str) -> Op
     return None
 
 
-def _encounter_id_to_label_studio_id(exported_json: list[dict], enc_id: str) -> Optional[int]:
+def _encounter_id_to_label_studio_id(exported_json: list[dict], enc_id: str) -> int | None:
     """Looks at the metadata in LS and grabs the note ID that holds the provided encounter"""
     for row in exported_json:
         row_data = row.get("data", {})
@@ -76,7 +75,7 @@ def _encounter_id_to_label_studio_id(exported_json: list[dict], enc_id: str) -> 
 def external_id_to_label_studio_id(
     exported_json: list[dict],
     row_id: str,
-) -> Optional[int]:
+) -> int | None:
     """Looks at the metadata in LS and grabs the note ID that holds the provided ID"""
     # First, check if there is a resource prefix, which will tell us which kind of ID this is
     parts = row_id.split("/", 1)

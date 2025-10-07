@@ -2,7 +2,6 @@
 
 import argparse
 import sys
-from typing import Optional
 
 from chart_review.commands import accuracy, default, frequency, ids, labels, mcnemar, mentions
 
@@ -25,7 +24,7 @@ def define_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main_cli(argv: Optional[list[str]] = None) -> None:
+def main_cli(argv: list[str] | None = None) -> None:
     """Main entrypoint that wraps all the core program logic"""
     try:
         parser = define_parser()
