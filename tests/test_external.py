@@ -48,7 +48,7 @@ class TestExternal(base.TestCase):
             common.write_json(
                 f"{tmpdir}/labelstudio-export.json",
                 [
-                    {"id": 1, "data": {"enc_id": "could-be-either", "docref_mappings": {}}},
+                    {"id": 1, "data": {"enc_id": "could-be-either", "docref_mappings": {"a": "b"}}},
                     {"id": 2, "data": {"docref_mappings": {"could-be-either": "anon"}}},
                 ],
             )

@@ -23,30 +23,19 @@ def print_ids(args: argparse.Namespace) -> None:
 
     table = cli_utils.create_table("Chart ID", "Original FHIR ID", "Anonymized FHIR ID")
 
-    for chart in reader.ls_export:
-        chart_id = str(chart["id"])
-        chart_data = chart.get("data", {})
+    for note in reader.ls_export.notes:
+        chart_id = str(note.note_id)
         printed = False
 
         # Grab encounters first
-        if "encounter_id" in chart_data:
-            orig_id = f"Encounter/{chart_data['encounter_id']}"
-        elif "enc_id" in chart_data:
-            orig_id = f"Encounter/{chart_data['enc_id']}"
-        else:
-            orig_id = ""
-        if "anon_encounter_id" in chart_data:
-            anon_id = f"Encounter/{chart_data['anon_encounter_id']}"
-        elif "anon_id" in chart_data:
-            anon_id = f"Encounter/{chart_data['anon_id']}"
-        else:
-            anon_id = ""
+        orig_id = note.encounter_id and f"Encounter/{note.encounter_id}"
+        anon_id = note.anon_encounter_id and f"Encounter/{note.anon_encounter_id}"
         if orig_id or anon_id:
             table.add_row(chart_id, orig_id, anon_id)
             printed = True
 
         # Now each DocRef ID
-        for orig_id, anon_id in chart_data.get("docref_mappings", {}).items():
+        for orig_id, anon_id in note.docref_mappings.items():
             table.add_row(chart_id, f"DocumentReference/{orig_id}", f"DocumentReference/{anon_id}")
             printed = True
 
