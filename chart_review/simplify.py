@@ -1,15 +1,15 @@
-from chart_review import config, defines
+from chart_review import config, defines, studio
 
 
 def simplify_export(
-    exported_json: list[dict], proj_config: config.ProjectConfig
+    export: studio.ExportFile, proj_config: config.ProjectConfig
 ) -> defines.ProjectAnnotations:
     """
     Label Studio outputs contain more info than needed for IAA and term_freq.
 
     * PHI raw physician note text is removed *
 
-    :param exported_json: exported json from Label Studio
+    :param export: exported json from Label Studio
     :param proj_config: project configuration
     :return: all project mentions parsed from the Label Studio export
     """
@@ -17,39 +17,27 @@ def simplify_export(
     annotations.labels = proj_config.class_labels
     grab_all_labels = not annotations.labels
 
-    for entry in exported_json:
-        note_id = int(entry.get("id"))
-
-        for annot in entry.get("annotations", []):
-            # Determine annotator
-            completed_by = annot.get("completed_by")
-            if completed_by is None:
-                continue  # we don't know who annotated this!
-            if proj_config.annotators and completed_by not in proj_config.annotators:
+    for note in export.notes:
+        for annot in note.annotations:
+            if proj_config.annotators and annot.author not in proj_config.annotators:
                 continue  # user specified an annotators config, and this one doesn't fit
-            annotator = proj_config.annotators.get(completed_by, str(completed_by))
+            annotator = proj_config.annotators.get(annot.author, str(annot.author))
 
             # Grab all valid mentions for this annotator & note
             labels = defines.LabelSet()
             text_tags = []
-            for result in annot.get("result", []):
-                if result.get("origin") not in {None, "manual"}:
-                    continue  # avoid counting predictions as human annotators
-                result_value = result.get("value", {})
-                result_text = result_value.get("text")
-                result_labels = set(result_value.get("labels", []))
-
-                labels |= result_labels
-                text_tags.append(defines.LabeledText(result_text, result_labels))
+            for mention in annot.mentions:
+                labels |= mention.labels
+                text_tags.append(defines.LabeledText(mention.text, mention.labels))
 
             if grab_all_labels:
                 annotations.labels |= labels
 
             # Store these mentions in the main annotations list, by author & note
             annotator_mentions = annotations.mentions.setdefault(annotator, defines.Mentions())
-            annotator_mentions[note_id] = labels
+            annotator_mentions[note.note_id] = labels
             annot_orig_text_tags = annotations.original_text_mentions.setdefault(annotator, {})
-            annot_orig_text_tags[note_id] = text_tags
+            annot_orig_text_tags[note.note_id] = text_tags
 
     return annotations
 

@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 
-from chart_review import agree, common, config, defines, errors, external, simplify
+from chart_review import agree, config, defines, external, simplify, studio
 
 
 class CohortReader:
@@ -18,10 +18,7 @@ class CohortReader:
         self.project_dir = self.config.project_dir
 
         # Load exported annotations
-        try:
-            self.ls_export = common.read_json(self.config.path("labelstudio-export.json"))
-        except Exception as exc:
-            errors.exit_for_invalid_project(str(exc))
+        self.ls_export = studio.ExportFile(self.config.path("labelstudio-export.json"))
 
         self.annotations = simplify.simplify_export(self.ls_export, self.config)
 
@@ -48,7 +45,7 @@ class CohortReader:
             self.annotations.remove(note)
 
     def _collect_note_ranges(
-        self, exported_json: list[dict]
+        self, export: studio.ExportFile
     ) -> tuple[dict[str, defines.NoteSet], defines.NoteSet]:
         # Detect note ranges if they were not defined in the project config
         # (i.e. default to the full set of annotated notes)
@@ -57,12 +54,12 @@ class CohortReader:
             if annotator not in note_ranges:
                 note_ranges[annotator] = set(annotator_mentions.keys())
 
-        all_ls_notes = {int(entry["id"]) for entry in exported_json if "id" in entry}
+        all_ls_notes = {note.note_id for note in export.notes}
 
         # Parse ignored IDs (might be note IDs, might be external IDs)
         ignored_notes = defines.NoteSet()
         for ignore_id in self.config.ignore:
-            ls_id = external.external_id_to_label_studio_id(exported_json, str(ignore_id))
+            ls_id = external.external_id_to_label_studio_id(export, str(ignore_id))
             if ls_id is None:
                 if isinstance(ignore_id, int):
                     ls_id = ignore_id  # must be direct note ID

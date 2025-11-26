@@ -4,7 +4,7 @@ import csv
 import os
 import sys
 
-from chart_review import defines
+from chart_review import defines, studio
 
 
 def _load_csv_labels(filename: str) -> dict[str, defines.LabelSet]:
@@ -44,52 +44,48 @@ def _load_csv_labels(filename: str) -> dict[str, defines.LabelSet]:
     return id_to_labels
 
 
-def _note_ref_to_label_studio_id(exported_json: list[dict], note_ref: str) -> int | None:
+def _note_ref_to_label_studio_id(export: studio.ExportFile, note_ref: str) -> int | None:
     """Looks at the metadata in LS and grabs the note ID that holds the provided note ref"""
-    for row in exported_json:
-        mappings = row.get("data", {}).get("docref_mappings", {})
-        for key, value in mappings.items():
+    for note in export.notes:
+        for key, value in note.docref_mappings.items():
             # Support older exports that didn't specify DocRef vs DxReport
             key = key if "/" in key else f"DocumentReference/{key}"
             value = value if "/" in value else f"DocumentReference/{value}"
             # Allow either an anonymous ID or the real ID -- collisions seem very unlikely
             # (i.e. real IDs aren't going to be formatted like our long anonymous ID hash)
             if key == note_ref or value == note_ref:
-                return int(row["id"])
+                return note.note_id
     return None
 
 
-def _encounter_id_to_label_studio_id(exported_json: list[dict], enc_id: str) -> int | None:
+def _encounter_id_to_label_studio_id(export: studio.ExportFile, enc_id: str) -> int | None:
     """Looks at the metadata in LS and grabs the note ID that holds the provided encounter"""
-    for row in exported_json:
-        row_data = row.get("data", {})
-        row_enc_id = row_data.get("encounter_id") or row_data.get("enc_id")  # old name
-        row_anon_id = row_data.get("anon_encounter_id") or row_data.get("anon_id")  # old name
+    for note in export.notes:
         # Allow either an anonymous ID or the real ID -- collisions seem very unlikely
         # (i.e. real IDs aren't going to be formatted like our long anonymous ID hash)
-        if row_enc_id == enc_id or row_anon_id == enc_id:
-            return int(row["id"])
+        if note.encounter_id == enc_id or note.anon_encounter_id == enc_id:
+            return note.note_id
     return None
 
 
 def external_id_to_label_studio_id(
-    exported_json: list[dict],
+    export: studio.ExportFile,
     row_id: str,
 ) -> int | None:
     """Looks at the metadata in LS and grabs the note ID that holds the provided ID"""
     # First, check if there is a resource prefix, which will tell us which kind of ID this is
     parts = row_id.split("/", 1)
     if parts[0] == "Encounter" or len(parts) == 1:
-        return _encounter_id_to_label_studio_id(exported_json, parts[-1])
+        return _encounter_id_to_label_studio_id(export, parts[-1])
     elif parts[0] in {"DiagnosticReport", "DocumentReference"}:
-        return _note_ref_to_label_studio_id(exported_json, row_id)
+        return _note_ref_to_label_studio_id(export, row_id)
     else:
         raise ValueError(f"Unrecognized resource type: {parts[0]}")  # pragma: no cover
 
 
 def merge_external(
     annotations: defines.ProjectAnnotations,
-    exported_json: list[dict],
+    export: studio.ExportFile,
     project_dir: str,
     name: str,
     config: dict,
@@ -102,8 +98,8 @@ def merge_external(
         raise ValueError(f"Did not understand config for external annotator '{name}'")
 
     # Inspect exported json to see if it has the metadata we'll need.
-    for row in exported_json:
-        if "docref_mappings" not in row.get("data", {}):
+    for note in export.notes:
+        if not note.docref_mappings:
             raise ValueError(
                 "Your Label Studio export does not include note/encounter ID mapping metadata!\n"
                 "Consider re-uploading your notes using Cumulus ETL's upload-notes command."
@@ -113,7 +109,7 @@ def merge_external(
     # Convert each row id into an LS id:
     external_mentions = annotations.mentions.setdefault(name, defines.Mentions())
     for row_id, label_set in label_map.items():
-        ls_id = external_id_to_label_studio_id(exported_json, row_id)
+        ls_id = external_id_to_label_studio_id(export, row_id)
         if ls_id is not None:
             all_labels = external_mentions.setdefault(ls_id, set())
             all_labels |= label_set
