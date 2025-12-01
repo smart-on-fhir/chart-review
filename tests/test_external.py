@@ -15,7 +15,7 @@ class TestExternal(base.TestCase):
         self.assertEqual(
             {
                 "human": {
-                    1: {"happy", "sad"},
+                    1: {base.Label("happy"), base.Label("sad")},
                     # This was a note that didn't appear in the icd10 external annotations
                     # (and also didn't have a positive label by the human reviewer).
                     # Just here to test that it didn't screw anything up.
@@ -24,8 +24,8 @@ class TestExternal(base.TestCase):
                     # but no labels for this note"
                     3: set(),
                 },
-                "icd10-doc": {1: {"happy", "hungry", "sad", "tired"}, 3: set()},
-                "icd10-enc": {1: {"happy", "hungry", "sad", "tired"}, 3: set()},
+                "icd10-doc": {1: base.labels({"happy", "hungry", "sad", "tired"}), 3: set()},
+                "icd10-enc": {1: base.labels({"happy", "hungry", "sad", "tired"}), 3: set()},
             },
             reader.annotations.mentions,
         )

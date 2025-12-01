@@ -4,8 +4,15 @@ import contextlib
 import io
 import os
 import unittest
+from collections.abc import Iterable
 
-from chart_review import cli
+from chart_review import cli, defines
+
+Label = defines.Label  # syntactic sugar
+
+
+def labels(strs: Iterable[str]) -> defines.LabelSet:
+    return {defines.Label(x) for x in strs}
 
 
 class TestCase(unittest.TestCase):

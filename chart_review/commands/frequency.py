@@ -5,7 +5,7 @@ import rich.box
 import rich.table
 import rich.text
 
-from chart_review import cli_utils, console_utils, defines
+from chart_review import cli_utils, console_utils
 
 
 def make_subparser(parser: argparse.ArgumentParser) -> None:
@@ -22,7 +22,7 @@ def print_frequency(args: argparse.Namespace) -> None:
 
     frequencies = {}  # annotator -> label -> text -> count
     all_annotator_frequencies = {}  # label -> text -> count
-    text_labels = {}  # text -> labelset (to flag term confusion)
+    text_labels = {}  # text -> label namespace -> labelset (to flag term confusion)
     for annotator in reader.annotations.original_text_mentions:
         annotator_mentions = reader.annotations.original_text_mentions[annotator]
         for labeled_texts in annotator_mentions.values():
@@ -40,7 +40,8 @@ def print_frequency(args: argparse.Namespace) -> None:
                         all_text_to_count[text] = all_text_to_count.get(text, 0) + 1
 
                         # And finally, add it to our running term-confusion tracker
-                        text_labels.setdefault(text, defines.LabelSet()).add(label)
+                        sublabel_to_labels = text_labels.setdefault(text, {})
+                        sublabel_to_labels.setdefault(label.namespace(), set()).add(label)
 
     # Now group up the data into a formatted table
     table = cli_utils.create_table("Annotator", "Label", "Mention", "Count")
@@ -50,16 +51,16 @@ def print_frequency(args: argparse.Namespace) -> None:
     def add_annotator_to_table(name, label_to_text: dict) -> None:
         nonlocal has_term_confusion
         table.add_section()
-        for label in sorted(label_to_text, key=str.casefold):
+        for label in sorted(label_to_text):
             text_to_count = label_to_text[label]
             for text, count in sorted(
                 text_to_count.items(), key=lambda t: (t[1], t[0]), reverse=True
             ):
-                is_confused = not args.csv and text and len(text_labels[text]) > 1
-                if is_confused:
-                    text = rich.text.Text(text + "*", style="bold")
-                    has_term_confusion = True
-                table.add_row(name, label, text, f"{count:,}")
+                if not args.csv and text:
+                    if len(text_labels[text][label.namespace()]) > 1:
+                        text = rich.text.Text(text + "*", style="bold")
+                        has_term_confusion = True
+                table.add_row(name, str(label), text, f"{count:,}")
 
     # Add each annotator
     add_annotator_to_table(rich.text.Text("All", style="italic"), all_annotator_frequencies)

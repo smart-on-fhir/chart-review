@@ -39,7 +39,7 @@ def _load_csv_labels(filename: str) -> dict[str, defines.LabelSet]:
                 row_id = f"{default_resource}/{row_id}"
             label_set = id_to_labels.setdefault(row_id, defines.LabelSet())
             if row[1]:  # allow for no labels for a row (no positive labels found)
-                label_set.add(row[1])
+                label_set.add(defines.Label(row[1]))
 
     return id_to_labels
 

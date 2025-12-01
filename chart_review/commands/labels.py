@@ -19,7 +19,7 @@ def print_labels(args: argparse.Namespace) -> None:
     reader = cli_utils.get_cohort_reader(args)
 
     # Calculate all label counts for each annotator
-    label_names = sorted(reader.class_labels, key=str.casefold)
+    label_names = sorted(reader.class_labels)
     label_notes: dict[str, dict[str, defines.NoteSet]] = {}  # annotator -> label -> note IDs
     any_annotator_note_sets: dict[str, defines.NoteSet] = {}
     for annotator, mentions in reader.annotations.mentions.items():
@@ -34,14 +34,14 @@ def print_labels(args: argparse.Namespace) -> None:
     # First add summary entries, for counts across the union of all annotators
     for name in label_names:
         count = f"{len(any_annotator_note_sets.get(name, {})):,}"
-        label_table.add_row(rich.text.Text("Any", style="italic"), name, count)
+        label_table.add_row(rich.text.Text("Any", style="italic"), str(name), count)
 
     # Now do each annotator as their own little boxed section
     for annotator in sorted(label_notes.keys(), key=str.casefold):
         label_table.add_section()
         for name, note_set in label_notes[annotator].items():
             count = str(len(note_set))
-            label_table.add_row(annotator, name, count)
+            label_table.add_row(annotator, str(name), count)
 
     if args.csv:
         cli_utils.print_table_as_csv(label_table)

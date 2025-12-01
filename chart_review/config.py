@@ -48,7 +48,7 @@ class ProjectConfig:
             # Coerce single labels into a set
             if not isinstance(value, list):
                 value = {value}
-            self.implied_labels[key] = set(value)
+            self.implied_labels[defines.Label(key)] = set(defines.Label(x) for x in value)
 
         # ** Grouped labels **
         self.grouped_labels = defines.GroupedLabels()
@@ -56,7 +56,7 @@ class ProjectConfig:
             # Coerce single labels into a set
             if not isinstance(value, list):
                 value = {value}
-            self.grouped_labels[key] = set(value)
+            self.grouped_labels[defines.Label(key)] = set(defines.Label(x) for x in value)
 
     def path(self, filename: str) -> str:
         return os.path.join(self.project_dir, filename)
@@ -107,7 +107,7 @@ class ProjectConfig:
 
     @property
     def class_labels(self) -> defines.LabelSet:
-        return set(self._data.setdefault("labels", []))
+        return set(defines.Label(x) for x in self._data.setdefault("labels", []))
 
     @property
     def ignore(self) -> set[str]:

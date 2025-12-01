@@ -193,3 +193,40 @@ class TestFrequency(base.TestCase):
             ],
             stdout.splitlines(),
         )
+
+    def test_sublabels(self):
+        output = self.run_cli("frequency", path=f"{self.DATA_DIR}/sublabels")
+        self.assertEqual(
+            output,
+            """╭───────────┬────────────────────────────────┬───────────────────────┬───────╮
+│ Annotator │ Label                          │ Mention               │ Count │
+├───────────┼────────────────────────────────┼───────────────────────┼───────┤
+│ All       │ Deceased                       │ death*                │ 1     │
+│ All       │ Deceased → False               │ alive                 │ 3     │
+│ All       │ Deceased → Datetime → 11/12/25 │ alive*                │ 2     │
+│ All       │ Deceased → Datetime → 11/13/25 │ alive*                │ 1     │
+│ All       │ Fungal → Confirmed             │ fungus found in lungs │ 3     │
+│ All       │ Infection                      │ death*                │ 1     │
+│ All       │ Infection → Confirmed          │ maybe got infected*   │ 1     │
+│ All       │ Infection → Suspected          │ maybe got infected*   │ 2     │
+├───────────┼────────────────────────────────┼───────────────────────┼───────┤
+│ alice     │ Deceased                       │ death*                │ 1     │
+│ alice     │ Deceased → False               │ alive                 │ 1     │
+│ alice     │ Deceased → Datetime → 11/12/25 │ alive*                │ 1     │
+│ alice     │ Fungal → Confirmed             │ fungus found in lungs │ 1     │
+│ alice     │ Infection → Suspected          │ maybe got infected*   │ 1     │
+├───────────┼────────────────────────────────┼───────────────────────┼───────┤
+│ bob       │ Deceased → False               │ alive                 │ 1     │
+│ bob       │ Deceased → Datetime → 11/13/25 │ alive*                │ 1     │
+│ bob       │ Fungal → Confirmed             │ fungus found in lungs │ 1     │
+│ bob       │ Infection                      │ death*                │ 1     │
+│ bob       │ Infection → Suspected          │ maybe got infected*   │ 1     │
+├───────────┼────────────────────────────────┼───────────────────────┼───────┤
+│ carla     │ Deceased → False               │ alive                 │ 1     │
+│ carla     │ Deceased → Datetime → 11/12/25 │ alive*                │ 1     │
+│ carla     │ Fungal → Confirmed             │ fungus found in lungs │ 1     │
+│ carla     │ Infection → Confirmed          │ maybe got infected*   │ 1     │
+╰───────────┴────────────────────────────────┴───────────────────────┴───────╯
+  * This text has multiple associated labels.
+""",
+        )

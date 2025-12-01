@@ -38,7 +38,7 @@ class TestCohort(base.TestCase):
             )
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
 
-        self.assertEqual({"Label A", "Label B"}, reader.class_labels)
+        self.assertEqual(base.labels({"Label A", "Label B"}), reader.class_labels)
 
     def test_ignored_ids(self):
         reader = cohort.CohortReader(config.ProjectConfig(f"{self.DATA_DIR}/ignore"))
@@ -101,7 +101,7 @@ class TestCohort(base.TestCase):
                 ],
             )
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
-            self.assertEqual({"1": {1: {"cat"}}}, reader.annotations.mentions)
+            self.assertEqual({"1": {1: base.labels({"cat"})}}, reader.annotations.mentions)
 
     def test_prediction_annotations_are_ignored(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -123,7 +123,7 @@ class TestCohort(base.TestCase):
                 ],
             )
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
-            self.assertEqual({"1": {1: {"bear"}}}, reader.annotations.mentions)
+            self.assertEqual({"1": {1: base.labels({"bear"})}}, reader.annotations.mentions)
 
     def test_default_annotator_config(self):
         """Should use a string version of the completed_by ID for the names"""
@@ -161,4 +161,6 @@ class TestCohort(base.TestCase):
                 ],
             )
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
-            self.assertEqual({"bob": {1: {"cat", "animal", "alive"}}}, reader.annotations.mentions)
+            self.assertEqual(
+                {"bob": {1: base.labels({"cat", "animal", "alive"})}}, reader.annotations.mentions
+            )

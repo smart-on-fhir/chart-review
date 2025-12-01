@@ -48,7 +48,7 @@ def print_mcnemar(args: argparse.Namespace) -> None:
     for annotator in annotators:
         note_range &= reader.note_range[annotator]
 
-    labels = [None, *sorted(reader.class_labels, key=str.casefold)]
+    labels = [None, *sorted(reader.class_labels)]
 
     # Calculate contingency tables
     matrices = {
@@ -72,7 +72,7 @@ def print_mcnemar(args: argparse.Namespace) -> None:
             str(len(m["OL"])),
             str(len(m["OR"])),
             str(len(m["BW"])),
-            label or "*",
+            str(label) if label else "*",
         )
 
     if args.csv:

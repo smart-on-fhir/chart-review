@@ -106,3 +106,49 @@ class TestLabels(base.TestCase):
             ],
             stdout.splitlines(),
         )
+
+    def test_sublabels(self):
+        output = self.run_cli("labels", path=f"{self.DATA_DIR}/sublabels")
+        self.assertEqual(
+            output,
+            """╭───────────┬────────────────────────────────┬─────────────╮
+│ Annotator │ Label                          │ Chart Count │
+├───────────┼────────────────────────────────┼─────────────┤
+│ Any       │ Deceased                       │ 1           │
+│ Any       │ Deceased → False               │ 1           │
+│ Any       │ Deceased → Datetime → 11/12/25 │ 1           │
+│ Any       │ Deceased → Datetime → 11/13/25 │ 1           │
+│ Any       │ Fungal → Confirmed             │ 1           │
+│ Any       │ Infection                      │ 1           │
+│ Any       │ Infection → Confirmed          │ 1           │
+│ Any       │ Infection → Suspected          │ 1           │
+├───────────┼────────────────────────────────┼─────────────┤
+│ alice     │ Deceased                       │ 1           │
+│ alice     │ Deceased → False               │ 1           │
+│ alice     │ Deceased → Datetime → 11/12/25 │ 1           │
+│ alice     │ Deceased → Datetime → 11/13/25 │ 0           │
+│ alice     │ Fungal → Confirmed             │ 1           │
+│ alice     │ Infection                      │ 0           │
+│ alice     │ Infection → Confirmed          │ 0           │
+│ alice     │ Infection → Suspected          │ 1           │
+├───────────┼────────────────────────────────┼─────────────┤
+│ bob       │ Deceased                       │ 0           │
+│ bob       │ Deceased → False               │ 1           │
+│ bob       │ Deceased → Datetime → 11/12/25 │ 0           │
+│ bob       │ Deceased → Datetime → 11/13/25 │ 1           │
+│ bob       │ Fungal → Confirmed             │ 1           │
+│ bob       │ Infection                      │ 1           │
+│ bob       │ Infection → Confirmed          │ 0           │
+│ bob       │ Infection → Suspected          │ 1           │
+├───────────┼────────────────────────────────┼─────────────┤
+│ carla     │ Deceased                       │ 0           │
+│ carla     │ Deceased → False               │ 1           │
+│ carla     │ Deceased → Datetime → 11/12/25 │ 1           │
+│ carla     │ Deceased → Datetime → 11/13/25 │ 0           │
+│ carla     │ Fungal → Confirmed             │ 1           │
+│ carla     │ Infection                      │ 0           │
+│ carla     │ Infection → Confirmed          │ 1           │
+│ carla     │ Infection → Suspected          │ 0           │
+╰───────────┴────────────────────────────────┴─────────────╯
+""",
+        )
