@@ -77,7 +77,7 @@ class CohortReader:
         return note_ranges, ignored_notes
 
     @property
-    def class_labels(self):
+    def class_labels(self) -> defines.LabelSet:
         return self.annotations.labels
 
     def _select_labels(self, label_pick: str | None = None) -> Iterable[str]:
