@@ -43,7 +43,7 @@ def print_accuracy(args: argparse.Namespace) -> None:
     note_range = set(reader.note_range[truth])
     note_range &= set(reader.note_range[annotator])
 
-    labels = sorted(reader.class_labels, key=str.casefold)
+    labels = sorted(reader.class_labels)
 
     # Calculate confusion matrices
     matrices = {None: reader.confusion_matrix(truth, annotator, note_range)}
@@ -68,14 +68,14 @@ def print_accuracy(args: argparse.Namespace) -> None:
                     if {note_id: label} in matrices[label][classification]:
                         style = "bold" if classification[0] == "F" else None  # highlight errors
                         class_text = rich.text.Text(classification, style=style)
-                        table.add_row(str(note_id), label, class_text)
+                        table.add_row(str(note_id), str(label), class_text)
                         break
     else:
         # Normal F1/Kappa scores
         table = cli_utils.create_table(*agree.csv_header(), "Label", dense=True)
         table.add_row(*agree.csv_row_score(scores[None]), "*")
         for label in labels:
-            table.add_row(*agree.csv_row_score(scores[label]), label)
+            table.add_row(*agree.csv_row_score(scores[label]), str(label))
 
     if args.csv:
         cli_utils.print_table_as_csv(table)
@@ -112,7 +112,7 @@ def print_accuracy(args: argparse.Namespace) -> None:
         scores.update(scores[None])
         del scores[None]
 
-        common.write_json(f"{output_stem}.json", scores)
+        common.write_json(f"{output_stem}.json", {str(key): val for key, val in scores.items()})
         console.print(f"Wrote {output_stem}.json")
 
         # CSV: we should really use a .tsv suffix here, but keeping .csv for historical reasons

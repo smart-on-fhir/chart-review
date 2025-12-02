@@ -1,11 +1,55 @@
 """Various type declarations for better type hinting."""
 
 import dataclasses
+import functools
+
+
+@dataclasses.dataclass(frozen=True)
+@functools.total_ordering
+class Label:
+    label: str
+    sublabel_name: str = ""  # empty string means "not provided" / "not used"
+    sublabel_value: str = ""
+
+    def __str__(self) -> str:
+        """Suitable for presenting to user, though it may be long"""
+        if self.sublabel_name:
+            short_name = self.sublabel_name.removeprefix(f"{self.label} ")
+            if not short_name or self.label == self.sublabel_name:
+                return f"{self.label} → {self.sublabel_value}"
+            else:
+                return f"{self.label} → {short_name} → {self.sublabel_value}"
+        else:
+            return self.label
+
+    def __lt__(self, other) -> bool:
+        """Case-insensitive ordering (useful for presentation to user)"""
+        left = tuple(x.casefold() for x in dataclasses.astuple(self))
+        right = tuple(x.casefold() for x in dataclasses.astuple(other))
+        return left < right
+
+    def namespace(self) -> tuple[str, str]:
+        """
+        Returns an object combining the "namespace" (i.e. "non-value") parts of the label.
+
+        When sublabels are present, it's the label and sublabel, but not the sublabel value.
+        When not using a sublabel, it's just empty strings because the label itself is a value in
+        the same "namespace" as all other bare labels.
+
+        This is mostly used for detecting when two labels "conflict", meaning they have the same
+        namespace but different values. (like when `frequency` detects conflicting labels for the
+        same text)
+        """
+        if self.sublabel_name:
+            return self.label, self.sublabel_name
+        else:
+            return "", ""
+
 
 # Map of label_studio_user_id: human name
 AnnotatorMap = dict[int, str]
 
-LabelSet = set[str]
+LabelSet = set[Label]
 NoteSet = set[int]
 
 # Map of label_studio_note_id: {all labels for that note}
@@ -13,10 +57,10 @@ NoteSet = set[int]
 Mentions = dict[int, LabelSet]
 
 # Map of label: {all implied labels}
-ImpliedLabels = dict[str, LabelSet]
+ImpliedLabels = dict[Label, LabelSet]
 
 # Map of group: {all member labels}
-GroupedLabels = dict[str, LabelSet]
+GroupedLabels = dict[Label, LabelSet]
 
 
 @dataclasses.dataclass

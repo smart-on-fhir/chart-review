@@ -136,8 +136,8 @@ def csv_table(score: dict, class_labels: defines.LabelSet):
     table.append(csv_header(False, True))
     table.append(csv_row_score(score, as_string=True))
 
-    for label in sorted(class_labels, key=str.casefold):
-        table.append(csv_row_score(score[label], label, as_string=True))
+    for label in sorted(class_labels):
+        table.append(csv_row_score(score[label], str(label), as_string=True))
     return "\n".join(table) + "\n"
 
 

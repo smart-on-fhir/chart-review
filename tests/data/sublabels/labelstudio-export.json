@@ -1,0 +1,303 @@
+[
+  {
+    "id": 1308,
+    "annotations": [
+      {
+        "id": 4,
+        "completed_by": 1,
+        "result": [
+          {
+            "value": {
+              "text": "maybe got infected",
+              "labels": ["Infection"]
+            },
+            "id": "HI1y_tlNwu",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "maybe got infected",
+              "choices": ["Suspected"]
+            },
+            "id": "HI1y_tlNwu",
+            "from_name": "Infection",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "fungus found in lungs",
+              "labels": ["Fungal"]
+            },
+            "id": "s4hJGFQLLH",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "fungus found in lungs",
+              "choices": ["Confirmed"]
+            },
+            "id": "s4hJGFQLLH",
+            "from_name": "Fungal",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "alive",
+              "labels": ["Deceased"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "alive",
+              "choices": ["False"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "Deceased",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": ["11/12/25"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "Deceased Datetime",
+            "to_name": "text",
+            "type": "textarea",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "death",
+              "labels": ["Deceased"]
+            },
+            "id": "EW1f64rW6m",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "completed_by": 2,
+        "result": [
+          {
+            "value": {
+              "text": "maybe got infected",
+              "labels": ["Infection"]
+            },
+            "id": "HI1y_tlNwu",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "maybe got infected",
+              "choices": ["Suspected"]
+            },
+            "id": "HI1y_tlNwu",
+            "from_name": "Infection",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "fungus found in lungs",
+              "labels": ["Fungal"]
+            },
+            "id": "s4hJGFQLLH",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "fungus found in lungs",
+              "choices": ["Confirmed"]
+            },
+            "id": "s4hJGFQLLH",
+            "from_name": "Fungal",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "alive",
+              "labels": ["Deceased"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "alive",
+              "choices": ["False"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "Deceased",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": ["11/13/25"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "Deceased Datetime",
+            "to_name": "text",
+            "type": "textarea",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "death",
+              "labels": ["Infection"]
+            },
+            "id": "EW1f64rW6m",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "completed_by": 3,
+        "result": [
+          {
+            "value": {
+              "text": "maybe got infected",
+              "labels": ["Infection"]
+            },
+            "id": "HI1y_tlNwu",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "maybe got infected",
+              "choices": ["Confirmed"]
+            },
+            "id": "HI1y_tlNwu",
+            "from_name": "Infection",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "fungus found in lungs",
+              "labels": ["Fungal"]
+            },
+            "id": "s4hJGFQLLH",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "fungus found in lungs",
+              "choices": ["Confirmed"]
+            },
+            "id": "s4hJGFQLLH",
+            "from_name": "Fungal",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "alive",
+              "labels": ["Deceased"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "label",
+            "to_name": "text",
+            "type": "labels",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": "alive",
+              "choices": ["False"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "Deceased",
+            "to_name": "text",
+            "type": "choices",
+            "origin": "manual"
+          },
+          {
+            "value": {
+              "text": ["11/12/25"]
+            },
+            "id": "eGO-ujlnvZ",
+            "from_name": "Deceased Datetime",
+            "to_name": "text",
+            "type": "textarea",
+            "origin": "manual"
+          }
+        ]
+      }
+    ],
+    "data": {
+      "text": "",
+      "label": []
+    }
+  },
+  {
+    "id": 1309,
+    "annotations": [
+      {
+        "id": 4,
+        "completed_by": 1,
+        "result": []
+      },
+      {
+        "id": 5,
+        "completed_by": 2,
+        "result": []
+      },
+      {
+        "id": 5,
+        "completed_by": 3,
+        "result": []
+      }
+    ],
+    "data": {
+      "text": "",
+      "label": []
+    }
+  }
+]

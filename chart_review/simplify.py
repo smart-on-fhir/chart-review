@@ -43,10 +43,10 @@ def simplify_export(
 
 
 def _find_implied_labels(
-    source_label: str,
+    source_label: defines.Label,
     implied_label_mappings: defines.ImpliedLabels,
-    found_labels: set[str] | None = None,
-) -> set[str]:
+    found_labels: defines.LabelSet | None = None,
+) -> defines.LabelSet:
     """
     Expands the source label into the set of all implied labels.
 

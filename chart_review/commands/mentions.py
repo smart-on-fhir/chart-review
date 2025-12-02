@@ -35,8 +35,8 @@ def print_mentions(args: argparse.Namespace) -> None:
                         note_mentions.add((text, label))
 
             # Now add each mention to the table
-            for note_mention in sorted(note_mentions, key=lambda m: (m[0], m[1].casefold())):
-                table.add_row(annotator, str(note_id), note_mention[0], note_mention[1])
+            for note_mention in sorted(note_mentions, key=lambda m: (m[0], m[1])):
+                table.add_row(annotator, str(note_id), note_mention[0], str(note_mention[1]))
 
     if args.csv:
         cli_utils.print_table_as_csv(table)

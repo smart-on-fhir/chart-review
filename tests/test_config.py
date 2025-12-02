@@ -50,7 +50,7 @@ class TestProjectConfig(base.TestCase):
         """Verify that we can operate on multiple formats (like json & yaml)."""
         proj_config = self.make_config(text, filename=f"config.{suffix}")
 
-        self.assertEqual({"cough", "fever"}, proj_config.class_labels)
+        self.assertEqual(base.labels({"cough", "fever"}), proj_config.class_labels)
         self.assertEqual({1: "jane", 2: "john"}, proj_config.annotators)
         self.assertEqual({"jane": [3], "john": [1, 3, 5]}, proj_config.note_ranges)
 
@@ -94,8 +94,8 @@ class TestProjectConfig(base.TestCase):
 
         self.assertEqual(
             {
-                "A": {"B"},
-                "C": {"D", "E"},
+                base.Label("A"): base.labels({"B"}),
+                base.Label("C"): base.labels({"D", "E"}),
             },
             proj_config.grouped_labels,
         )
@@ -112,8 +112,8 @@ class TestProjectConfig(base.TestCase):
 
         self.assertEqual(
             {
-                "A": {"B"},
-                "C": {"D", "E"},
+                base.Label("A"): base.labels({"B"}),
+                base.Label("C"): base.labels({"D", "E"}),
             },
             proj_config.implied_labels,
         )

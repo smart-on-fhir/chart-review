@@ -21,46 +21,44 @@ class TestSimplify(base.TestCase):
         annotations = defines.ProjectAnnotations(
             # Note that the group names are not part of this label set yet.
             # This set generally starts with just the human-tagged input labels.
-            labels={"Animal", "Cat", "Dangerous", "Lion", "Pet", "Venomous"},
+            labels=base.labels({"Animal", "Cat", "Dangerous", "Lion", "Pet", "Venomous"}),
             mentions={
-                "katherine": {1: input_labels},
+                "katherine": {1: base.labels(input_labels)},
             },
         )
         simplify.simplify_mentions(
             annotations,
             implied_labels={
-                "Cat": {"Animal", "Pet"},
-                "Lion": {"Cat", "Dangerous"},
+                base.Label("Cat"): base.labels({"Animal", "Pet"}),
+                base.Label("Lion"): base.labels({"Cat", "Dangerous"}),
             },
             grouped_labels={
                 # Dangerous overlaps with implied labels above, to test ordering
-                "Risky": {"Dangerous", "Venomous"},
+                base.Label("Risky"): base.labels({"Dangerous", "Venomous"}),
             },
         )
-        self.assertEqual(expected_labels, annotations.mentions["katherine"][1])
-        self.assertEqual({"Animal", "Cat", "Lion", "Pet", "Risky"}, annotations.labels)
+        self.assertEqual(base.labels(expected_labels), annotations.mentions["katherine"][1])
+        self.assertEqual(base.labels({"Animal", "Cat", "Lion", "Pet", "Risky"}), annotations.labels)
 
     def test_binary_grouping(self):
         """Verify that grouping all labels down to a simple yes/no works as expected."""
         annotations = defines.ProjectAnnotations(
-            labels={"Blue", "Green", "Red"},
+            labels=base.labels({"Blue", "Green", "Red"}),
             mentions={
                 "paint-bot": {
-                    1: {"Blue"},
+                    1: base.labels({"Blue"}),
                     2: set(),
-                    3: {"Red", "Green"},
+                    3: base.labels({"Red", "Green"}),
                 },
             },
         )
         simplify.simplify_mentions(
             annotations,
             implied_labels={},
-            grouped_labels={
-                "Painted": {"Blue", "Green", "Red"},
-            },
+            grouped_labels={base.Label("Painted"): base.labels({"Blue", "Green", "Red"})},
         )
         self.assertEqual(
-            {1: {"Painted"}, 2: set(), 3: {"Painted"}},
+            {1: base.labels({"Painted"}), 2: set(), 3: base.labels({"Painted"})},
             annotations.mentions["paint-bot"],
         )
-        self.assertEqual({"Painted"}, annotations.labels)
+        self.assertEqual(base.labels({"Painted"}), annotations.labels)
