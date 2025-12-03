@@ -90,6 +90,12 @@ annotators:
     filename: icd10.csv
 ```
 
+##### Sublabels
+If you have a more complicated Label Studio setup involving sublabels, that can work too.
+You'll just need to specify a `label`, `sublabel_name`, and `sublabel_value` columns.
+These are the same columns that Cumulus ETL expects when uploading to Label Studio,
+so the same CSV should work for both.
+
 ### `grouped-labels`
 
 This lets you bundle certain labels together into a smaller set.
@@ -104,6 +110,28 @@ The new group labels do not need to be a part of your source `labels` list.
 ```yaml
 grouped-labels:
   animal: [dog, cat, fox]
+```
+
+#### Sublabels
+If you have a more complicated Label Studio setup involving sublabels,
+you can specify a full label & sublabel pair using the "pipe" character: `|`.
+
+For example: a "Infection" label with a sublabel of "Severity" and a choice value might look like:
+
+```yaml
+grouped-labels:
+  Had Infection: [Infection|Severity|Severe, Infection|Severity|Mild]
+```
+
+You can also use partial "wildcard" matches on the right hand side:
+```yaml
+grouped-labels:
+  Had Infection: [Infection|Severity]
+```
+Or:
+```yaml
+grouped-labels:
+  Had Infection: [Infection]
 ```
 
 ### `ignore`
@@ -141,6 +169,28 @@ implied-labels:
   lion: cat
 ```
 
+#### Sublabels
+If you have a more complicated Label Studio setup involving sublabels,
+you can specify a full label & sublabel pair using the "pipe" character: `|`.
+
+For example: a "Infection" label with a sublabel of "Severity" and a choice value might look like:
+
+```yaml
+implied-labels:
+  Infection|Severity|Severe: [Had Infection]
+```
+
+You can also use partial "wildcard" matches on the left hand side:
+```yaml
+implied-labels:
+  Infection|Severity: [Had Infection]
+```
+Or:
+```yaml
+implied-labels:
+  Infection: [Had Infection]
+```
+
 ### `labels`
 
 This lets you restrict scoring to just this specific set of labels.
@@ -158,6 +208,18 @@ labels:
   - cat
   - has-tail
   - lion
+```
+
+#### Sublabels
+If you have a more complicated Label Studio setup involving sublabels,
+you can specify a full label & sublabel pair using the "pipe" character: `|`.
+
+For example: a "Infection" label with a sublabel of "Severity" and a choice value might look like:
+
+```yaml
+labels:
+  - Infection | Severity | Mild
+  - Infection | Severity | Severe
 ```
 
 ### `ranges`

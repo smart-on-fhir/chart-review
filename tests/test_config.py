@@ -24,7 +24,7 @@ class TestProjectConfig(base.TestCase):
             "yaml",
             """
             labels:
-                - cough
+                - cough | cough | sever
                 - fever
             annotators:
                 jane: 1
@@ -38,7 +38,7 @@ class TestProjectConfig(base.TestCase):
             "json",
             """
             {
-                "labels": ["cough", "fever"],
+                "labels": ["cough | cough | sever", "fever"],
                 "annotators": {"jane": 1, "john": 2},
                 "ranges": {"jane": [3], "john": [1, 3, 5]}
             }
@@ -50,7 +50,7 @@ class TestProjectConfig(base.TestCase):
         """Verify that we can operate on multiple formats (like json & yaml)."""
         proj_config = self.make_config(text, filename=f"config.{suffix}")
 
-        self.assertEqual(base.labels({"cough", "fever"}), proj_config.class_labels)
+        self.assertEqual(base.labels({"cough|cough|sever", "fever"}), proj_config.class_labels)
         self.assertEqual({1: "jane", 2: "john"}, proj_config.annotators)
         self.assertEqual({"jane": [3], "john": [1, 3, 5]}, proj_config.note_ranges)
 
@@ -87,15 +87,15 @@ class TestProjectConfig(base.TestCase):
         proj_config = self.make_config(
             """
             grouped-labels:
-                A: B
+                A|AX|AY: B|BX|BY
                 C: [D, E]
             """
         )
 
         self.assertEqual(
             {
-                base.Label("A"): base.labels({"B"}),
-                base.Label("C"): base.labels({"D", "E"}),
+                base.Label("A", "AX", "AY"): base.LabelMatcher("B|BX|BY"),
+                base.Label("C"): base.LabelMatcher("D", "E"),
             },
             proj_config.grouped_labels,
         )
@@ -105,15 +105,33 @@ class TestProjectConfig(base.TestCase):
         proj_config = self.make_config(
             """
             implied-labels:
-                A: B
+                A|AX|AY: B|BX|BY
                 C: [D, E]
             """
         )
 
         self.assertEqual(
             {
-                base.Label("A"): base.labels({"B"}),
-                base.Label("C"): base.labels({"D", "E"}),
+                base.LabelMatcher("A|AX|AY"): {base.Label("B", "BX", "BY")},
+                base.LabelMatcher("C"): base.labels({"D", "E"}),
             },
             proj_config.implied_labels,
         )
+
+    def test_incomplete_label(self):
+        with self.assertRaisesRegex(ValueError, "Sublabel name but no sublabel value provided"):
+            proj_config = self.make_config("labels: [A|B]")
+            print(proj_config.class_labels)  # reference the field so the labels get computed
+
+    def test_label_with_extra_pipes(self):
+        """They get put with the value side of things"""
+        proj_config = self.make_config("labels: [A|B|C|D]")
+        self.assertEqual(proj_config.class_labels, {base.Label("A", "B", "C|D")})
+
+    def test_label_with_pipes_in_key_part(self):
+        """They are not allowed"""
+        # No normal way to make these, so just confirm we check for this manually
+        with self.assertRaisesRegex(ValueError, "Invalid character found in label name: '|'."):
+            base.Label("A|B")
+        with self.assertRaisesRegex(ValueError, "Invalid character found in label name: '|'."):
+            base.Label("A", "B|C")

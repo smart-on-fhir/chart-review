@@ -59,8 +59,12 @@ def _find_implied_labels(
         return found_labels
 
     found_labels.add(source_label)
-    for implied_label in implied_label_mappings.get(source_label, []):
-        _find_implied_labels(implied_label, implied_label_mappings, found_labels=found_labels)
+    for matcher, implied_labels in implied_label_mappings.items():
+        if matcher.is_match(source_label):
+            for implied_label in implied_labels:
+                _find_implied_labels(
+                    implied_label, implied_label_mappings, found_labels=found_labels
+                )
 
     return found_labels
 
@@ -92,10 +96,10 @@ def _convert_grouped_mentions(
     final_mentions = defines.Mentions()
 
     for note_id, labels in mentions.items():
-        for group_name, group_members in grouped_label_mappings.items():
-            if labels & group_members:
-                labels -= group_members
-                labels.add(group_name)
+        for group_label, group_matcher in grouped_label_mappings.items():
+            if matched := group_matcher.matches_in_set(labels):
+                labels -= matched
+                labels.add(group_label)
         final_mentions[note_id] = labels
 
     return final_mentions
@@ -114,9 +118,11 @@ def simplify_mentions(
     }
 
     # ** Convert all grouped labels.
-    # First, calculate the new set of valid labels
+    # First, calculate the new set of valid labels, adding the group and removing the groupees
     annotations.labels |= set(grouped_labels.keys())
-    annotations.labels = annotations.labels.difference(*grouped_labels.values())
+    annotations.labels.difference_update(
+        *[m.matches_in_set(annotations.labels) for m in grouped_labels.values()]
+    )
     # Next, convert old labels to the new group labels
     annotations.mentions = {
         annotator: _convert_grouped_mentions(mentions, grouped_labels)

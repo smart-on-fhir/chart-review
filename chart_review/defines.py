@@ -4,12 +4,37 @@ import dataclasses
 import functools
 
 
+def _split_label(label_str: str) -> tuple[str, str, str]:
+    pieces = label_str.split("|", 2)
+    while len(pieces) < 3:
+        pieces.append("")
+    return tuple(piece.strip() for piece in pieces)
+
+
 @dataclasses.dataclass(frozen=True)
 @functools.total_ordering
 class Label:
     label: str
     sublabel_name: str = ""  # empty string means "not provided" / "not used"
     sublabel_value: str = ""
+
+    @classmethod
+    def parse(cls, label_str: str) -> "Label":
+        """
+        This parses a label string into a full Label class.
+
+        It interprets '|' characters as delimiters for the label and sublabel name.
+        Surrounding whitespace of any part of the label string is ignored.
+        """
+        return Label(*_split_label(label_str))
+
+    def __post_init__(self):
+        if "|" in self.label or "|" in self.sublabel_name:
+            raise ValueError("Invalid character found in label name: '|'.")
+        if self.sublabel_name and not self.sublabel_value:
+            raise ValueError(
+                f"Sublabel name but no sublabel value provided: '{self.sublabel_name}'."
+            )
 
     def __str__(self) -> str:
         """Suitable for presenting to user, though it may be long"""
@@ -56,11 +81,45 @@ NoteSet = set[int]
 # Usually used in the context of a specific annotator's label mentions.
 Mentions = dict[int, LabelSet]
 
+
+class LabelMatcher:
+    """
+    Class to match a specific label or a class of labels.
+
+    Examples:
+        "A|B|C" will match "A|B|C" but not "A|B|D"
+        "A|B" will match both "A|B|C" and "A|B|D" but not "A|E"
+        "A" will match "A|B|C" and "A|E|F" and "A" but not "X"
+    """
+
+    def __init__(self, *expressions: str):
+        self._labels = frozenset(_split_label(x) for x in expressions)
+
+    def __eq__(self, other):
+        return self._labels == other._labels
+
+    def __hash__(self):
+        return hash(self._labels)
+
+    def is_match(self, other: Label) -> bool:
+        for label in self._labels:
+            if (
+                label[0] == other.label
+                and (not label[1] or label[1] == other.sublabel_name)
+                and (not label[2] or label[2] == other.sublabel_value)
+            ):
+                return True
+        return False
+
+    def matches_in_set(self, other: LabelSet) -> LabelSet:
+        return {label for label in other if self.is_match(label)}
+
+
 # Map of label: {all implied labels}
-ImpliedLabels = dict[Label, LabelSet]
+ImpliedLabels = dict[LabelMatcher, LabelSet]
 
 # Map of group: {all member labels}
-GroupedLabels = dict[Label, LabelSet]
+GroupedLabels = dict[Label, LabelMatcher]
 
 
 @dataclasses.dataclass
