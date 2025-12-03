@@ -95,9 +95,6 @@ class LabelMatcher:
     def __init__(self, *expressions: str):
         self._labels = frozenset(_split_label(x) for x in expressions)
 
-    def __bool__(self) -> bool:
-        return bool(self._labels)
-
     def __eq__(self, other):
         return self._labels == other._labels
 

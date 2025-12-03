@@ -117,3 +117,21 @@ class TestProjectConfig(base.TestCase):
             },
             proj_config.implied_labels,
         )
+
+    def test_incomplete_label(self):
+        with self.assertRaisesRegex(ValueError, "Sublabel name but no sublabel value provided"):
+            proj_config = self.make_config("labels: [A|B]")
+            print(proj_config.class_labels)  # reference the field so the labels get computed
+
+    def test_label_with_extra_pipes(self):
+        """They get put with the value side of things"""
+        proj_config = self.make_config("labels: [A|B|C|D]")
+        self.assertEqual(proj_config.class_labels, {base.Label("A", "B", "C|D")})
+
+    def test_label_with_pipes_in_key_part(self):
+        """They are not allowed"""
+        # No normal way to make these, so just confirm we check for this manually
+        with self.assertRaisesRegex(ValueError, "Invalid character found in label name: '|'."):
+            base.Label("A|B")
+        with self.assertRaisesRegex(ValueError, "Invalid character found in label name: '|'."):
+            base.Label("A", "B|C")
