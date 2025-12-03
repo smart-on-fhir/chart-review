@@ -2,7 +2,6 @@
 
 import dataclasses
 import functools
-from collections.abc import Iterable
 
 
 def _split_label(label_str: str) -> tuple[str, str, str]:

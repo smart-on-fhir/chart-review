@@ -78,3 +78,125 @@ class TestExternal(base.TestCase):
 
             with self.assertRaisesRegex(ValueError, "^Your Label Studio export does not include"):
                 cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+    def test_sublabels_happy_path(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": {"filename": "ext.csv"}}}
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "data": {
+                            "encounter_id": "enc",
+                            "docref_mappings": {"DocumentReference/a": "DocumentReference/a_anon"},
+                        },
+                    },
+                    {
+                        "id": 2,
+                        "data": {
+                            "encounter_id": "enc",
+                            "docref_mappings": {"DocumentReference/b": "DocumentReference/b_anon"},
+                        },
+                    },
+                ],
+            )
+            common.write_text(
+                f"{tmpdir}/ext.csv",
+                """blarg,label,sublabel_name,sublabel_value,note_ref
+                bogus,A,B,C,a
+                bogus,,B,C,b""",  # empty 'label' col should give empty label set result
+            )
+
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+        self.assertEqual(
+            reader.annotations.mentions,
+            {"ext": {1: base.labels({"A|B|C"}), 2: set()}},
+        )
+
+    def test_sublabels_no_id_col(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": {"filename": "ext.csv"}}}
+            )
+            common.write_json(f"{tmpdir}/labelstudio-export.json", [{"id": 1, "data": {}}])
+            common.write_text(
+                f"{tmpdir}/ext.csv",
+                """blarg,label,sublabel_name,sublabel_value
+                bogus,A,B,C""",
+            )
+
+            with self.assertRaisesRegex(ValueError, "no resource ID column found"):
+                cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+    def test_sublabels_no_label_col(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": {"filename": "ext.csv"}}}
+            )
+            common.write_json(f"{tmpdir}/labelstudio-export.json", [{"id": 1, "data": {}}])
+            common.write_text(
+                f"{tmpdir}/ext.csv",
+                """blarg,diagnosticreport_id,sublabel_name,sublabel_value
+                bogus,id,B,C""",
+            )
+
+            with self.assertRaisesRegex(ValueError, "no 'label' column found"):
+                cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+    def test_sublabels_no_sublabel_name_col(self):
+        """This one works, you just can't specify sublabels, naturally"""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": {"filename": "ext.csv"}}}
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "data": {
+                            "encounter_id": "enc",
+                            "docref_mappings": {"DiagnosticReport/a": "DiagnosticReport/a_anon"},
+                        },
+                    }
+                ],
+            )
+            common.write_text(
+                f"{tmpdir}/ext.csv",
+                """blarg,diagnosticreport_id,label
+                bogus,a,Label1""",
+            )
+
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+
+        self.assertEqual(reader.annotations.mentions, {"ext": {1: base.labels({"Label1"})}})
+
+    def test_sublabels_no_sublabel_value_col(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json", {"annotators": {"ext": {"filename": "ext.csv"}}}
+            )
+            common.write_json(
+                f"{tmpdir}/labelstudio-export.json",
+                [
+                    {
+                        "id": 1,
+                        "data": {
+                            "encounter_id": "enc",
+                            "docref_mappings": {"DiagnosticReport/a": "DiagnosticReport/a_anon"},
+                        },
+                    }
+                ],
+            )
+            common.write_text(
+                f"{tmpdir}/ext.csv",
+                """blarg,diagnosticreport_id,label,sublabel_name
+                bogus,a,Label1,Sub1""",
+            )
+
+            with self.assertRaisesRegex(ValueError, "no 'sublabel_value' column found"):
+                cohort.CohortReader(config.ProjectConfig(tmpdir))
