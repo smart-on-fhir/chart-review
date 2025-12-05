@@ -103,28 +103,6 @@ class TestCohort(base.TestCase):
             reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
             self.assertEqual({"1": {1: base.labels({"cat"})}}, reader.annotations.mentions)
 
-    def test_prediction_annotations_are_ignored(self):
-        with tempfile.TemporaryDirectory() as tmpdir:
-            common.write_json(
-                f"{tmpdir}/labelstudio-export.json",
-                [
-                    {
-                        "id": 1,
-                        "annotations": [
-                            {
-                                "completed_by": 1,
-                                "result": [
-                                    {"origin": "prediction", "value": {"labels": ["cat"]}},
-                                    {"origin": "manual", "value": {"labels": ["bear"]}},
-                                ],
-                            },
-                        ],
-                    },
-                ],
-            )
-            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
-            self.assertEqual({"1": {1: base.labels({"bear"})}}, reader.annotations.mentions)
-
     def test_default_annotator_config(self):
         """Should use a string version of the completed_by ID for the names"""
         with tempfile.TemporaryDirectory() as tmpdir:

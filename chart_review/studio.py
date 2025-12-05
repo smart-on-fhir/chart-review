@@ -25,10 +25,7 @@ class Mention:
     from_name: str
 
     @staticmethod
-    def parse(entry: dict) -> "Mention | None":
-        if entry.get("origin") not in {None, "manual"}:
-            return None  # avoid counting predictions as human annotators
-
+    def parse(entry: dict) -> "Mention":
         # Check where we're going to find the labels/tags
         match entry.get("type", "labels").casefold():
             case "labels":
@@ -111,8 +108,6 @@ class Annotation:
         sublabels: list[Mention] = []
         for result in entry.get("result", []):
             mention = Mention.parse(result)
-            if not mention:
-                continue
             if not mention.from_name or mention.from_name in data_keys:
                 # This is a toplevel mention
                 toplevels[mention.id] = mention
