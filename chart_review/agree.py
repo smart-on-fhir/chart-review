@@ -1,4 +1,4 @@
-from collections.abc import Collection, Iterable
+from collections.abc import Collection
 
 from chart_review import defines
 
@@ -8,7 +8,7 @@ def confusion_matrix(
     truth: str,
     annotator: str,
     note_range: Collection[int],
-    labels: Iterable[str] | None = None,
+    labels: defines.LabelSet | None = None,
 ) -> dict[str, list]:
     """
     Confusion Matrix (TP, FP, TN, FN)
@@ -36,7 +36,7 @@ def confusion_matrix(
     for _v in annotator_mentions.values():
         label_set |= set(_v)
     if labels:
-        label_set &= set(labels)
+        label_set &= labels
 
     TP = list()  # True Positive
     FP = list()  # False Positive
@@ -185,7 +185,7 @@ def contingency_table(
     annotator1: str,
     annotator2: str,
     note_range: Collection[int],
-    labels: Iterable[str] | None = None,
+    labels: defines.LabelSet | None = None,
 ) -> dict[str, list]:
     # Grab all mentions
     mentions = {
@@ -199,7 +199,7 @@ def contingency_table(
         for mention_labels in mentions_set.values():
             label_set |= set(mention_labels)
     if labels:
-        label_set &= set(labels)
+        label_set &= labels
 
     BC = []  # both correct
     OL = []  # only left

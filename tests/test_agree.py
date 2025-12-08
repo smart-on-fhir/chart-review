@@ -16,10 +16,10 @@ class TestAgreement(base.TestCase):
             "bob",
             None,
             {
-                "FN": [{1: "Cough"}],
-                "FP": [{1: "Headache"}, {2: "Cough"}],
-                "TN": [{1: "Fever"}, {2: "Headache"}],
-                "TP": [{2: "Fever"}],
+                "FN": [{1: base.Label("Cough")}],
+                "FP": [{1: base.Label("Headache")}, {2: base.Label("Cough")}],
+                "TN": [{1: base.Label("Fever")}, {2: base.Label("Headache")}],
+                "TP": [{2: base.Label("Fever")}],
             },
         ),
         (
@@ -27,19 +27,19 @@ class TestAgreement(base.TestCase):
             "alice",
             {},
             {
-                "FN": [{1: "Headache"}, {2: "Cough"}],
-                "FP": [{1: "Cough"}],
-                "TN": [{1: "Fever"}, {2: "Headache"}],
-                "TP": [{2: "Fever"}],
+                "FN": [{1: base.Label("Headache")}, {2: base.Label("Cough")}],
+                "FP": [{1: base.Label("Cough")}],
+                "TN": [{1: base.Label("Fever")}, {2: base.Label("Headache")}],
+                "TP": [{2: base.Label("Fever")}],
             },
         ),
         (
             "alice",
             "bob",
-            ["Cough"],
+            base.labels(["Cough"]),
             {
-                "FN": [{1: "Cough"}],
-                "FP": [{2: "Cough"}],
+                "FN": [{1: base.Label("Cough")}],
+                "FP": [{2: base.Label("Cough")}],
                 "TN": [],
                 "TP": [],
             },
@@ -51,8 +51,8 @@ class TestAgreement(base.TestCase):
         annotations = defines.ProjectAnnotations(
             labels={"Cough", "Fever", "Headache"},
             mentions={
-                "alice": {1: {"Cough"}, 2: {"Fever"}},
-                "bob": {1: {"Headache"}, 2: {"Cough", "Fever"}},
+                "alice": {1: base.labels({"Cough"}), 2: base.labels({"Fever"})},
+                "bob": {1: base.labels({"Headache"}), 2: base.labels({"Cough", "Fever"})},
             },
         )
         notes = [1, 2]

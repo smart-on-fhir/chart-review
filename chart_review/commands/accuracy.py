@@ -8,7 +8,7 @@ import rich.box
 import rich.table
 import rich.text
 
-from chart_review import agree, cli_utils, common, console_utils
+from chart_review import agree, cli_utils, common, console_utils, defines
 
 
 def make_subparser(parser: argparse.ArgumentParser) -> None:
@@ -49,11 +49,14 @@ def print_accuracy(args: argparse.Namespace) -> None:
     matrices = {None: reader.confusion_matrix(truth, annotator, note_range)}
     for label in labels:
         matrices[label] = reader.confusion_matrix(truth, annotator, note_range, label)
+        # Add an aggregate row for any sublabel groupings
+        if label.sublabel_name:
+            matcher = defines.LabelMatcher(f"{label.label}|{label.sublabel_name}|*")
+            if matcher not in matrices:
+                matrices[matcher] = reader.confusion_matrix(truth, annotator, note_range, matcher)
 
     # Now score them
-    scores = {None: agree.score_matrix(matrices[None])}
-    for label in labels:
-        scores[label] = agree.score_matrix(matrices[label])
+    scores = {key: agree.score_matrix(matrix) for key, matrix in matrices.items()}
 
     console = rich.get_console()
 
@@ -75,6 +78,13 @@ def print_accuracy(args: argparse.Namespace) -> None:
         table = cli_utils.create_table(*agree.csv_header(), "Label", dense=True)
         table.add_row(*agree.csv_row_score(scores[None]), "*")
         for label in labels:
+            # Add an aggregate row for any sublabel groupings
+            if label.sublabel_name:
+                matcher = defines.LabelMatcher(f"{label.label}|{label.sublabel_name}|*")
+                if matcher in scores:
+                    wildcard_label = defines.Label(label.label, label.sublabel_name, "*")
+                    table.add_row(*agree.csv_row_score(scores[matcher]), str(wildcard_label))
+                    del scores[matcher]
             table.add_row(*agree.csv_row_score(scores[label]), str(label))
 
     if args.csv:
