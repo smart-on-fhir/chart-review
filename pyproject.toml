@@ -7,7 +7,6 @@ dependencies = [
     "rich",
     "scipy",
 ]
-description = "Medical Record Chart Review Calculator"
 readme = "README.md"
 license = "Apache-2.0"
 classifiers = [
@@ -15,7 +14,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dynamic = ["version"]
+dynamic = ["description", "version"]
 
 [project.urls]
 Home = "https://smarthealthit.org/cumulus/"

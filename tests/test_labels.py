@@ -48,7 +48,7 @@ class TestLabels(base.TestCase):
             )
             common.write_json(
                 f"{tmpdir}/labelstudio-export.json",
-                [],
+                [{"id": 1}],
             )
             stdout = self.run_cli("labels", path=tmpdir)
 
