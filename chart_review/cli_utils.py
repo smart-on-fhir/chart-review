@@ -17,9 +17,7 @@ def add_project_args(parser: argparse.ArgumentParser, is_global: bool = False) -
         "-p",
         default=None if is_global else argparse.SUPPRESS,
         metavar="DIR",
-        help=(
-            "directory holding project files, like labelstudio-export.json (default: current dir)"
-        ),
+        help=("directory holding project files, like a Label Studio export (default: current dir)"),
     )
     group.add_argument(
         "--config",

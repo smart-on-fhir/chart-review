@@ -11,6 +11,8 @@ might make it harder to understand what the test is focusing on.)
 """
 
 import dataclasses
+import os
+import sys
 
 from chart_review import common, defines, errors
 
@@ -174,15 +176,68 @@ class Note:
 
 
 class ExportFile:
-    """Parse information from a single Label Studio export file."""
+    """Parse information from Label Studio export files."""
 
     def __init__(self, path: str):
-        try:
-            data = common.read_json(path)
-        except Exception as exc:
-            errors.exit_for_invalid_project(str(exc))
+        """If path is a file, load it. If a folder, merge all export files in it."""
+        self._notes = []
+        note_hashes = {}
 
-        self._notes = [Note.parse(x) for x in data]
+        if os.path.isdir(path):
+            filenames = sorted(
+                os.path.join(path, name)
+                for name in os.listdir(path)
+                if name.casefold().endswith(".json")
+            )
+        else:
+            filenames = [path]
+
+        for name in filenames:
+            try:
+                data = common.read_json(name)
+            except Exception as exc:
+                print(f"Could not parse '{name}': {exc}", file=sys.stderr)
+                continue
+
+            # Confirm it is (very roughly) shaped like an LS export.
+            # We are pretty loose, for unit testing's sake.
+            # If we end up reading files we shouldn't in the real world, we can add a few more
+            # keys to check for.
+            if not data or not isinstance(data, list):
+                continue
+            if not isinstance(data[0], dict):
+                continue
+            if "id" not in data[0]:
+                continue
+
+            # Fold new notes into running list
+            new_notes = [Note.parse(x) for x in data]
+            for note in new_notes:
+                if note.docref_mappings:
+                    # Smush the note IDs together to form a stable string
+                    ids_hash = hash(tuple(sorted(note.docref_mappings.items())))
+                    if old_note := note_hashes.get(ids_hash):
+                        self._merge_notes(old_note, note)
+                    else:
+                        note_hashes[ids_hash] = note
+                        self._notes.append(note)
+                else:
+                    self._notes.append(note)
+
+        if not self._notes:
+            errors.exit_for_invalid_project("No Label Studio export data found.")
+
+    @staticmethod
+    def _merge_notes(old: Note, new: Note) -> None:
+        # Only merge annotations, take all the metadata from the old note
+        for new_annot in new.annotations:
+            for old_annot in old.annotations:
+                if old_annot.author == new_annot.author:
+                    old_annot.mentions.extend(new_annot.mentions)
+                    break
+            else:
+                old.annotations.append(new_annot)
+                continue
 
     @property
     def notes(self) -> list[Note]:

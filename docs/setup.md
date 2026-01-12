@@ -15,8 +15,8 @@ nav_order: 1
 ## Make Project Directory
 
 1. Make a new directory to hold your project files.
-2. Export your Label Studio project and put the resulting JSON file
-   in this directory with the name `labelstudio-export.json`.
+2. Export your Label Studio project as a JSON file and put the exported file
+   in this directory (name it as you like, it will automatically be detected).
 3. Create a [config file](config.md) in this directory.
 
 ## Run Chart Review

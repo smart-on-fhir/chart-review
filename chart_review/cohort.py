@@ -18,7 +18,7 @@ class CohortReader:
         self.project_dir = self.config.project_dir
 
         # Load exported annotations
-        self.ls_export = studio.ExportFile(self.config.path("labelstudio-export.json"))
+        self.ls_export = studio.ExportFile(self.config.project_dir)
 
         self.annotations = simplify.simplify_export(self.ls_export, self.config)
 
