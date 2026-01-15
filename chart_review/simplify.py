@@ -14,8 +14,7 @@ def simplify_export(
     :return: all project mentions parsed from the Label Studio export
     """
     annotations = defines.ProjectAnnotations()
-    annotations.labels = proj_config.class_labels
-    grab_all_labels = not annotations.labels
+    annotations.labels = proj_config.class_labels.direct_labels()
 
     for note in export.notes:
         for annot in note.annotations:
@@ -30,8 +29,10 @@ def simplify_export(
                 labels |= mention.labels
                 text_tags.append(defines.LabeledText(mention.text, mention.labels))
 
-            if grab_all_labels:
-                annotations.labels |= labels
+            valid_proj_labels = labels
+            if proj_config.class_labels:
+                valid_proj_labels = proj_config.class_labels.matches_in_set(labels)
+            annotations.labels |= valid_proj_labels
 
             # Store these mentions in the main annotations list, by author & note
             annotator_mentions = annotations.mentions.setdefault(annotator, defines.Mentions())

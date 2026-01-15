@@ -126,12 +126,12 @@ grouped-labels:
 You can also use partial "wildcard" matches on the right hand side:
 ```yaml
 grouped-labels:
-  Had Infection: [Infection|Severity]
+  Had Infection: [Infection|Severity|*]
 ```
 Or:
 ```yaml
 grouped-labels:
-  Had Infection: [Infection]
+  Had Infection: [Infection|*]
 ```
 
 ### `ignore`
@@ -183,12 +183,12 @@ implied-labels:
 You can also use partial "wildcard" matches on the left hand side:
 ```yaml
 implied-labels:
-  Infection|Severity: [Had Infection]
+  Infection|Severity|*: [Had Infection]
 ```
 Or:
 ```yaml
 implied-labels:
-  Infection: [Had Infection]
+  Infection|*: [Had Infection]
 ```
 
 ### `labels`
@@ -220,6 +220,17 @@ For example: a "Infection" label with a sublabel of "Severity" and a choice valu
 labels:
   - Infection | Severity | Mild
   - Infection | Severity | Severe
+```
+
+You can also use partial "wildcard" matches against the labels found in the export:
+```yaml
+labels:
+  - Infection|Severity|*
+```
+Or:
+```yaml
+labels:
+  - Infection|*
 ```
 
 ### `ranges`

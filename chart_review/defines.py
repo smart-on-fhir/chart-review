@@ -88,8 +88,10 @@ class LabelMatcher:
 
     Examples:
         "A|B|C" will match "A|B|C" but not "A|B|D"
-        "A|B" will match both "A|B|C" and "A|B|D" but not "A|E"
-        "A" will match "A|B|C" and "A|E|F" and "A" but not "X"
+        "A|B|*" will match both "A|B|C" and "A|B|D" but not "A|E"
+        "A|B" will match only "A|B" (not wildcarded)
+        "A|*" will match "A|B|C" and "A|E|F" and "A" but not "X"
+        "A" will match only "A" (not wildcarded)
     """
 
     def __init__(self, *expressions: str):
@@ -101,18 +103,27 @@ class LabelMatcher:
     def __hash__(self):
         return hash(self._labels)
 
+    def __bool__(self):
+        return bool(self._labels)
+
     def is_match(self, other: Label) -> bool:
         for label in self._labels:
             if (
                 label[0] == other.label
-                and (not label[1] or label[1] == other.sublabel_name)
-                and (not label[2] or label[2] == other.sublabel_value)
+                and (label[1] in {"*", other.sublabel_name})
+                and (label[1] == "*" or label[2] in {"*", other.sublabel_value})
             ):
                 return True
         return False
 
     def matches_in_set(self, other: LabelSet) -> LabelSet:
         return {label for label in other if self.is_match(label)}
+
+    def direct_labels(self) -> LabelSet:
+        """Returns all directly specified (non-wildcard) labels in the match set"""
+        return {
+            Label(*label) for label in self._labels if not any(filter(lambda x: x == "*", label))
+        }
 
 
 # Map of label: {all implied labels}
