@@ -1,5 +1,3 @@
-from collections.abc import Iterable
-
 from chart_review import agree, config, defines, external, simplify, studio
 
 
@@ -80,18 +78,22 @@ class CohortReader:
     def class_labels(self) -> defines.LabelSet:
         return self.annotations.labels
 
-    def _select_labels(self, label_pick: str | None = None) -> Iterable[str]:
-        if label_pick:
-            return [label_pick]
-        else:
+    def _select_labels(
+        self, label_pick: defines.Label | defines.LabelMatcher | None = None
+    ) -> defines.LabelSet:
+        if label_pick is None:
             return self.class_labels
+        elif isinstance(label_pick, defines.LabelMatcher):
+            return label_pick.matches_in_set(self.class_labels)
+        else:
+            return {label_pick}
 
     def confusion_matrix(
         self,
         truth: str,
         annotator: str,
         note_range: defines.NoteSet,
-        label_pick: str | None = None,
+        label_pick: defines.Label | defines.LabelMatcher | None = None,
     ) -> dict:
         """
         This is the rollup of counting each symptom only once, not multiple times.
@@ -117,7 +119,7 @@ class CohortReader:
         annotator1: str,
         annotator2: str,
         note_range: defines.NoteSet,
-        label_pick: str | None = None,
+        label_pick: defines.Label | defines.LabelMatcher | None = None,
     ) -> dict:
         """
         Calculate a contingency table for truth and two annotators.
