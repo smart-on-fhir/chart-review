@@ -33,18 +33,6 @@ def write_json(path: str, data: dict | list, indent: int | None = 4) -> None:
         json.dump(data, f, indent=indent)
 
 
-def read_text(path: str) -> str:
-    """
-    Reads data from the given path, in text format
-    :param path: (currently filesystem path)
-    :return: message: coded message
-    """
-    logging.debug("read_text() %s", path)
-
-    with open(path) as f:
-        return f.read()
-
-
 def write_text(path: str, text: str) -> None:
     """
     Writes data to the given path, in text format

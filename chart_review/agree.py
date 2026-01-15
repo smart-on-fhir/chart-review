@@ -1,3 +1,4 @@
+import math
 from collections.abc import Collection
 
 from chart_review import defines
@@ -79,6 +80,8 @@ def score_kappa(matrix: dict) -> float:
     fp = len(matrix["FP"])  # false positive
     fn = len(matrix["FN"])  # false negative
     total = tp + tn + fp + fn
+    if not total:
+        return math.nan
 
     # observed agreement A (Po)
     observed = (tp + tn) / total
@@ -102,20 +105,12 @@ def score_matrix(matrix: dict) -> dict:
     false_pos = len(matrix["FP"])
     false_neg = len(matrix["FN"])
 
-    if 0 == true_pos or 0 == true_neg:
-        sens = 0
-        spec = 0
-        ppv = 0
-        npv = 0
-        f1 = 0
-        kappa = 0
-    else:
-        sens = true_pos / (true_pos + false_neg)
-        spec = true_neg / (true_neg + false_pos)
-        ppv = true_pos / (true_pos + false_pos)
-        npv = true_neg / (true_neg + false_neg)
-        f1 = (2 * ppv * sens) / (ppv + sens)
-        kappa = score_kappa(matrix)
+    sens = true_pos / (true_pos + false_neg) if (true_pos + false_neg) else math.nan
+    spec = true_neg / (true_neg + false_pos) if (true_neg + false_pos) else math.nan
+    ppv = true_pos / (true_pos + false_pos) if (true_pos + false_pos) else math.nan
+    npv = true_neg / (true_neg + false_neg) if (true_neg + false_neg) else math.nan
+    f1 = (2 * ppv * sens) / (ppv + sens) if (ppv + sens) else math.nan
+    kappa = score_kappa(matrix)
 
     return {
         "F1": f1,
@@ -131,52 +126,32 @@ def score_matrix(matrix: dict) -> dict:
     }
 
 
-def csv_table(score: dict, class_labels: defines.LabelSet):
-    table = list()
-    table.append(csv_header(False, True))
-    table.append(csv_row_score(score, as_string=True))
-
-    for label in sorted(class_labels):
-        table.append(csv_row_score(score[label], str(label), as_string=True))
-    return "\n".join(table) + "\n"
+def float_to_str(value: float) -> str:
+    if math.isnan(value):
+        return "-"
+    else:
+        return str(round(value, 3))
 
 
-def csv_header(pick_label=False, as_string=False):
+def csv_header():
     """
     Table Header
     F1, PPV (precision), Recall (sensitivity), True Pos, False Pos, False Neg
-    :param pick_label: default= None
     :return: header
     """
-    as_list = ["F1", "Sens", "Spec", "PPV", "NPV", "Kappa", "TP", "FN", "TN", "FP"]
-
-    if not as_string:
-        return as_list
-
-    header = as_list
-    header.append(pick_label if pick_label else "Label")
-    return "\t".join(header)
+    return ["F1", "Sens", "Spec", "PPV", "NPV", "Kappa", "TP", "FN", "TN", "FP"]
 
 
-def csv_row_score(
-    score: dict, pick_label: str | None = None, as_string: bool = False
-) -> str | list[str]:
+def csv_row_score(score: dict) -> str | list[str]:
     """
     Table Row entry
     F1, PPV (precision), Recall (sensitivity), True Pos, False Pos, False Neg
     :param score: dict result from F1 scoring
     :param pick_label: default= None means '*' all classes
-    :param as_string: whether to return a list of string scores or one single string
     :return: str representation of the score
     """
     row = [score[header] for header in csv_header()]
-    row = [str(round(value, 3)) for value in row]
-
-    if not as_string:
-        return row
-
-    row.append(pick_label if pick_label else "*")
-    return "\t".join(row)
+    return [float_to_str(value) for value in row]
 
 
 def contingency_table(

@@ -31,9 +31,7 @@ def add_project_args(parser: argparse.ArgumentParser, is_global: bool = False) -
 def add_output_args(parser: argparse.ArgumentParser):
     """Returns an exclusive option group if you want to add custom output arguments"""
     group = parser.add_argument_group("output")
-    exclusive = group.add_mutually_exclusive_group()
-    exclusive.add_argument("--csv", action="store_true", help="print results in CSV format")
-    return exclusive
+    group.add_argument("--csv", action="store_true", help="print results in CSV format")
 
 
 def get_cohort_reader(args: argparse.Namespace) -> cohort.CohortReader:
@@ -68,4 +66,7 @@ def print_table_as_csv(table: rich.table.Table) -> None:
     # And then each row
     cells_by_row = zip(*[col.cells for col in table.columns])
     for row in cells_by_row:
+        # Turn hyphens into empty csv entries (handled as null/NaN),
+        # so that our float columns aren't interpreted as a string column.
+        row = ["" if cell == "-" else cell for cell in row]
         writer.writerow(row)
