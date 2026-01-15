@@ -60,6 +60,11 @@ class ProjectConfig:
             group_label = defines.Label.parse(key)
             self.grouped_labels[group_label] = defines.LabelMatcher(*value)
 
+        # ** List of project labels **
+        self.class_labels = defines.LabelMatcher(*self._data.setdefault("labels", []))
+        # Validate that we don't have any partial labels like A|B by constructing them all:
+        self.class_labels.direct_labels()
+
     def path(self, filename: str) -> str:
         return os.path.join(self.project_dir, filename)
 
@@ -106,10 +111,6 @@ class ProjectConfig:
         else:
             print(f"Unknown note range '{value}'", file=sys.stderr)
             return []
-
-    @property
-    def class_labels(self) -> defines.LabelSet:
-        return set(defines.Label.parse(x) for x in self._data.setdefault("labels", []))
 
     @property
     def ignore(self) -> set[str]:

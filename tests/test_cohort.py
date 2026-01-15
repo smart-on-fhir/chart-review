@@ -142,3 +142,75 @@ class TestCohort(base.TestCase):
             self.assertEqual(
                 {"bob": {1: base.labels({"cat", "animal", "alive"})}}, reader.annotations.mentions
             )
+
+    def test_label_matching(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            common.write_json(
+                f"{tmpdir}/config.json",
+                {
+                    "labels": [
+                        "A|B|C",
+                        "D|*",
+                        "E|F|*",
+                    ],
+                },
+            )
+            common.write_json(
+                f"{tmpdir}/export.json",
+                [
+                    {
+                        "id": 1,
+                        "annotations": [
+                            {
+                                "completed_by": 1,
+                                "result": [
+                                    # D|X|Y
+                                    {
+                                        "id": "id1",
+                                        "value": {"labels": ["D"]},
+                                        "type": "labels",
+                                    },
+                                    {
+                                        "id": "id1",
+                                        "value": {"choices": ["Y"]},
+                                        "type": "choices",
+                                        "from_name": "X",
+                                    },
+                                    # E|F|Z
+                                    {
+                                        "id": "id2",
+                                        "value": {"labels": ["E"]},
+                                        "type": "labels",
+                                    },
+                                    {
+                                        "id": "id2",
+                                        "value": {"choices": ["Z"]},
+                                        "type": "choices",
+                                        "from_name": "F",
+                                    },
+                                    # E|Nope|Nope
+                                    {
+                                        "id": "id3",
+                                        "value": {"labels": ["E"]},
+                                        "type": "labels",
+                                    },
+                                    {
+                                        "id": "id3",
+                                        "value": {"choices": ["Nope"]},
+                                        "type": "choices",
+                                        "from_name": "Nope",
+                                    },
+                                    # Nope
+                                    {
+                                        "id": "id4",
+                                        "value": {"labels": ["Nope"]},
+                                        "type": "labels",
+                                    },
+                                ],
+                            },
+                        ],
+                    }
+                ],
+            )
+            reader = cohort.CohortReader(config.ProjectConfig(tmpdir))
+            self.assertEqual(reader.class_labels, base.labels({"A|B|C", "D|X|Y", "E|F|Z"}))

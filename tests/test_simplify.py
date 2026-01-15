@@ -66,10 +66,12 @@ class TestSimplify(base.TestCase):
     @ddt.data(
         (["A|B|C"], ["A|B|C"], True),
         (["A|B|D"], ["A|B|C"], False),
-        (["A|B|C"], ["A|B"], True),
-        (["A|C|D"], ["A|B"], False),
-        (["A|B|C"], ["A"], True),
-        (["B|C|D"], ["A"], False),
+        (["A|B|C"], ["A|B"], False),
+        (["A|B|C"], ["A|B|*"], True),
+        (["A|C|D"], ["A|B|*"], False),
+        (["A|B|C"], ["A"], False),
+        (["A|B|C"], ["A|*"], True),
+        (["B|C|D"], ["A|*"], False),
     )
     @ddt.unpack
     def test_sublabel_implied_matching(self, labels, config, add_to_expected):
@@ -86,8 +88,8 @@ class TestSimplify(base.TestCase):
         self.assertEqual(annotations.labels, labels)
 
     @ddt.data(
-        (["A"], ["Group", "H"]),
-        (["A|B"], ["Group", "H", "A|M|N"]),
+        (["A|*"], ["Group", "H"]),
+        (["A|B|*"], ["Group", "H", "A|M|N"]),
         (["A|B|C"], ["Group", "H", "A|B|D", "A|M|N"]),
     )
     @ddt.unpack
