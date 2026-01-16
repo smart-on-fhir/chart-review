@@ -21,13 +21,13 @@ $ chart-review accuracy jill jane
 Comparing 3 charts (1, 3–4)
 Truth: jill
 Annotator: jane
-Macro F1: 0.556
+Macro F1: 0.833
 
-F1     Sens  Spec  PPV  NPV   Kappa  TP  FN  TN  FP  Label   
-0.667  0.75  0.6   0.6  0.75  0.341  3   1   3   2   *       
-0.667  0.5   1.0   1.0  0.5   0.4    1   1   1   0   Cough   
-1.0    1.0   1.0   1.0  1.0   1.0    2   0   1   0   Fatigue 
-0      0     0     0    0     0      0   0   1   2   Headache
+F1     Sens  Spec   PPV  NPV   Kappa  TP  FN  TN  FP  Label   
+0.667  0.75  0.6    0.6  0.75  0.341  3   1   3   2   *       
+0.667  0.5   1.0    1.0  0.5   0.4    1   1   1   0   Cough   
+1.0    1.0   1.0    1.0  1.0   1.0    2   0   1   0   Fatigue 
+-      -     0.333  0.0  1.0   0.0    0   0   1   2   Headache
 ```
 
 ## Options
@@ -76,7 +76,7 @@ f1,sens,spec,ppv,npv,kappa,tp,fn,tn,fp,label
 0.667,0.75,0.6,0.6,0.75,0.341,3,1,3,2,*
 0.667,0.5,1.0,1.0,0.5,0.4,1,1,1,0,Cough
 1.0,1.0,1.0,1.0,1.0,1.0,2,0,1,0,Fatigue
-0,0,0,0,0,0,0,0,1,2,Headache
+,,0.333,0.0,1.0,0.0,0,0,1,2,Headache
 ```
 
 ```shell

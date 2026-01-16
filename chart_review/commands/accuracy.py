@@ -1,20 +1,19 @@
 """Methods for high-level accuracy calculations."""
 
 import argparse
-import os
+import math
 
 import rich
 import rich.box
 import rich.table
 import rich.text
 
-from chart_review import agree, cli_utils, common, console_utils, defines
+from chart_review import agree, cli_utils, console_utils, defines
 
 
 def make_subparser(parser: argparse.ArgumentParser) -> None:
     cli_utils.add_project_args(parser)
-    output_group = cli_utils.add_output_args(parser)
-    output_group.add_argument("--save", action="store_true", help=argparse.SUPPRESS)
+    cli_utils.add_output_args(parser)
     parser.add_argument("--verbose", action="store_true", help="show each chart’s labels")
     parser.add_argument("truth_annotator")
     parser.add_argument("annotator")
@@ -102,31 +101,9 @@ def print_accuracy(args: argparse.Namespace) -> None:
 
     if not args.verbose and labels:
         # Calculate Macro F1 as a convenience
-        macro_f1 = sum(scores[label]["F1"] for label in labels) / len(labels)
-        console.print(f"Macro F1: {round(macro_f1, 3)}")
+        valid_f1s = [scores[label]["F1"] for label in labels if not math.isnan(scores[label]["F1"])]
+        macro_f1 = sum(valid_f1s) / len(valid_f1s) if valid_f1s else "-"
+        console.print(f"Macro F1: {agree.float_to_str(macro_f1)}")
 
     console.print()
-
-    if args.save:  # deprecated/hidden since 2.0, but still supported for now
-        output_stem = os.path.join(reader.project_dir, f"accuracy-{truth}-{annotator}")
-
-        # Round before we hit disk
-        for label_scores in scores.values():
-            for key, value in label_scores.items():
-                label_scores[key] = round(value, 3)
-
-        # JSON: Historically, this has been formatted with the global label results intermixed
-        # with the specific label names, so reproduce that historical formatting here.
-        # Note: this could bite us if the user ever has a label like "Kappa", which is why the
-        # above code avoids intermixing, but we'll keep this as-is for now.
-        scores.update(scores[None])
-        del scores[None]
-
-        common.write_json(f"{output_stem}.json", {str(key): val for key, val in scores.items()})
-        console.print(f"Wrote {output_stem}.json")
-
-        # CSV: we should really use a .tsv suffix here, but keeping .csv for historical reasons
-        common.write_text(f"{output_stem}.csv", agree.csv_table(scores, reader.class_labels))
-        console.print(f"Wrote {output_stem}.csv")
-    else:
-        console.print(table)
+    console.print(table)
