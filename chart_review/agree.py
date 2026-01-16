@@ -91,6 +91,10 @@ def score_kappa(matrix: dict) -> float:
     expected_neg = ((tn + fp) / total) * ((tn + fn) / total)
     expected = expected_pos + expected_neg
 
+    # If we encounter a divide-by-zero, return NaN
+    if math.isclose(1 - expected, 0.0):
+        return math.nan
+
     return (observed - expected) / (1 - expected)
 
 
