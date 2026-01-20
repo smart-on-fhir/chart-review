@@ -1,5 +1,7 @@
 """Tests for agree.py"""
 
+import math
+
 import ddt
 
 from chart_review import agree, defines
@@ -105,3 +107,28 @@ class TestAgreement(base.TestCase):
         """Verify that we can score a matrix for kappa."""
         kappa = round(agree.score_kappa(matrix), 4)
         self.assertEqual(expected_kappa, kappa)
+
+    @ddt.data(
+        # Example of incredibly unbalanced data, as a regression test
+        (
+            {
+                "FN": [],
+                "FP": [],
+                "TN": [{x: "Label"} for x in range(90)],
+                "TP": [],
+            },
+        ),
+        (
+            {
+                "FN": [],
+                "FP": [],
+                "TN": [],
+                "TP": [{x: "Label"} for x in range(90)],
+            },
+        ),
+    )
+    @ddt.unpack
+    def test_unbalanced_kappa(self, matrix):
+        """Verify that kappa will handle unbalanced NaN cases."""
+        kappa = round(agree.score_kappa(matrix), 4)
+        self.assertEqual(math.isnan(kappa), True)
