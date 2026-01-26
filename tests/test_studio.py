@@ -203,3 +203,54 @@ class TestStudio(base.TestCase):
                 studio.ExportFile(tmpdir).notes,
                 [studio.Note.parse({"id": 1})],
             )
+
+    def test_supported_types(self):
+        with tempfile.NamedTemporaryFile("wt") as tmpfile:
+            json.dump(
+                [
+                    {
+                        "id": 1,
+                        "annotations": [
+                            {
+                                "completed_by": 1,
+                                "result": [
+                                    {
+                                        "value": {"choices": ["Choice"]},
+                                        "type": "choices",
+                                    },
+                                    {
+                                        "value": {"datetime": "2021-04-22"},
+                                        "type": "datetime",
+                                    },
+                                    {
+                                        "value": {"datetime": "2021-04-22T10:20:30Z"},
+                                        "type": "datetime",
+                                    },
+                                    {
+                                        "value": {"labels": ["Label"]},
+                                        "type": "labels",
+                                    },
+                                    {
+                                        "value": {"text": ["Text"]},
+                                        "type": "textarea",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+                tmpfile,
+            )
+            tmpfile.flush()
+            export = studio.ExportFile(tmpfile.name)
+
+        self.assertEqual(
+            [x.labels for x in export.notes[0].annotations[0].mentions],
+            [
+                base.labels(["Choice"]),
+                base.labels(["2021-04-22"]),
+                base.labels(["2021-04-22T10:20:30Z"]),
+                base.labels(["Label"]),
+                base.labels(["Text"]),
+            ],
+        )

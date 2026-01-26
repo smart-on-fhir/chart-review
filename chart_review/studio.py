@@ -30,13 +30,6 @@ class Mention:
     def parse(entry: dict) -> "Mention":
         # Check where we're going to find the labels/tags
         match entry.get("type", "labels").casefold():
-            case "labels":
-                # Looks like:
-                # "value": {
-                #   "text": "patient has infection",
-                #   "labels": ["Infection"]
-                # },
-                field = "labels"
             case "choices":
                 # Looks like:
                 # "value": {
@@ -44,18 +37,42 @@ class Mention:
                 #   "choices": ["False"]
                 # },
                 field = "choices"
+                is_list = True
+            case "datetime":
+                # Looks like:
+                # "value": {
+                #   "text": "Nov 15",
+                #   "datetime": "2018-11-15",
+                # },
+                field = "datetime"
+                is_list = False
+            case "labels":
+                # Looks like:
+                # "value": {
+                #   "text": "patient has infection",
+                #   "labels": ["Infection"]
+                # },
+                field = "labels"
+                is_list = True
             case "textarea":
                 # Looks like:
                 # "value": {
                 #   "text": ["free form"],
                 # },
                 field = "text"
+                is_list = True
             case _:
                 raise ValueError(f"Unrecognized Label Studio result type '{entry.get('type')}'.")
 
         value = entry.get("value", {})
         text = value.get("text", "") if field != "text" else ""
-        labels = set(defines.Label(x) for x in value.get(field, []))
+        field_value = value.get(field)
+        if not field_value:
+            labels = set()
+        elif is_list:
+            labels = {defines.Label(x) for x in field_value}
+        else:
+            labels = {defines.Label(field_value)}
         return Mention(
             id=entry.get("id", ""), text=text, labels=labels, from_name=entry.get("from_name", "")
         )
