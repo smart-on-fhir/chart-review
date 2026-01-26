@@ -72,6 +72,7 @@ def print_frequency(args: argparse.Namespace) -> None:
     else:
         rich.get_console().print(table)
         console_utils.print_ignored_charts(reader)
+        console_utils.print_ignored_labels(reader)
         if has_term_confusion:
             rich.get_console().print(
                 "  * This text has multiple associated labels.", style="italic"

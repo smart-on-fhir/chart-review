@@ -90,6 +90,7 @@ def print_mcnemar(args: argparse.Namespace) -> None:
     console.print()
 
     console.print(table)
+    console_utils.print_ignored_labels(reader, prefix="\n", annotators=all_people)
 
 
 def _small_float(number: float) -> str:

@@ -48,3 +48,4 @@ def print_labels(args: argparse.Namespace) -> None:
     else:
         rich.get_console().print(label_table)
         console_utils.print_ignored_charts(reader)
+        console_utils.print_ignored_labels(reader)

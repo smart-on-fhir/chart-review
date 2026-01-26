@@ -107,3 +107,7 @@ def print_accuracy(args: argparse.Namespace) -> None:
 
     console.print()
     console.print(table)
+
+    console_utils.print_ignored_labels(
+        reader, prefix=None if args.verbose else "\n", annotators={truth, annotator}
+    )

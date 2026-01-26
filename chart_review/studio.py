@@ -119,15 +119,15 @@ class Annotation:
         # So you can see there that the "id" field is re-used, and the sublabel refers to the
         # parent via "from_name".
 
-        # When parsing here, we'll first look for the toplevel entries (identifiable by a
-        # "from_name" pointing at a key in data_keys). Then do a second pass for any sublabels and
-        # adjust the parent with the extra info.
+        # When parsing here, we'll first look for the toplevel entries (the first use of any given
+        # "id" value). Then do a second pass for any sublabels and adjust the parent with the extra
+        # info.
         mentions: list[Mention] = []
         toplevels: dict[str, Mention] = {}
         sublabels: list[Mention] = []
         for result in entry.get("result", []):
             mention = Mention.parse(result)
-            if not mention.from_name or mention.from_name in data_keys:
+            if not mention.id or mention.id not in toplevels:
                 # This is a toplevel mention
                 toplevels[mention.id] = mention
                 mentions.append(mention)
@@ -138,8 +138,6 @@ class Annotation:
         # Now match up the sublabels
         base_sets: dict[str, defines.LabelSet] = {}
         for sublabel in sublabels:
-            if sublabel.id not in toplevels:
-                raise ValueError(f"Unrecognized sublabel ID '{sublabel.id}'.")
             toplevel = toplevels[sublabel.id]
 
             # Wipe out any toplevel tags (existence of a sublabel implies no toplevel labels)
