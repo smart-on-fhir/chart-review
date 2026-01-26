@@ -146,6 +146,9 @@ class ProjectAnnotations:
     # annotator_name -> Mentions
     mentions: dict[str, Mentions] = dataclasses.field(default_factory=dict)
 
+    # annotator_name -> Mentions
+    invalid_mentions: dict[str, Mentions] = dataclasses.field(default_factory=dict)
+
     # We usually deal with simplified note-wide labels, but sometimes it's helpful to have
     # the original text-to-label associations available, for term frequency analysis.
     # annotators -> note_id -> list of text/label combos
@@ -156,6 +159,9 @@ class ProjectAnnotations:
     def remove(self, chart_id: int):
         # Remove any instance of this chart ID
         for mentions in self.mentions.values():
+            if chart_id in mentions:
+                del mentions[chart_id]
+        for mentions in self.invalid_mentions.values():
             if chart_id in mentions:
                 del mentions[chart_id]
         for mentions in self.original_text_mentions.values():

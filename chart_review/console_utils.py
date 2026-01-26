@@ -59,3 +59,32 @@ def print_ignored_charts(reader: cohort.CohortReader):
         highlight=False,
         style="italic",
     )
+
+
+def print_ignored_labels(
+    reader: cohort.CohortReader,
+    prefix: str | None = None,
+    annotators: set[str] | None = None,
+):
+    """
+    Prints a line about ignored labels, suitable for underlying a table.
+
+    It's recommended that any CLI command that shows labels or label counts
+    call this for their normal output view (i.e. not a formatted view like --csv).
+    """
+    invalid_count = 0
+    for annotator, mentions in reader.annotations.invalid_mentions.items():
+        if annotators and annotator not in annotators:
+            continue
+        for _chart_id, labels in mentions.items():
+            invalid_count += len(labels)
+    if invalid_count == 0:
+        return
+
+    label_word = "mention" if invalid_count == 1 else "mentions"
+    prefix = "  " if prefix is None else prefix
+    rich.get_console().print(
+        f"{prefix}Ignoring {invalid_count} invalid {label_word}",
+        highlight=False,
+        style="italic",
+    )

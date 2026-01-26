@@ -106,7 +106,7 @@
           {
             "value": {
               "labels": [
-                "A"
+                "Recorded On"
               ]
             }
           }
@@ -131,11 +131,19 @@
         "completed_by": 1,
         "result": [
           {
+            "id": "xyz",
             "value": {
               "labels": [
-                "A"
+                "Recorded On"
               ]
             }
+          },
+          {
+            "id": "xyz",
+            "value": {
+              "datetime": "2025-10-10"
+            },
+            "type": "datetime"
           }
         ]
       },

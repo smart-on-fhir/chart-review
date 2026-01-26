@@ -129,3 +129,23 @@ def simplify_mentions(
         annotator: _convert_grouped_mentions(mentions, grouped_labels)
         for annotator, mentions in annotations.mentions.items()
     }
+
+    # Check for any toplevel labels that *should* have a sublabel but don't, and drop them.
+    # e.g. if we saw a sublabel for "LabelA", any "LabelA" instances without a sublabel
+    # are considered invalid and we toss them.
+    # First, make one pass to find all the invalid versions of labels
+    invalid_labels = defines.LabelSet()
+    for annotator, mentions in annotations.mentions.items():
+        for labels in mentions.values():
+            for label in labels:
+                if label.sublabel_value:
+                    invalid_labels.add(defines.Label(label.label))
+    annotations.labels -= invalid_labels
+
+    # Now a second pass to strip invalid labels out
+    for annotator, mentions in annotations.mentions.items():
+        for chart_id, labels in mentions.items():
+            if found_invalid := labels & invalid_labels:
+                new_mention = annotations.invalid_mentions.setdefault(annotator, defines.Mentions())
+                new_mention[chart_id] = found_invalid
+                labels.difference_update(found_invalid)

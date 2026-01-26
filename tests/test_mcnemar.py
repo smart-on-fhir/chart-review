@@ -66,14 +66,14 @@ Truth: alice
 Annotators: bob, carla
 
 McNemar  P-value  BC  OL  OR  BW  Label                         
-N/A      0.688    10  2   3   1   *                             
-N/A      1.0      1   0   0   1   Deceased                      
+N/A      1.0      8   2   2   0   *                             
 N/A      1.0      2   0   0   0   Deceased → False              
 N/A      0.5      1   0   1   0   Deceased → Datetime → 11/12/25
 N/A      0.5      1   0   1   0   Deceased → Datetime → 11/13/25
 N/A      1.0      2   0   0   0   Fungal → Confirmed            
-N/A      0.5      1   0   1   0   Infection                     
 N/A      0.5      1   1   0   0   Infection → Confirmed         
 N/A      0.5      1   1   0   0   Infection → Suspected         
+
+Ignoring 2 invalid mentions
 """,
         )

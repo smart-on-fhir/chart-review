@@ -215,14 +215,12 @@ class TestMentions(base.TestCase):
 │ alice     │ 1308     │ alive                 │ Deceased → False              │
 │ alice     │ 1308     │ alive                 │ Deceased → Datetime →         │
 │           │          │                       │ 11/12/25                      │
-│ alice     │ 1308     │ death                 │ Deceased                      │
 │ alice     │ 1308     │ fungus found in lungs │ Fungal → Confirmed            │
 │ alice     │ 1308     │ maybe got infected    │ Infection → Suspected         │
 ├───────────┼──────────┼───────────────────────┼───────────────────────────────┤
 │ bob       │ 1308     │ alive                 │ Deceased → False              │
 │ bob       │ 1308     │ alive                 │ Deceased → Datetime →         │
 │           │          │                       │ 11/13/25                      │
-│ bob       │ 1308     │ death                 │ Infection                     │
 │ bob       │ 1308     │ fungus found in lungs │ Fungal → Confirmed            │
 │ bob       │ 1308     │ maybe got infected    │ Infection → Suspected         │
 ├───────────┼──────────┼───────────────────────┼───────────────────────────────┤
@@ -232,5 +230,6 @@ class TestMentions(base.TestCase):
 │ carla     │ 1308     │ fungus found in lungs │ Fungal → Confirmed            │
 │ carla     │ 1308     │ maybe got infected    │ Infection → Confirmed         │
 ╰───────────┴──────────┴───────────────────────┴───────────────────────────────╯
+  Ignoring 2 invalid mentions
 """,
         )

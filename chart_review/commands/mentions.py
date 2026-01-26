@@ -43,3 +43,4 @@ def print_mentions(args: argparse.Namespace) -> None:
     else:
         rich.get_console().print(table)
         console_utils.print_ignored_charts(reader)
+        console_utils.print_ignored_labels(reader)
