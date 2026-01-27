@@ -44,23 +44,32 @@ def confusion_matrix(
     FN = list()  # False Negative
     TN = list()  # True Negative
 
+    # Group sublabels together, so we can compare them as a group.
+    # Same sublabel value = TP, different sublabel value = FP, present or not = TN/FN
+    sublabel_groups = {}
+    for label in label_set:
+        sublabel_key = (label.label, label.sublabel_name)
+        group_set = sublabel_groups.setdefault(sublabel_key, set())
+        group_set.add(label)
+
     for note_id in note_range:
         truth_note_mentions = truth_mentions.get(note_id, set())
         annotator_note_mentions = annotator_mentions.get(note_id, set())
 
-        for label in sorted(label_set):
-            key = {note_id: label}
-            truth_positive = label in truth_note_mentions
-            annotator_positive = label in annotator_note_mentions
+        for sublabel_key in sorted(sublabel_groups):
+            all_sublabel_values = sublabel_groups[sublabel_key]
+            truth_values = all_sublabel_values & truth_note_mentions
+            annotator_values = all_sublabel_values & annotator_note_mentions
 
-            if truth_positive and annotator_positive:
-                TP.append(key)
-            elif truth_positive and not annotator_positive:
-                FN.append(key)
-            elif not truth_positive and annotator_positive:
-                FP.append(key)
-            elif not truth_positive and not annotator_positive:
+            key = (note_id, *sublabel_key)
+            if not truth_values and not annotator_values:
                 TN.append(key)
+            elif truth_values and not annotator_values:
+                FN.append(key)
+            elif truth_values != annotator_values:
+                FP.append(key)
+            elif truth_values == annotator_values:
+                TP.append(key)
             else:
                 raise Exception("Guard: Impossible comparison of reviewers")  # pragma: no cover
 

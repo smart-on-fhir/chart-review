@@ -18,10 +18,10 @@ class TestAgreement(base.TestCase):
             "bob",
             None,
             {
-                "FN": [{1: base.Label("Cough")}],
-                "FP": [{1: base.Label("Headache")}, {2: base.Label("Cough")}],
-                "TN": [{1: base.Label("Fever")}, {2: base.Label("Headache")}],
-                "TP": [{2: base.Label("Fever")}],
+                "FN": [(1, "Cough", "")],
+                "FP": [(1, "Headache", ""), (2, "Cough", "")],
+                "TN": [(1, "Fever", ""), (2, "Headache", "")],
+                "TP": [(2, "Fever", "")],
             },
         ),
         (
@@ -29,10 +29,10 @@ class TestAgreement(base.TestCase):
             "alice",
             {},
             {
-                "FN": [{1: base.Label("Headache")}, {2: base.Label("Cough")}],
-                "FP": [{1: base.Label("Cough")}],
-                "TN": [{1: base.Label("Fever")}, {2: base.Label("Headache")}],
-                "TP": [{2: base.Label("Fever")}],
+                "FN": [(1, "Headache", ""), (2, "Cough", "")],
+                "FP": [(1, "Cough", "")],
+                "TN": [(1, "Fever", ""), (2, "Headache", "")],
+                "TP": [(2, "Fever", "")],
             },
         ),
         (
@@ -40,8 +40,8 @@ class TestAgreement(base.TestCase):
             "bob",
             base.labels(["Cough"]),
             {
-                "FN": [{1: base.Label("Cough")}],
-                "FP": [{2: base.Label("Cough")}],
+                "FN": [(1, "Cough", "")],
+                "FP": [(2, "Cough", "")],
                 "TN": [],
                 "TP": [],
             },
@@ -61,6 +61,43 @@ class TestAgreement(base.TestCase):
 
         matrix = agree.confusion_matrix(annotations, truth, annotator, notes, labels=labels)
         self.assertEqual(expected_matrix, matrix)
+
+    def test_confusion_matrix_for_sublabels(self):
+        annotations = defines.ProjectAnnotations(
+            labels=base.labels({"Top|Sub|A", "Top|Sub|B", "Top|Sub|C"}),
+            mentions={
+                "alice": {
+                    1: base.labels({"Top|Sub|A"}),  # TP
+                    2: base.labels({"Top|Sub|A"}),  # FP
+                    3: base.labels({"Top|Sub|A", "Top|Sub|B"}),  # TP
+                    4: base.labels({"Top|Sub|A", "Top|Sub|B"}),  # FP
+                    5: set(),  # TN
+                    6: base.labels({"Top|Sub|A"}),  # FN
+                    7: set(),  # FP
+                },
+                "bob": {
+                    1: base.labels({"Top|Sub|A"}),  # TP
+                    2: base.labels({"Top|Sub|C"}),  # FP
+                    3: base.labels({"Top|Sub|A", "Top|Sub|B"}),  # TP
+                    4: base.labels({"Top|Sub|C", "Top|Sub|B"}),  # FP
+                    5: set(),  # TN
+                    6: set(),  # FN
+                    7: base.labels({"Top|Sub|A"}),  # FP
+                },
+            },
+        )
+        notes = [1, 2, 3, 4, 5, 6, 7]
+
+        matrix = agree.confusion_matrix(annotations, "alice", "bob", notes)
+        self.assertEqual(
+            matrix,
+            {
+                "FN": [(6, "Top", "Sub")],
+                "FP": [(2, "Top", "Sub"), (4, "Top", "Sub"), (7, "Top", "Sub")],
+                "TN": [(5, "Top", "Sub")],
+                "TP": [(1, "Top", "Sub"), (3, "Top", "Sub")],
+            },
+        )
 
     @ddt.data(
         # Examples pulled from https://en.wikipedia.org/wiki/Cohen's_kappa#Examples

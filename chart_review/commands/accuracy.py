@@ -67,7 +67,8 @@ def print_accuracy(args: argparse.Namespace) -> None:
             table.add_section()
             for label in labels:
                 for classification in ["TN", "TP", "FN", "FP"]:
-                    if {note_id: label} in matrices[label][classification]:
+                    label_key = (note_id, label.label, label.sublabel_name)
+                    if label_key in matrices[label][classification]:
                         style = "bold" if classification[0] == "F" else None  # highlight errors
                         class_text = rich.text.Text(classification, style=style)
                         table.add_row(str(note_id), str(label), class_text)

@@ -115,20 +115,20 @@ Truth: alice
 Annotator: bob
 Macro F1: 1.0
 
-F1    Sens  Spec   PPV   NPV    Kappa   TP  FN  TN  FP  Label                   
-0.75  0.75  0.833  0.75  0.833  0.583   3   1   5   1   *                       
-1.0   1.0   1.0    1.0   1.0    1.0     1   0   1   0   Deceased → *            
-1.0   1.0   1.0    1.0   1.0    1.0     1   0   1   0   Deceased → False        
--     0.0   0.667  0.0   0.667  -0.333  0   1   2   1   Deceased → Datetime → * 
--     0.0   1.0    -     0.5    0.0     0   1   1   0   Deceased → Datetime →   
-                                                        11/12/25                
--     -     0.5    0.0   1.0    0.0     0   0   1   1   Deceased → Datetime →   
-                                                        11/13/25                
-1.0   1.0   1.0    1.0   1.0    1.0     1   0   1   0   Fungal → *              
-1.0   1.0   1.0    1.0   1.0    1.0     1   0   1   0   Fungal → Confirmed      
-1.0   1.0   1.0    1.0   1.0    1.0     1   0   1   0   Infection → *           
--     -     -      -     -      -       0   0   0   0   Infection → Confirmed   
-1.0   1.0   1.0    1.0   1.0    1.0     1   0   1   0   Infection → Suspected   
+F1     Sens  Spec  PPV   NPV  Kappa  TP  FN  TN  FP  Label                      
+0.857  1.0   0.8   0.75  1.0  0.75   3   0   4   1   *                          
+1.0    1.0   1.0   1.0   1.0  1.0    1   0   1   0   Deceased → *               
+1.0    1.0   1.0   1.0   1.0  1.0    1   0   1   0   Deceased → False           
+-      -     0.5   0.0   1.0  0.0    0   0   1   1   Deceased → Datetime → *    
+-      0.0   1.0   -     0.5  0.0    0   1   1   0   Deceased → Datetime →      
+                                                     11/12/25                   
+-      -     0.5   0.0   1.0  0.0    0   0   1   1   Deceased → Datetime →      
+                                                     11/13/25                   
+1.0    1.0   1.0   1.0   1.0  1.0    1   0   1   0   Fungal → *                 
+1.0    1.0   1.0   1.0   1.0  1.0    1   0   1   0   Fungal → Confirmed         
+1.0    1.0   1.0   1.0   1.0  1.0    1   0   1   0   Infection → *              
+-      -     -     -     -    -      0   0   0   0   Infection → Confirmed      
+1.0    1.0   1.0   1.0   1.0  1.0    1   0   1   0   Infection → Suspected      
 
 Ignoring 1 invalid mention
 """,
