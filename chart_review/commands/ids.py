@@ -36,7 +36,7 @@ def print_ids(args: argparse.Namespace) -> None:
 
         # Now each DocRef ID
         for orig_id, anon_id in note.docref_mappings.items():
-            table.add_row(chart_id, f"DocumentReference/{orig_id}", f"DocumentReference/{anon_id}")
+            table.add_row(chart_id, orig_id, anon_id)
             printed = True
 
         if not printed:

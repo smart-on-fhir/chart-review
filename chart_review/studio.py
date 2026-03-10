@@ -169,11 +169,21 @@ class Note:
     anon_encounter_id: str | None = None
 
     @staticmethod
+    def _prefix_note(note_ref: str) -> str:
+        # For historical reasons, prefix DocRef/ if we're dealing with an ID not a Ref
+        return note_ref if "/" in note_ref else f"DocumentReference/{note_ref}"
+
+    @staticmethod
     def parse(entry: dict) -> "Note":
         metadata = entry.get("data", {})
         docref_mappings = metadata.get("docref_mappings", {})
         encounter_id = metadata.get("encounter_id") or metadata.get("enc_id")  # old name
         anon_encounter_id = metadata.get("anon_encounter_id") or metadata.get("anon_id")  # old name
+
+        # Normalize mappings
+        docref_mappings = {
+            Note._prefix_note(key): Note._prefix_note(val) for key, val in docref_mappings.items()
+        }
 
         data_keys = set(metadata.keys())
         annotations = [
