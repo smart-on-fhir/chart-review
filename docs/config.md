@@ -64,13 +64,12 @@ Sometimes you are working with externally-derived annotations.
 For example, from NLP or ICD10 codes.
 
 That's easy to integrate!
-Just make a CSV file with two columns:
-first an identifier for the document and second, the label.
+Just make a CSV file with an identifier column and a `label` column.
 
-- The document identifier can be an Encounter or DocumentReference ID
+- The identifier can be an Encounter, DocumentReference, or DiagnosticReport ID
   (either the original ID or the anonymized version that Cumulus ETL creates).
 - The label should be the same kind of label you define in your config.
-- An ID can appear multiple times with different labels. All the labels will apply to that note.
+- An ID can appear multiple times with different labels. All the labels will apply to that chart.
 - If there are no labels for a given ID, include a line for that ID but with an empty label field.
   That way, Chart Review will know to include that ID in its math, but with no labels.
 
@@ -88,6 +87,34 @@ ijkl789,Cough
 annotators:
   icd10:
     filename: icd10.csv
+```
+
+##### Identifier column and resource types
+
+Chart Review needs to know which kind of FHIR resource each ID refers to.
+There are two ways to tell it:
+
+1. **Prefix the ID with its resource type**, like `DocumentReference/abcd123`
+   or `DiagnosticReport/abcd123`. This always wins, and lets you mix resource types
+   freely in one file.
+2. **Name the identifier column after the resource type.** Any *bare* ID (no `/`) is assumed
+   to be that type. Recognized names:
+   - DocumentReference: any name containing `doc` (e.g. `docref_id`, `doc_id`), or `note_ref`
+   - DiagnosticReport: `diagnosticreport_id` or `diagnosticreport_ref`
+   - Encounter: any name containing `enc` (e.g. `encounter_id`, `enc_id`)
+
+   If the file has only two columns and the first isn't recognized,
+   Chart Review will warn and assume Encounter IDs.
+
+You do **not** need separate files per resource type.
+Each row is matched to the Label Studio chart that holds that resource,
+so a single file can label DocumentReferences and DiagnosticReports side by side:
+
+```csv
+docref_id,label
+DocumentReference/abcd123,Cough
+DiagnosticReport/xyz789,Fever
+DocumentReference/abcd456,
 ```
 
 ##### Sublabels
@@ -144,7 +171,9 @@ If put in this ignore list, they won't affect the score.
 
 You can use either the Label Studio note ID directly,
 an Encounter ID (original or anonymized),
-or a DocumentReference ID (original or anonymized).
+or a DocumentReference or DiagnosticReport ID (original or anonymized).
+Bare IDs are assumed to be Encounter IDs, so prefix other resource types
+with `DocumentReference/` or `DiagnosticReport/`.
 
 #### Example
 ```yaml

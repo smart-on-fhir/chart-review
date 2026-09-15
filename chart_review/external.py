@@ -37,9 +37,14 @@ class ExternalCsvParser:
         self.sublabel_name_col = None
         self.sublabel_value_col = None
 
-        # There are two ways headers could be layed out:
+        # There are two ways headers could be laid out:
         # - bare bones two column layout of id/label
         # - an ID column (with lots of possible names) and the standard label column names
+        #
+        # In either layout, the ID column name only determines the *default* resource type,
+        # used for bare IDs (no "/"). Any row may instead use a full "ResourceType/id" ref,
+        # which overrides the default -- so one file can freely mix DocumentReference,
+        # DiagnosticReport, and Encounter rows. See _row_to_id().
 
         if len(header) == 2:
             # Implicit header order of [id, label]
@@ -77,6 +82,7 @@ class ExternalCsvParser:
                     self._error("no 'sublabel_value' column found")
 
     def _row_to_id(self, row: list[str]) -> str:
+        """Normalizes a row's ID to a "ResourceType/id" ref, using the header default if bare"""
         row_id = row[self.id_col]
         if "/" not in row_id:
             row_id = f"{self.default_resource}/{row_id}"
@@ -107,14 +113,18 @@ class ExternalCsvParser:
         raise ValueError(f"Could not parse external file '{self.filename}': {msg}.")
 
 
+################################## 
+# Helpers leveraging ExternalCsvParser 
+# 
 def _load_csv_labels(filename: str) -> dict[str, defines.LabelSet]:
     """
     Loads a csv and returns a list of labels per row.
 
-    CSV format is two columns, where the first is note/encounter id and the second is a single
-    label.
+    Simplest CSV format is two columns, where the first is a resource ID and the second is a
+    single label. IDs may be bare (resource type inferred from the column name) or fully
+    qualified "ResourceType/id" refs, and a single file may mix resource types.
 
-    Returns {row_id -> set of labels for that ID}
+    Returns {"ResourceType/id" -> set of labels for that ID}
     """
     id_to_labels = {}
 
